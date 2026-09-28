@@ -1,4 +1,4 @@
-/* NIMCOS E-VOTING — progressive enhancement only.
+/* NIMCOS E-VOTING: progressive enhancement only.
  * Every voter page works without JavaScript; this file adds the step-by-step
  * ballot on phones, confirmation dialogs, live statistics and small charts.
  * Loaded as an external file so the Content-Security-Policy can forbid inline script.
@@ -267,7 +267,7 @@
     return path.split('.').reduce(function (o, k) { return o == null ? undefined : o[k]; }, obj);
   }
   function fmt(v, kind) {
-    if (v == null) return '—';
+    if (v == null) return '-';
     if (kind === 'percent') return Number(v).toFixed(2) + '%';
     if (typeof v === 'number') return v.toLocaleString('en-NG');
     return String(v);
@@ -331,6 +331,56 @@
         .then(function () { setTimeout(run, every); });
     }
     setTimeout(run, every);
+  }
+
+  /* ---------- Home page menu (phones) ---------- */
+  function initSiteNav() {
+    var btn = $('[data-nav-toggle]');
+    var panel = $('[data-nav-panel]');
+    if (!btn || !panel) return;
+    btn.addEventListener('click', function () {
+      var open = panel.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    $$('a', panel).forEach(function (a) {
+      a.addEventListener('click', function () { panel.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); });
+    });
+  }
+
+  /* ---------- Announcement ticker: steady reading speed, with a pause button (WCAG 2.2.2) ---------- */
+  function initTicker() {
+    var ticker = $('[data-ticker]');
+    if (!ticker) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var track = $('[data-ticker-track]', ticker);
+    var toggle = $('[data-ticker-toggle]', ticker);
+    ticker.classList.add('is-moving');
+    // One copy of the text scrolls past at about 70 pixels per second.
+    var distance = track.scrollWidth / 2;
+    track.style.setProperty('--ticker-duration', Math.max(15, Math.round(distance / 70)) + 's');
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var paused = ticker.classList.toggle('is-paused');
+        toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        toggle.textContent = paused ? 'Play' : 'Pause';
+      });
+    }
+  }
+
+  /* ---------- Announcement pop-up: shown once per announcement version per browser ---------- */
+  function initAnnouncementPopup() {
+    var dialog = $('[data-announcement-popup]');
+    if (!dialog || typeof dialog.showModal !== 'function') return;
+    var keys = (dialog.getAttribute('data-announcement-popup') || '').split(',').filter(Boolean);
+    var storeKey = 'nimcos.announcements.seen';
+    var seen = [];
+    try { seen = JSON.parse(window.localStorage.getItem(storeKey) || '[]'); } catch (e) { seen = []; }
+    var unseen = keys.filter(function (k) { return seen.indexOf(k) === -1; });
+    if (!unseen.length) return;
+    dialog.addEventListener('close', function () {
+      try { window.localStorage.setItem(storeKey, JSON.stringify(seen.concat(unseen).slice(-50))); } catch (e) { /* private mode: it will show again next time */ }
+    });
+    setTimeout(function () { dialog.showModal(); }, 400);
   }
 
   /* ---------- Admin sidebar ---------- */
@@ -399,5 +449,8 @@
     initSelectAll();
     initAutoSubmit();
     initPrint();
+    initSiteNav();
+    initTicker();
+    initAnnouncementPopup();
   });
 })();

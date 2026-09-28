@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Enums\AccountStatus;
+use App\Enums\AnnouncementDisplay;
+use App\Enums\AnnouncementLevel;
 use App\Enums\CandidateStatus;
 use App\Enums\ElectionStatus;
 use App\Enums\ElectionType;
@@ -13,6 +15,7 @@ use App\Enums\ResultStatus;
 use App\Enums\UserStatus;
 use App\Enums\VerificationStatus;
 use App\Enums\VoterEligibility;
+use App\Models\Announcement;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\ElectionPosition;
@@ -28,7 +31,7 @@ use RuntimeException;
 /**
  * ============================ DEVELOPMENT / DEMO DATA ONLY ============================
  * Every record is fictitious and flagged is_test_data = true. Service Numbers are
- * in the reserved range 90001–90024 and emails end in ".test". This seeder refuses to run in production.
+ * in the reserved range 90001 to 90024 and emails end in ".test". This seeder refuses to run in production.
  * =====================================================================================
  */
 class DemoSeeder extends Seeder
@@ -53,6 +56,7 @@ class DemoSeeder extends Seeder
             $this->admins();
             $voters = $this->voters();
             $this->election($voters);
+            $this->announcements();
         });
 
         $this->command?->warn('DEMO DATA loaded (fictitious). Admin password for all demo accounts: '.self::ADMIN_PASSWORD);
@@ -117,6 +121,22 @@ class DemoSeeder extends Seeder
         return $voters;
     }
 
+    private function announcements(): void
+    {
+        if (Announcement::query()->exists()) {
+            return;
+        }
+        $author = User::query()->where('email', 'superadmin@nimcos.test')->value('id');
+
+        foreach ([
+            ['DEMO: Voting is now open', "Voting for the NIMCOS 2026 Elective Congress is open until 17:00 today (WAT).\nSign in with your Service Number and the code sent to your registered email.", AnnouncementDisplay::BOTH, AnnouncementLevel::IMPORTANT, '/vote', 'Vote now'],
+            ['DEMO: Never share your code', 'NIMCOS officials will never ask for your verification code. Report anyone who does to the Electoral Committee.', AnnouncementDisplay::TICKER, AnnouncementLevel::INFO, null, null],
+        ] as [$title, $body, $display, $level, $url, $label]) {
+            $a = new Announcement(['title' => $title, 'body' => $body, 'display' => $display, 'level' => $level, 'link_url' => $url, 'link_label' => $label, 'is_active' => true]);
+            $a->forceFill(['created_by' => $author, 'updated_by' => $author])->save();
+        }
+    }
+
     /** @param list<Voter> $voters */
     private function election(array $voters): void
     {
@@ -128,7 +148,7 @@ class DemoSeeder extends Seeder
         $election->fill([
             'name' => 'NIMCOS 2026 ELECTIVE CONGRESS',
             'code' => 'NIMCOS-2026-EC',
-            'description' => 'DEMO: Election of officers of the Nigeria Immigration Multi-Purpose Cooperative Society for the 2026–2028 tenure.',
+            'description' => 'DEMO: Election of officers of the Nigeria Immigration Multi-Purpose Cooperative Society for the 2026 to 2028 tenure.',
             'election_type' => ElectionType::GENERAL,
             'starts_at' => now()->subMinutes(5),
             'ends_at' => now()->addHours(12),

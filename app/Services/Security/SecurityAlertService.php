@@ -117,7 +117,7 @@ class SecurityAlertService
     {
         $len = mb_strlen($serviceNumber);
 
-        // Service Numbers are short (4–5 digits), so reveal only the last two.
+        // Service Numbers are short, so reveal only the last two characters.
         return $len <= 3 ? str_repeat('•', $len) : str_repeat('•', $len - 2).mb_substr($serviceNumber, -2);
     }
 }

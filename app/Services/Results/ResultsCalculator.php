@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Results are computed from the votes table and nothing else (spec §20–22).
+ * Results are computed from the votes table and nothing else (spec §20 to 22).
  * There is no code path that accepts a vote count from a user.
  *
  * Workflow: CLOSE -> calculate() -> verify() -> resolveTie() as needed -> publish()

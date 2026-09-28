@@ -13,12 +13,12 @@
 <body class="voter-body">
 <a class="skip-link" href="#main">Skip to main content</a>
 @if (config('nimcos.demo_mode'))
-    <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT — test data only. Votes cast here are not real.</div>
+    <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT: test data only. Votes cast here are not real.</div>
 @endif
 <div class="band" aria-hidden="true"></div>
 <header class="voter-header">
     <div class="inner">
-        <a class="brand" href="{{ route('voter.entry') }}">
+        <a class="brand" href="{{ route('home') }}">
             <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS seal" width="44" height="44">
             <span>
                 <span class="brand-name">{{ config('nimcos.name') }}</span><br>
@@ -33,6 +33,11 @@
         @endauth
     </div>
 </header>
+{{-- No pop-ups or moving text while a voter is filling in or reviewing their ballot. --}}
+@include('partials.announcements', [
+    'showTicker' => ! request()->routeIs('voter.ballot', 'voter.ballot.*'),
+    'showPopups' => ! request()->routeIs('voter.ballot', 'voter.ballot.*', 'voter.receipt', 'voter.otp'),
+])
 @yield('ballot-top')
 <main id="main" class="voter-main @yield('main-class')" tabindex="-1">
     @include('partials.flash')

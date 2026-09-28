@@ -1,10 +1,10 @@
-# How to Vote — NIMCOS E-VOTING
+# How to Vote: NIMCOS E-VOTING
 
 You can vote on any smartphone, tablet or computer with internet access, during the official voting period only.
 
 ## What you need
 
-- Your **NIS Service Number** (4 or 5 digits), as registered with NIMCOS.
+- Your **Service Number**, as registered with NIMCOS.
 - Access to the **email address** on the NIMCOS register (your one-time code is sent to it). Check your spam or junk folder if it does not arrive.
 
 ## Steps

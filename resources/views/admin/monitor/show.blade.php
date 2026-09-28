@@ -27,7 +27,7 @@
     </div>
 
     <div class="stats">
-        <div class="stat"><div class="stat-label">Last vote</div><div class="stat-value" data-stat="summary.last_vote_at">{{ $summary['last_vote_at'] ?? '—' }}</div></div>
+        <div class="stat"><div class="stat-label">Last vote</div><div class="stat-value" data-stat="summary.last_vote_at">{{ $summary['last_vote_at'] ?? '-' }}</div></div>
         <div class="stat"><div class="stat-label">Active sessions</div><div class="stat-value" data-stat="summary.sessions.active">{{ $summary['sessions']['active'] }}</div></div>
         <div class="stat"><div class="stat-label">Completed sessions</div><div class="stat-value" data-stat="summary.sessions.completed">{{ $summary['sessions']['completed'] }}</div></div>
         <div class="stat"><div class="stat-label">Expired sessions</div><div class="stat-value" data-stat="summary.sessions.expired">{{ $summary['sessions']['expired'] }}</div><div class="stat-note">Revoked: <span data-stat="summary.sessions.revoked">{{ $summary['sessions']['revoked'] }}</span></div></div>

@@ -109,6 +109,12 @@ final class AuditAction
 
     public const ELIGIBILITY_CHANGED = 'eligibility.changed';
 
+    public const ANNOUNCEMENT_CREATED = 'announcement.created';
+
+    public const ANNOUNCEMENT_UPDATED = 'announcement.updated';
+
+    public const ANNOUNCEMENT_DELETED = 'announcement.deleted';
+
     public const POSITION_CREATED = 'position.created';
 
     public const POSITION_UPDATED = 'position.updated';

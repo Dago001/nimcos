@@ -1,4 +1,4 @@
-NIMCOS E-VOTING — SECURITY ALERT
+NIMCOS E-VOTING: SECURITY ALERT
 
 Severity: {{ $severity }}
 Type: {{ $type }}
@@ -10,4 +10,4 @@ Review and acknowledge it here: {{ $alertsUrl }}
 
 You receive this email because your account can review security alerts. Alerts are observations for review, not conclusions.
 
-— NIMCOS E-Voting
+NIMCOS E-Voting

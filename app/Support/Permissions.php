@@ -42,6 +42,8 @@ final class Permissions
 
     public const MANAGE_SYSTEM_SETTINGS = 'manage_system_settings';
 
+    public const MANAGE_ANNOUNCEMENTS = 'manage_announcements';
+
     /** @return array<string, array{label:string, group:string}> */
     public static function catalogue(): array
     {
@@ -62,6 +64,7 @@ final class Permissions
             self::VIEW_AUDIT_LOGS => ['label' => 'View audit logs and security alerts', 'group' => 'Audit'],
             self::MANAGE_ADMINS => ['label' => 'Manage administrators and roles', 'group' => 'Administration'],
             self::MANAGE_SYSTEM_SETTINGS => ['label' => 'Manage system settings', 'group' => 'Administration'],
+            self::MANAGE_ANNOUNCEMENTS => ['label' => 'Post announcements to voters', 'group' => 'Administration'],
         ];
     }
 

@@ -17,7 +17,7 @@
 
 <div class="facts">
     <div class="fact"><span>Election date</span><strong>{{ display_time($election->starts_at, 'j F Y') }}</strong></div>
-    <div class="fact"><span>Voting period (WAT)</span><strong>{{ display_time($election->starts_at, 'H:i') }} – {{ display_time($election->ends_at, 'H:i') }}</strong></div>
+    <div class="fact"><span>Voting period (WAT)</span><strong>{{ display_time($election->starts_at, 'H:i') }} to {{ display_time($election->ends_at, 'H:i') }}</strong></div>
     <div class="fact"><span>Positions</span><strong>{{ $positionCount }}</strong></div>
     <div class="fact"><span>Voter</span><strong>{{ $voter->surname }}, {{ $voter->first_name }}</strong></div>
 </div>

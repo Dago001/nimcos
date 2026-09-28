@@ -5,7 +5,7 @@
 The tests run against a **real PostgreSQL database** (`nimcos_test`), so row locks, composite foreign keys, CHECK constraints and integrity triggers are exercised exactly as in production. Each test runs inside a transaction that is rolled back. The suite refuses to run against any database whose name does not end in `_test`.
 
 ```bash
-php artisan test                        # everything (102 tests)
+php artisan test                        # everything (112 tests)
 php artisan test --filter=VotingTest    # one file
 ```
 
@@ -21,6 +21,7 @@ Configuration is in `phpunit.xml` (bcrypt at low cost for speed, array cache/ses
 | `Feature/ElectionLifecycleTest` | Create election + attach 14 positions (WAT→UTC); readiness checks; schedule → open → close; ballot locked once scheduled; closed election cannot reopen (application and DB); scheduler auto-open/close; ballots/votes/audit/VOTED immutable at DB level; no ballots into a closed election |
 | `Feature/VoterImportTest` | Preview counts (duplicates, missing fields, bad Service Number, bad phone, missing, reused and bad email); nothing changes before confirmation; transactional create/update; no double confirmation; bad files rejected; duplicate Service Number on manual entry; formula-injection neutralisation |
 | `Feature/DashboardAndEmailTest` | Dashboard lists every contestant with the live count (HTML and polling JSON); hidden when switched off or without `view_results`; voter codes, admin credentials and HIGH/CRITICAL alerts are emailed |
+| `Feature/HomeAndAnnouncementsTest` | Home page and `/vote` sign-in; announcements as ticker, pop-up or both; switched-off, scheduled and expired notices hidden; text escaped; nothing on the ballot; permission, password and safe-link checks; audited; survives a real cache round trip |
 | `Feature/EligibilityAndCandidateTest` | Bulk authorisation filters; no granting while open but suspension allowed; VOTED final; per-election eligibility; photo re-encoding; non-image upload rejected; draft photos private; audit chain tamper detection |
 | `Unit/SupportTest` | TOTP RFC 6238 vectors and window; Nigerian phone normalisation; election state machine |
 

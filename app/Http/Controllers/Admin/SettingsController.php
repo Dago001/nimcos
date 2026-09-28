@@ -40,6 +40,10 @@ class SettingsController extends Controller
             'voting_session_minutes' => ['required', 'integer', 'min:5', 'max:60'],
             'require_admin_mfa' => ['nullable', 'boolean'],
             'support_contact' => ['nullable', 'string', 'max:200'],
+            'contact_address' => ['nullable', 'string', 'max:200'],
+            'contact_phone' => ['nullable', 'string', 'max:40'],
+            'contact_email' => ['nullable', 'email:rfc', 'max:191'],
+            'contact_hours' => ['nullable', 'string', 'max:80'],
             'confirm_password' => ['required', 'string'],
             'confirm_mfa' => ['nullable', 'string'],
         ]);

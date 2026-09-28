@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Services\Announcements\AnnouncementFeed;
 use App\Services\Settings\SettingsService;
 use App\Support\Permissions;
 use App\Support\ServiceNumber;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use RuntimeException;
@@ -43,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Route keys are UUIDs; anything else is a 404 before it reaches the database.
-        foreach (['election', 'electionVoter', 'electionPosition', 'candidate', 'voter', 'import', 'user', 'role', 'alert', 'position'] as $param) {
+        foreach (['election', 'electionVoter', 'electionPosition', 'candidate', 'voter', 'import', 'user', 'role', 'alert', 'position', 'announcement'] as $param) {
             Route::pattern($param, '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}');
         }
 
@@ -54,6 +56,11 @@ class AppServiceProvider extends ServiceProvider
 
         Password::defaults(fn () => Password::min((int) config('nimcos.admin.password_min_length', 12))
             ->letters()->mixedCase()->numbers()->symbols());
+
+        View::composer('partials.announcements', function ($view) {
+            $feed = app(AnnouncementFeed::class);
+            $view->with(['tickerItems' => $feed->ticker(), 'popupItems' => $feed->popups()]);
+        });
 
         Paginator::defaultView('partials.pagination');
         Paginator::defaultSimpleView('partials.pagination');

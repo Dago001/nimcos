@@ -3,7 +3,7 @@
 @section('title', 'System settings')
 
 @section('content')
-<div class="page-head"><div><h1>System settings</h1><div class="sub">Runtime settings. Secrets (database, SMS provider keys) are configured only in the server environment file.</div></div></div>
+<div class="page-head"><div><h1>System settings</h1><div class="sub">Runtime settings. Secrets (database, mail server password) are configured only in the server environment file.</div></div></div>
 
 <div class="grid-2">
     <form method="POST" action="{{ route('admin.settings.update') }}" class="panel">

@@ -2,7 +2,7 @@
 
 PostgreSQL 16+. All primary keys are UUIDs, except `audit_logs.id`, a sequential key that defines the hash-chain order. All timestamps are `timestamptz` in UTC (the connection is pinned to UTC), displayed in Africa/Lagos.
 
-The full ERD and rationale are in [ARCHITECTURE.md §3–4](ARCHITECTURE.md). This document is the operational reference.
+The full ERD and rationale are in [ARCHITECTURE.md §3 to 4](ARCHITECTURE.md). This document is the operational reference.
 
 ## Tables
 

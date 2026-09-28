@@ -70,7 +70,7 @@ class VoterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'service_number.regex' => 'Service Number must be 4 or 5 digits.',
+            'service_number.regex' => 'Service Number is not in a valid format.',
             'service_number.unique' => 'A voter with this Service Number is already registered.',
         ];
     }

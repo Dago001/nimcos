@@ -3,7 +3,7 @@
 @section('title', 'Security alerts')
 
 @section('content')
-<div class="page-head"><div><h1>Security alerts</h1><div class="sub">Suspicious activity flagged for authorised review. An alert is an observation, not an accusation — confirm the facts before acting.</div></div></div>
+<div class="page-head"><div><h1>Security alerts</h1><div class="sub">Suspicious activity flagged for authorised review. An alert is an observation, not an accusation. Confirm the facts before acting.</div></div></div>
 
 <form class="filters" method="GET">
     <div class="field"><label for="status">Status</label><select class="input" id="status" name="status" data-autosubmit>
@@ -23,7 +23,7 @@
             <tr>
                 <td><x-status-badge :status="$alert->severity" /></td>
                 <td><strong class="small mono">{{ $alert->type }}</strong><br>{{ $alert->description }}
-                    @if ($alert->review_notes)<div class="small muted mt-1">Review: {{ $alert->review_notes }} — {{ $alert->reviewer?->name }}, {{ display_time($alert->reviewed_at) }}</div>@endif</td>
+                    @if ($alert->review_notes)<div class="small muted mt-1">Review: {{ $alert->review_notes }} (by {{ $alert->reviewer?->name }}, {{ display_time($alert->reviewed_at) }})</div>@endif</td>
                 <td class="small">{{ $alert->subject }}<br><span class="mono muted">{{ $alert->ip }}</span></td>
                 <td class="num">{{ $alert->occurrences }}</td>
                 <td class="small nowrap">{{ display_time($alert->first_seen_at, 'j M H:i') }}<br>{{ display_time($alert->last_seen_at, 'j M H:i') }}</td>
@@ -37,7 +37,7 @@
                                 <div class="modal-body">
                                     <p class="small">{{ $alert->description }}</p>
                                     <div class="field"><label for="st-{{ $alert->id }}">Outcome</label>
-                                        <select class="input" id="st-{{ $alert->id }}" name="status"><option value="REVIEWED">Reviewed — action taken / noted</option><option value="DISMISSED">Dismissed — benign</option></select></div>
+                                        <select class="input" id="st-{{ $alert->id }}" name="status"><option value="REVIEWED">Reviewed: action taken / noted</option><option value="DISMISSED">Dismissed: benign</option></select></div>
                                     <div class="field"><label for="nt-{{ $alert->id }}">Notes</label><textarea class="input" id="nt-{{ $alert->id }}" name="review_notes" required maxlength="2000"></textarea></div>
                                 </div>
                                 <div class="modal-foot"><button type="button" class="btn btn-secondary" data-dialog-close>Cancel</button><button class="btn btn-primary" type="submit">Save review</button></div>

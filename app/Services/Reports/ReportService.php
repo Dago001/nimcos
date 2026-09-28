@@ -133,11 +133,11 @@ class ReportService
                     $c['is_tied'] && ! $p['resolution'] ? 'TIE' : ($c['is_winner'] ? 'Elected' : ''),
                 ];
             }
-            $rows[] = [$p['name'].' — total valid votes', '', $p['total_valid_votes'], '', ''];
+            $rows[] = [$p['name'].': total valid votes', '', $p['total_valid_votes'], '', ''];
         }
 
         return [
-            'title' => 'Election Results'.($provisional ? ' (PROVISIONAL — NOT PUBLISHED)' : ''),
+            'title' => 'Election Results'.($provisional ? ' (PROVISIONAL, NOT PUBLISHED)' : ''),
             'subtitle' => $election->name,
             'headings' => ['Position', 'Candidate', 'Votes', 'Percentage', 'Outcome'],
             'rows' => $rows,

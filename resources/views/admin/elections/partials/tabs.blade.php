@@ -3,7 +3,7 @@
 <div class="page-head">
     <div>
         <h1>{{ $election->name }}</h1>
-        <div class="sub"><x-status-badge :status="$election->status" /> &nbsp; {{ display_time($election->starts_at, 'j M Y, H:i') }} – {{ display_time($election->ends_at, 'H:i') }} WAT</div>
+        <div class="sub"><x-status-badge :status="$election->status" /> &nbsp; {{ display_time($election->starts_at, 'j M Y, H:i') }} to {{ display_time($election->ends_at, 'H:i') }} WAT</div>
     </div>
     @isset($actions){{ $actions }}@endisset
 </div>

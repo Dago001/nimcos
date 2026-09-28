@@ -38,7 +38,7 @@
             <div class="stat">
                 <div class="stat-label">Election status</div>
                 <div class="stat-value {{ $summary['accepting_votes'] ? 'green' : '' }}" data-stat="summary.status_label">{{ $summary['status_label'] }}</div>
-                <div class="stat-note">{{ display_time($focus->starts_at, 'H:i') }} – {{ display_time($focus->ends_at, 'H:i, j M') }}</div>
+                <div class="stat-note">{{ display_time($focus->starts_at, 'H:i') }} to {{ display_time($focus->ends_at, 'H:i, j M') }}</div>
             </div>
             <div class="stat">
                 <div class="stat-label">Eligible voters</div>
@@ -99,7 +99,7 @@
 
         <div class="grid-2">
             <div class="panel">
-                <div class="panel-head"><h3>Votes cast by hour (WAT)</h3><span class="small muted">Last vote: <strong data-stat="summary.last_vote_at">{{ $summary['last_vote_at'] ?? '—' }}</strong></span></div>
+                <div class="panel-head"><h3>Votes cast by hour (WAT)</h3><span class="small muted">Last vote: <strong data-stat="summary.last_vote_at">{{ $summary['last_vote_at'] ?? '-' }}</strong></span></div>
                 <div class="panel-body">
                     <div class="chart" data-bar-chart="{{ json_encode($hourly) }}" data-chart-source="hourly" data-label="Votes cast per hour" data-empty="No votes have been cast yet."></div>
                 </div>
@@ -109,7 +109,7 @@
                 <div class="panel-head"><h3>At a glance</h3></div>
                 <div class="panel-body">
                     <ul class="checklist">
-                        <li><span>Is the election open?</span><strong class="{{ $summary['accepting_votes'] ? 'ok' : '' }}">{{ $summary['accepting_votes'] ? 'Yes — voting in progress' : 'No' }}</strong></li>
+                        <li><span>Is the election open?</span><strong class="{{ $summary['accepting_votes'] ? 'ok' : '' }}">{{ $summary['accepting_votes'] ? 'Yes, voting in progress' : 'No' }}</strong></li>
                         <li><span>Active voting sessions</span><strong data-stat="summary.sessions.active">{{ $summary['sessions']['active'] }}</strong></li>
                         <li><span>Completed sessions</span><strong data-stat="summary.sessions.completed">{{ $summary['sessions']['completed'] }}</strong></li>
                         <li><span>Expired / revoked sessions</span><strong><span data-stat="summary.sessions.expired">{{ $summary['sessions']['expired'] }}</span> / <span data-stat="summary.sessions.revoked">{{ $summary['sessions']['revoked'] }}</span></strong></li>

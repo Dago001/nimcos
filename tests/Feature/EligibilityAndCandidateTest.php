@@ -91,7 +91,7 @@ class EligibilityAndCandidateTest extends TestCase
         Storage::disk('local')->assertExists($candidate->photo_path);
         [$w, $h] = getimagesize(Storage::disk('local')->path($candidate->photo_path));
         $this->assertSame([600, 600], [$w, $h]);
-        $this->assertSame(4, $candidate->candidate_number, 'Next number after candidates 1–3 is allocated automatically.');
+        $this->assertSame(4, $candidate->candidate_number, 'Next number after candidates 1 to 3 is allocated automatically.');
     }
 
     public function test_non_image_upload_is_rejected(): void

@@ -17,7 +17,7 @@ Sign in at `https://<your-site>/admin` with your email, password and (when enabl
 
 ## 1. Prepare the voter register
 
-1. **Import voters → Download template.** Fill in one row per member. Required columns: SERVICE NUMBER (4 or 5 digits), SURNAME, FIRST NAME, EMAIL. Each email address must belong to one member only (it receives their code). PHONE NUMBER is optional. In Excel, format the Service Number column as Text so leading zeros are kept.
+1. **Import voters → Download template.** Fill in one row per member. Required columns: SERVICE NUMBER, SURNAME, FIRST NAME, EMAIL. Each email address must belong to one member only (it receives their code). PHONE NUMBER is optional. In Excel, format the Service Number column as Text so leading zeros are kept.
 2. **Upload and validate.** The preview shows total, new, updated, duplicate, invalid and rejected rows. Nothing changes yet.
 3. Download the **error report**, correct the rows at source, and re-upload them if needed.
 4. Tick the confirmation and **Confirm and import**. The whole file is applied in one transaction: if anything fails, nothing changes.
@@ -67,6 +67,18 @@ Recalculating before publication discards the tallies and tie resolutions and re
 
 ## 7. Administrators and settings (Super Admin)
 
-- **Users → Add administrator:** choose roles. A one-time temporary password is shown once; the user must change it and (in production) enrol MFA at first sign-in.
+- **Users → Add administrator:** choose roles. A temporary password is emailed to the new administrator; they must change it and (in production) enrol MFA at first sign-in.
 - **Roles & permissions:** adjust the matrix if the organisation's rules require it. At least one active administrator must keep *Manage administrators*.
-- **System settings:** OTP validity and attempts, ballot session timeout, MFA requirement, and the support contact shown to voters.
+- **System settings:** OTP validity and attempts, ballot session timeout, MFA requirement, the support contact shown to voters, and the office address, phone, email and support hours shown on the home page.
+
+## 8. Announcements (Super Admin)
+
+**Administration → Announcements → Post announcement** publishes a notice to voters on the home page, the sign-in page and the results pages.
+
+- **Show as:** *Pop-up* (opens once for each visitor, and again if you edit it), *Scrolling ticker* (a moving line across the top of the page, which visitors can pause), or both.
+- **Level:** Information (green), Important (amber) or Urgent (red, listed first).
+- **Show from / Show until (WAT):** optional. Leave both empty to show it immediately until you switch it off.
+- **Link:** optional; it must start with `https://` or be a page on this site (for example `/results`).
+- Announcements are plain text. Nothing is shown to a voter while they are filling in or reviewing their ballot.
+- Never ask voters for their verification code, password or payment in an announcement. Every post, change and deletion is recorded in the audit log.
+- The permission is *Post announcements to voters*; by default only the Super Admin has it.

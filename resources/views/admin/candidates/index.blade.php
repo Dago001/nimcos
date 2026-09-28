@@ -52,7 +52,7 @@
                                 @csrf
                                 <div class="modal-head"><h2>Candidate status</h2></div>
                                 <div class="modal-body">
-                                    <p><strong>{{ $candidate->displayName() }}</strong> — {{ $candidate->electionPosition->position->name }}</p>
+                                    <p><strong>{{ $candidate->displayName() }}</strong>, {{ $candidate->electionPosition->position->name }}</p>
                                     <div class="field"><label for="ns-{{ $candidate->id }}">Status</label>
                                         <select class="input" id="ns-{{ $candidate->id }}" name="status">
                                             @foreach (\App\Enums\CandidateStatus::cases() as $cs)<option value="{{ $cs->value }}" @selected($candidate->status === $cs)>{{ $cs->label() }}</option>@endforeach

@@ -25,7 +25,8 @@ The platform is a server-rendered application. Every state-changing endpoint is 
 
 | Method | Path | Middleware | Purpose |
 |---|---|---|---|
-| GET | `/` | guest:voter | Entry (Service Number) |
+| GET | `/` | throttle:public | Home page: how to vote, requirements, contact details, announcements |
+| GET | `/vote` | guest:voter | Sign in (Service Number) |
 | POST | `/access` | guest:voter, throttle:voter-access | Check register, issue OTP |
 | GET/POST | `/verify` | guest:voter, throttle:otp-verify | OTP form / verify |
 | POST | `/verify/resend` | throttle:voter-access | New OTP (invalidates the old one) |
@@ -43,6 +44,7 @@ The platform is a server-rendered application. Every state-changing endpoint is 
 |---|---|---|
 | GET | `/results`, `/results/{code}` | Published results only |
 | GET/POST | `/receipt/verify` | Confirms that a reference is recorded (never shows choices) |
+| GET/POST/PUT/DELETE | `/admin/announcements…` | Announcements (permission `manage_announcements`); text only, links must be https or on this site |
 | GET | `/media/candidates/{uuid}/photo` | Candidate photo (draft elections: admins only) |
 | GET | `/up` | Health check |
 

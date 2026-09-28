@@ -32,7 +32,7 @@
         <h3 class="mt-2">Checks performed</h3>
         <ul class="small muted mb-0">
             <li>File format, required columns and required values</li>
-            <li>Service Number format (4 or 5 digits); duplicate Service Numbers and duplicate records</li>
+            <li>Service Number format; duplicate Service Numbers and duplicate records</li>
             <li>Email required and valid; one email address per voter (verification codes are emailed)</li>
             <li>Nigerian mobile number format (optional column) and membership status values</li>
         </ul>

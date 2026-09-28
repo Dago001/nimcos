@@ -13,11 +13,11 @@
     <div class="stack">
         <div class="panel"><div class="panel-body">
             <dl class="dl">
-                <dt>Rank</dt><dd>{{ $voter->rank ?? '—' }}</dd>
-                <dt>Command</dt><dd>{{ $voter->command ?? '—' }}</dd>
-                <dt>Formation</dt><dd>{{ $voter->formation ?? '—' }}</dd>
-                <dt>Phone</dt><dd>{{ \App\Support\PhoneNumber::display($voter->phone) ?: '—' }}</dd>
-                <dt>Email</dt><dd>{{ $voter->email ?? '—' }}</dd>
+                <dt>Rank</dt><dd>{{ $voter->rank ?? '-' }}</dd>
+                <dt>Command</dt><dd>{{ $voter->command ?? '-' }}</dd>
+                <dt>Formation</dt><dd>{{ $voter->formation ?? '-' }}</dd>
+                <dt>Phone</dt><dd>{{ \App\Support\PhoneNumber::display($voter->phone) ?: '-' }}</dd>
+                <dt>Email</dt><dd>{{ $voter->email ?? '-' }}</dd>
                 <dt>Membership</dt><dd><x-status-badge :status="$voter->membership_status" /></dd>
                 <dt>Register eligibility</dt><dd><x-status-badge :status="$voter->eligibility_status" /></dd>
                 <dt>Verification</dt><dd><x-status-badge :status="$voter->verification_status" /> @if ($voter->verified_at)<span class="small muted">{{ display_time($voter->verified_at) }}</span>@endif</dd>
@@ -34,7 +34,7 @@
                     <thead><tr><th>Election</th><th>Status</th><th>Voted at</th></tr></thead>
                     <tbody>
                     @forelse ($participations as $ev)
-                        <tr><td>{{ $ev->election->name }}</td><td><x-status-badge :status="$ev->eligibility_status" /></td><td>{{ $ev->voted_at ? display_time($ev->voted_at) : '—' }}</td></tr>
+                        <tr><td>{{ $ev->election->name }}</td><td><x-status-badge :status="$ev->eligibility_status" /></td><td>{{ $ev->voted_at ? display_time($ev->voted_at) : '-' }}</td></tr>
                     @empty
                         <tr><td colspan="3" class="table-empty">Not on any election roll.</td></tr>
                     @endforelse

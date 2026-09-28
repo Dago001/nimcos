@@ -10,7 +10,7 @@ if (! function_exists('display_time')) {
     function display_time(CarbonInterface|DateTimeInterface|string|null $value, string $format = 'j M Y, H:i'): string
     {
         if ($value === null || $value === '') {
-            return '—';
+            return '-';
         }
         $carbon = $value instanceof CarbonInterface ? $value->copy() : Carbon::parse($value);
 

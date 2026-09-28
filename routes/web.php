@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Route;
 | authenticated session only (spec §9, §55).
 |--------------------------------------------------------------------------
 */
+Route::get('/', Public\HomeController::class)->middleware('throttle:public')->name('home');
+
 Route::name('voter.')->group(function () {
     Route::middleware('guest:voter')->group(function () {
-        Route::get('/', [Voter\AccessController::class, 'entry'])->name('entry');
+        Route::get('/vote', [Voter\AccessController::class, 'entry'])->name('entry');
         Route::post('/access', [Voter\AccessController::class, 'requestOtp'])->middleware('throttle:voter-access')->name('access');
         Route::get('/verify', [Voter\AccessController::class, 'otpForm'])->name('otp');
         Route::post('/verify', [Voter\AccessController::class, 'verifyOtp'])->middleware('throttle:otp-verify')->name('otp.verify');
@@ -198,6 +200,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('permission:'.P::MANAGE_SYSTEM_SETTINGS)->group(function () {
             Route::get('/settings', [Admin\SettingsController::class, 'edit'])->name('settings.edit');
             Route::put('/settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
+        });
+
+        Route::middleware('permission:'.P::MANAGE_ANNOUNCEMENTS)->group(function () {
+            Route::get('/announcements', [Admin\AnnouncementController::class, 'index'])->name('announcements.index');
+            Route::get('/announcements/create', [Admin\AnnouncementController::class, 'create'])->name('announcements.create');
+            Route::post('/announcements', [Admin\AnnouncementController::class, 'store'])->name('announcements.store');
+            Route::get('/announcements/{announcement}/edit', [Admin\AnnouncementController::class, 'edit'])->name('announcements.edit');
+            Route::put('/announcements/{announcement}', [Admin\AnnouncementController::class, 'update'])->name('announcements.update');
+            Route::post('/announcements/{announcement}/toggle', [Admin\AnnouncementController::class, 'toggle'])->name('announcements.toggle');
+            Route::delete('/announcements/{announcement}', [Admin\AnnouncementController::class, 'destroy'])->name('announcements.destroy');
         });
     });
 });

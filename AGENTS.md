@@ -1,4 +1,4 @@
-# NIMCOS E-VOTING — notes for contributors and coding agents
+# NIMCOS E-VOTING: notes for contributors and coding agents
 
 Laravel 13 / PHP 8.3+ / PostgreSQL. Read `docs/ARCHITECTURE.md` before changing anything in `app/Services/Voting`, `app/Services/Results` or the migrations.
 

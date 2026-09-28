@@ -19,8 +19,8 @@
             <div class="step-label">Step 1 of 3 · Identify yourself</div>
             <h1 class="page-title">NIMCOS E-VOTING</h1>
             <p class="lede">
-                @foreach ($openElections as $e){{ $e->name }}@if (! $loop->last), @endif @endforeach
-                — voting is open until {{ display_time($openElections->first()->ends_at, 'H:i, j M Y') }} (WAT).
+                {{ $openElections->pluck('name')->join(', ') }}.
+                Voting is open until {{ display_time($openElections->first()->ends_at, 'H:i, j M Y') }} (WAT).
             </p>
 
             <form method="POST" action="{{ route('voter.access') }}" data-submit-once novalidate>
@@ -34,7 +34,7 @@
                     @error('service_number')
                         <div class="error-text" id="sn-error" role="alert">{{ $message }}</div>
                     @else
-                        <div class="help" id="sn-help">Enter your NIS Service Number (4 or 5 digits) as it appears on the NIMCOS register.</div>
+                        <div class="help" id="sn-help">Enter your Service Number as it appears on the NIMCOS register.</div>
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg btn-block" data-busy-text="Checking…">Continue</button>
@@ -60,7 +60,7 @@
                         <strong>{{ $e->name }}</strong>
                         <div class="muted small">
                             {{ display_time($e->starts_at, 'l, j F Y') }} ·
-                            {{ display_time($e->starts_at, 'H:i') }} – {{ display_time($e->ends_at, 'H:i') }} (WAT)
+                            {{ display_time($e->starts_at, 'H:i') }} to {{ display_time($e->ends_at, 'H:i') }} (WAT)
                         </div>
                     </div>
                 @endforeach

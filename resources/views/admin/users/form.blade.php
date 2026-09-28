@@ -9,7 +9,7 @@
 
 @if (session('temporary_password'))
     <div class="alert alert-warning" role="alert">
-        <strong>DEMO MODE — temporary password (shown once):</strong>
+        <strong>DEMO MODE: temporary password (shown once):</strong>
         <span class="mono">{{ session('temporary_password') }}</span><br>
         In production it is only emailed to the administrator. They must change it at first sign-in.
     </div>
@@ -45,7 +45,7 @@
             <legend class="label">Roles <span class="req">*</span></legend>
             @foreach ($roles as $role)
                 <label class="check mb-1"><input type="checkbox" name="roles[]" value="{{ $role->id }}" @checked(in_array($role->id, old('roles', $assigned), true))>
-                    <span><strong>{{ $role->label }}</strong> <span class="small muted">— {{ $role->description }}</span></span></label>
+                    <span><strong>{{ $role->label }}</strong> <span class="small muted">({{ $role->description }})</span></span></label>
             @endforeach
             @error('roles')<div class="error-text">{{ $message }}</div>@enderror
         </fieldset>

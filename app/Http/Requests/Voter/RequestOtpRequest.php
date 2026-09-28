@@ -28,7 +28,7 @@ class RequestOtpRequest extends FormRequest
     {
         return [
             'service_number.required' => 'Enter your Service Number.',
-            'service_number.regex' => 'A Service Number is 4 or 5 digits. Check it and try again.',
+            'service_number.regex' => 'That Service Number is not valid. Check it and try again.',
         ];
     }
 }

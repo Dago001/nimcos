@@ -1,4 +1,4 @@
-# NIMCOS E-VOTING — notes for contributors and coding agents
+# NIMCOS E-VOTING: notes for contributors and coding agents
 
 Laravel 13 / PHP 8.3+ / PostgreSQL. Read `docs/ARCHITECTURE.md` before changing anything in `app/Services/Voting`, `app/Services/Results` or the migrations.
 
@@ -16,7 +16,7 @@ Laravel 13 / PHP 8.3+ / PostgreSQL. Read `docs/ARCHITECTURE.md` before changing 
 ## Commands
 
 ```bash
-php artisan test                         # 102 tests against PostgreSQL nimcos_test (never a non-_test DB)
+php artisan test                         # 112 tests against PostgreSQL nimcos_test (never a non-_test DB)
 php artisan migrate --seed               # demo data only when NIMCOS_DEMO_MODE=true
 php artisan queue:work --queue=otp,default
 php artisan schedule:work                # nimcos:tick every minute

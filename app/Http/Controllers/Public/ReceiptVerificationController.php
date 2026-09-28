@@ -9,7 +9,7 @@ use Illuminate\View\View;
 
 /**
  * Lets a voter confirm their ballot reference is in the recorded set.
- * Reveals only "recorded in election X" — never selections — so a receipt cannot
+ * Reveals only "recorded in election X", never selections, so a receipt cannot
  * be used to prove how anyone voted.
  */
 class ReceiptVerificationController extends Controller

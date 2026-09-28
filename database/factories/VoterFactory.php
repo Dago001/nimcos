@@ -10,7 +10,7 @@ use App\Models\Voter;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * TEST DATA ONLY — fictitious officers.
+ * TEST DATA ONLY: fictitious officers.
  *
  * @extends Factory<Voter>
  */

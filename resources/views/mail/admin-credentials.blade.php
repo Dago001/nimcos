@@ -16,4 +16,4 @@ You must choose a new password when you first sign in. The temporary password st
 
 If you were not expecting this message, report it to the NIMCOS election administrator immediately.
 
-— Nigeria Immigration Multi-Purpose Cooperative Society
+Nigeria Immigration Multi-Purpose Cooperative Society

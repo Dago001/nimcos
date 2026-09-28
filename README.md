@@ -7,9 +7,10 @@ A secure, auditable electronic voting platform for NIMCOS internal elections. Ap
 | | |
 |---|---|
 | Stack | PHP 8.3+ · Laravel 13 · PostgreSQL 16+ · Blade + vanilla JS/CSS (no build step) |
-| Voter journey | Service Number → OTP → election → ballot (step-by-step on phones) → review → confirm → receipt |
+| Home page | `/`: how to vote, requirements, contact details, announcements (pop-up and scrolling ticker) |
+| Voter journey | `/vote`: Service Number → OTP → election → ballot (step-by-step on phones) → review → confirm → receipt |
 | Roles | Super Admin · Election Administrator · Returning Officer · Auditor (permission-based) |
-| Tests | 102 automated tests (PHPUnit, real PostgreSQL) + parallel race script |
+| Tests | 112 automated tests (PHPUnit, real PostgreSQL) + parallel race script |
 
 ## Key guarantees
 
@@ -31,7 +32,7 @@ php artisan queue:work --queue=otp,default   # OTP delivery (separate terminal)
 php artisan schedule:work                # election auto-open/close (separate terminal)
 ```
 
-The demo seeder prints the admin accounts (all use the password `Demo-Only-2026!`). Demo voters use Service Numbers `90001` to `90024` (NIS Service Numbers are 4 or 5 digits). In demo mode the emailed code is also shown on screen. **Demo mode refuses to start in production.**
+The demo seeder prints the admin accounts (all use the password `Demo-Only-2026!`). Demo voters use Service Numbers `90001` to `90024`. In demo mode the emailed code is also shown on screen. **Demo mode refuses to start in production.**
 
 ## Documentation
 

@@ -44,7 +44,7 @@ class ReportRenderer
         return response()->streamDownload(function () use ($report) {
             $out = fopen('php://output', 'wb');
             fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel detects encoding
-            fputcsv($out, [$report['title'].' — '.$report['subtitle']], ',', '"', '');
+            fputcsv($out, [$report['title'].': '.$report['subtitle']], ',', '"', '');
             fputcsv($out, ['Generated', display_time(now(), 'j M Y H:i').' WAT'], ',', '"', '');
             foreach ($report['summary'] as $k => $v) {
                 fputcsv($out, [$k, self::safeCell($v)], ',', '"', '');
@@ -66,7 +66,7 @@ class ReportRenderer
         $sheet->setTitle('Report');
 
         $r = 1;
-        $sheet->setCellValueExplicit("A{$r}", $report['title'].' — '.$report['subtitle'], DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit("A{$r}", $report['title'].': '.$report['subtitle'], DataType::TYPE_STRING);
         $sheet->getStyle("A{$r}")->getFont()->setBold(true)->setSize(13);
         $r++;
         $sheet->setCellValueExplicit("A{$r}", 'Generated '.display_time(now(), 'j M Y H:i').' WAT', DataType::TYPE_STRING);

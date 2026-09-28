@@ -15,7 +15,7 @@
 @if ($import->status->value === 'PROCESSING')
     <div class="alert alert-info">The import is being applied. Refresh this page in a moment to see the final totals. (A queue worker must be running.)</div>
 @elseif ($import->status->value === 'FAILED')
-    <div class="alert alert-error"><strong>The import failed and was rolled back — no records were changed.</strong> {{ $import->failure_reason }}</div>
+    <div class="alert alert-error"><strong>The import failed and was rolled back. No records were changed.</strong> {{ $import->failure_reason }}</div>
 @elseif ($import->status->value === 'COMPLETED')
     <div class="alert alert-success">Import completed {{ display_time($import->completed_at) }}, confirmed by {{ $import->confirmer?->name }}.</div>
 @endif
@@ -61,7 +61,7 @@
 @endif
 
 @if ($errorTotal)
-    <h2>Rejected rows @if ($errorTotal > 200)<span class="muted small">(first 200 of {{ $errorTotal }} — download the full report)</span>@endif</h2>
+    <h2>Rejected rows @if ($errorTotal > 200)<span class="muted small">(first 200 of {{ $errorTotal }}; download the full report)</span>@endif</h2>
     <div class="table-wrap">
         <table class="table">
             <thead><tr><th>Row</th><th>Type</th><th>Service No.</th><th>Problems</th></tr></thead>

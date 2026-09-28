@@ -19,7 +19,7 @@
 <body class="admin-body">
 <a class="skip-link" href="#main">Skip to main content</a>
 @if (config('nimcos.demo_mode'))
-    <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT — fictitious test data only.</div>
+    <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT: fictitious test data only.</div>
 @endif
 <div class="admin-shell">
     <nav class="sidebar" aria-label="Administration">
@@ -81,9 +81,12 @@
             </div>
         @endif
 
-        @if ($can('manage_admins', 'manage_system_settings'))
+        @if ($can('manage_admins', 'manage_system_settings', 'manage_announcements'))
             <div class="nav-group">
                 <div class="nav-group-title">Administration</div>
+                @if ($can('manage_announcements'))
+                    <a class="nav-link {{ $is('admin.announcements.*') }}" href="{{ route('admin.announcements.index') }}">Announcements</a>
+                @endif
                 @if ($can('manage_admins'))
                     <a class="nav-link {{ $is('admin.users.*') }}" href="{{ route('admin.users.index') }}">Users</a>
                     <a class="nav-link {{ $is('admin.roles.*') }}" href="{{ route('admin.roles.index') }}">Roles &amp; permissions</a>

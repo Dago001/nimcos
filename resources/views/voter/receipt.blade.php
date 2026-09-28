@@ -23,7 +23,7 @@
             <dt>Time</dt><dd>{{ display_time($votedAt, 'H:i') }} (WAT)</dd>
         </dl>
 
-        <p class="small muted">Keep this reference for your records. It confirms that your ballot was counted; it does not show — and cannot be used to prove — how you voted. You can check it at any time on the <a href="{{ route('public.receipt') }}">receipt verification page</a>.</p>
+        <p class="small muted">Keep this reference for your records. It confirms that your ballot was counted; it does not show, and cannot be used to prove, how you voted. You can check it at any time on the <a href="{{ route('public.receipt') }}">receipt verification page</a>.</p>
 
         <div class="btn-row mt-3">
             <button type="button" class="btn btn-secondary" data-print>Print receipt</button>

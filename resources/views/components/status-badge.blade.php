@@ -9,4 +9,4 @@
         default => 'neutral',
     };
 @endphp
-<span {{ $attributes->merge(['class' => 'badge badge-'.$variant]) }}>{{ $status?->label() ?? '—' }}</span>
+<span {{ $attributes->merge(['class' => 'badge badge-'.$variant]) }}>{{ $status?->label() ?? '-' }}</span>

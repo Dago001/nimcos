@@ -1,4 +1,4 @@
-# NIMCOS E-VOTING — System Architecture (Phase 1)
+# NIMCOS E-VOTING: System Architecture (Phase 1)
 
 Nigeria Immigration Multi-Purpose Cooperative Society Electronic Voting Platform.
 
@@ -121,7 +121,7 @@ All primary keys are UUIDs. Admin-facing tables use time-ordered UUIDs. `ballot_
 |---|---|---|
 | `otp_verifications` | voter_id, channel, destination_masked, code_hash (HMAC-SHA256 keyed by APP_KEY), expires_at, attempts, max_attempts, consumed_at, invalidated_at, ip, user_agent | partial index on active OTP per voter |
 | `voting_sessions` | election_voter_id, token_hash, status (ACTIVE/COMPLETED/EXPIRED/REVOKED), ip, user_agent, started_at, last_activity_at, expires_at, ended_at | token_hash UNIQUE; **partial UNIQUE(election_voter_id) WHERE status='ACTIVE'** |
-| `ballot_tokens` | election_id, token_hash, consumed_at (date precision not stored — boolean `is_consumed`) | token_hash UNIQUE; **no voter / session / timestamp columns** |
+| `ballot_tokens` | election_id, token_hash, consumed_at (date precision not stored; boolean `is_consumed`) | token_hash UNIQUE; **no voter / session / timestamp columns** |
 | `ballots` | election_id, ballot_token_id, reference (NIM-2026-XXXXXXXX) | ballot_token_id UNIQUE (one ballot per token); reference UNIQUE; UNIQUE(id, election_id); **no timestamps** |
 | `votes` | ballot_id, election_id, election_position_id, candidate_id | FK(ballot_id, election_id) → ballots; FK(candidate_id, election_id) → candidates; FK(candidate_id, election_position_id) → candidates; FK(election_position_id, election_id) → election_positions; UNIQUE(ballot_id, candidate_id) |
 
@@ -215,7 +215,7 @@ SubmitBallot (single transaction, SERIALIZABLE not required: explicit row locks)
 | `election_voters`, `voting_sessions`, `otp_verifications`, `audit_logs` | yes | **no** |
 | `ballot_tokens`, `ballots`, `votes`, `result_tallies` | **no** | yes |
 | Laravel session (DB, encrypted) | yes | no (selections are never stored in it) |
-| Ballot-token cookie (in the voter's browser only) | – | links the voter's browser to *their own* ballot until logout |
+| Ballot-token cookie (in the voter's browser only) | none | links the voter's browser to *their own* ballot until logout |
 
 Measures:
 1. There is no FK, column or log entry that joins the two sides.

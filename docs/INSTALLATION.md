@@ -43,7 +43,7 @@ The seeders:
 | `PositionSeeder` | all | the 14 NIMCOS elective positions |
 | `DemoSeeder` | only when `NIMCOS_DEMO_MODE=true` and not production | 4 demo admins, 24 fictitious voters, an **open** demo election with 42 candidates |
 
-All demo records are flagged `is_test_data = true`, use Service Numbers 90001–90024 and `.test` emails, and are marked "Test" in the admin UI.
+All demo records are flagged `is_test_data = true`, use Service Numbers 90001 to 90024 and `.test` emails, and are marked "Test" in the admin UI.
 
 To create a real administrator (production or staging without demo data):
 

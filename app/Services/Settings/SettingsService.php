@@ -17,11 +17,15 @@ class SettingsService
      * @var array<string, array{0:string,1:string,2:string,3:string}>
      */
     public const DEFINITIONS = [
-        'otp_ttl_minutes' => ['nimcos.otp.ttl_minutes', 'int', 'OTP validity (minutes)', 'How long a one-time password remains valid. 3–10 minutes recommended.'],
+        'otp_ttl_minutes' => ['nimcos.otp.ttl_minutes', 'int', 'OTP validity (minutes)', 'How long a one-time password remains valid. 3 to 10 minutes recommended.'],
         'otp_max_attempts' => ['nimcos.otp.max_attempts', 'int', 'OTP attempts per code', 'Wrong entries allowed before a code is invalidated.'],
         'voting_session_minutes' => ['nimcos.voting_session.idle_minutes', 'int', 'Ballot session idle timeout (minutes)', 'A voter is signed out of the ballot after this much inactivity.'],
         'require_admin_mfa' => ['nimcos.admin.require_mfa', 'bool', 'Require MFA for all administrators', 'Administrators without an authenticator app will be required to enrol at next sign-in.'],
         'support_contact' => ['', 'string', 'Election support contact', 'Shown to voters who cannot sign in (phone or email of the election administrator).'],
+        'contact_address' => ['', 'string', 'Office address', 'Shown in the footer and the "Contact support" window of the home page.'],
+        'contact_phone' => ['', 'string', 'Support phone number', 'Shown on the home page for voters who need help.'],
+        'contact_email' => ['', 'string', 'Support email address', 'Shown on the home page for voters who need help.'],
+        'contact_hours' => ['', 'string', 'Support hours', 'For example: 08:00 to 17:00 (WAT) on election days.'],
     ];
 
     /** @var array<string, mixed> */
