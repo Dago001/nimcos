@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use App\Enums\MembershipStatus;
+use App\Models\Voter;
+use App\Support\PhoneNumber;
+use App\Support\ServiceNumber;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
+
+class VoterRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $phone = (string) $this->input('phone');
+        $this->merge([
+            'service_number' => ServiceNumber::normalise($this->input('service_number')),
+            'phone_normalised' => PhoneNumber::normalise($phone),
+            'email' => $this->input('email') ? mb_strtolower(trim((string) $this->input('email'))) : null,
+            'surname' => mb_strtoupper(trim((string) $this->input('surname'))),
+        ]);
+    }
+
+    public function rules(): array
+    {
+        /** @var Voter|null $voter */
+        $voter = $this->route('voter');
+        $name = "regex:/^[\pL\pM' .\-]+$/u";
+
+        return [
+            'service_number' => ['required', 'string', 'max:5', 'regex:'.config('nimcos.voters.service_number_pattern'),
+                Rule::unique('voters', 'service_number')->ignore($voter?->getKey())],
+            'surname' => ['required', 'string', 'max:100', $name],
+            'first_name' => ['required', 'string', 'max:100', $name],
+            'other_names' => ['nullable', 'string', 'max:150', $name],
+            'rank' => ['nullable', 'string', 'max:80'],
+            'command' => ['nullable', 'string', 'max:120'],
+            'formation' => ['nullable', 'string', 'max:120'],
+            'phone' => ['nullable', 'string', 'max:25'],
+            'email' => ['required', 'email:rfc', 'max:191'],
+            'membership_status' => ['required', Rule::enum(MembershipStatus::class)],
+        ];
+    }
+
+    public function after(): array
+    {
+        return [function (Validator $validator) {
+            if (! $validator->errors()->has('phone') && trim((string) $this->input('phone')) !== '' && $this->input('phone_normalised') === null) {
+                $validator->errors()->add('phone', 'Enter a valid Nigerian mobile number, e.g. 0803 123 4567, or leave it blank.');
+            }
+            if ($validator->errors()->has('email')) {
+                return;
+            }
+            $owner = Voter::query()->where('email', $this->input('email'))
+                ->when($this->route('voter'), fn ($q, $v) => $q->whereKeyNot($v->getKey()))
+                ->value('service_number');
+            if ($owner) {
+                $validator->errors()->add('email', "This email is already registered to Service Number {$owner}. Each voter needs their own email address for verification codes.");
+            }
+        }];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'service_number.regex' => 'Service Number must be 4 or 5 digits.',
+            'service_number.unique' => 'A voter with this Service Number is already registered.',
+        ];
+    }
+
+    public function voterData(): array
+    {
+        $data = $this->safe()->except('phone');
+        $data['phone'] = $this->input('phone_normalised');
+        foreach (['rank', 'command', 'formation'] as $field) {
+            $data[$field] = isset($data[$field]) && $data[$field] !== '' ? mb_strtoupper(trim($data[$field])) : null;
+        }
+
+        return $data;
+    }
+}

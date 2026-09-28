@@ -1,0 +1,20 @@
+# /etc/systemd/system/nimcos-queue.service
+# Queue worker: OTP delivery (queue "otp", highest priority) and voter-import processing.
+[Unit]
+Description=NIMCOS E-VOTING queue worker
+After=network.target postgresql.service
+
+[Service]
+User=nimcos
+Group=www-data
+Restart=always
+RestartSec=3
+WorkingDirectory=/var/www/nimcos/current
+ExecStart=/usr/bin/php artisan queue:work database --queue=otp,default --sleep=1 --tries=3 --max-time=3600 --memory=256
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
