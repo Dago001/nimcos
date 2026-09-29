@@ -54,7 +54,13 @@
             </div>
             <div class="field">
                 <label for="rank">Rank</label>
-                <input class="input" id="rank" name="rank" value="{{ old('rank', $candidate->rank) }}" maxlength="80">
+                <select class="input" id="rank" name="rank" @error('rank') aria-invalid="true" @enderror>
+                    <option value="">Select rank</option>
+                    @foreach (\App\Enums\NisRank::cases() as $r)
+                        <option value="{{ $r->value }}" @selected(old('rank', $candidate->rank) === $r->value)>{{ $r->label() }}</option>
+                    @endforeach
+                </select>
+                @error('rank')<div class="error-text">{{ $message }}</div>@enderror
             </div>
             <div class="field">
                 <label for="command">Command</label>

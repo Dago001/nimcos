@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CandidateStatus;
+use App\Enums\NisRank;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,5 +57,17 @@ class Candidate extends Model
     public function isActive(): bool
     {
         return $this->status === CandidateStatus::ACTIVE;
+    }
+
+    /** Full rank title for display, e.g. "Deputy Comptroller of Immigration (DCI)". Falls back to the raw value for legacy/imported data that predates the fixed rank list. */
+    public function rankLabel(): ?string
+    {
+        return $this->rank ? (NisRank::tryFrom($this->rank)?->label() ?? $this->rank) : null;
+    }
+
+    /** Abbreviation only, e.g. "DCI", for tight spaces such as ballot cards. */
+    public function rankShortLabel(): ?string
+    {
+        return $this->rank ? (NisRank::tryFrom($this->rank)?->shortLabel() ?? $this->rank) : null;
     }
 }

@@ -62,7 +62,7 @@
             <tr>
                 <td class="mono">{{ $ev->voter->service_number }}</td>
                 <td><a href="{{ route('admin.voters.show', $ev->voter) }}">{{ $ev->voter->fullName() }}</a></td>
-                <td class="small">{{ $ev->voter->rank }}<br><span class="muted">{{ $ev->voter->command }}</span></td>
+                <td class="small">{{ $ev->voter->rankLabel() }}<br><span class="muted">{{ $ev->voter->command }}</span></td>
                 <td><x-status-badge :status="$ev->eligibility_status" /></td>
                 <td class="small muted">{{ $ev->eligibility_reason }}</td>
                 <td class="actions">

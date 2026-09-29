@@ -3,6 +3,7 @@
 namespace App\Services\Voters;
 
 use App\Enums\MembershipStatus;
+use App\Enums\NisRank;
 use App\Support\PhoneNumber;
 use App\Support\ServiceNumber;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -173,12 +174,18 @@ class VoterFileParser
             $messages[] = 'Membership status must be one of: '.implode(', ', MembershipStatus::values()).'.';
         }
 
+        $rawRank = $clean($raw['rank'] ?? null, 80);
+        $rank = $rawRank !== null ? NisRank::fromText($rawRank) : null;
+        if ($rawRank !== null && $rank === null) {
+            $messages[] = "Rank \"{$rawRank}\" is not a recognised NIS rank. Use the full title (e.g. \"Deputy Comptroller of Immigration\") or the abbreviation (e.g. \"DCI\").";
+        }
+
         return [[
             'service_number' => $sn,
             'surname' => $surname !== null ? mb_strtoupper($surname) : null,
             'first_name' => $first !== null ? mb_convert_case($first, MB_CASE_TITLE) : null,
             'other_names' => ($o = $clean($raw['other_names'] ?? null, 150)) !== null ? mb_convert_case($o, MB_CASE_TITLE) : null,
-            'rank' => ($r = $clean($raw['rank'] ?? null, 80)) !== null ? mb_strtoupper($r) : null,
+            'rank' => $rank?->value,
             'command' => ($c = $clean($raw['command'] ?? null, 120)) !== null ? mb_strtoupper($c) : null,
             'formation' => ($f = $clean($raw['formation'] ?? null, 120)) !== null ? mb_strtoupper($f) : null,
             'phone' => $phone,

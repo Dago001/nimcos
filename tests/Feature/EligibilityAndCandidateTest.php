@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
+use App\Enums\NisRank;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\ElectionVoter;
@@ -93,6 +94,45 @@ class EligibilityAndCandidateTest extends TestCase
         [$w, $h] = getimagesize(Storage::disk('local')->path($candidate->photo_path));
         $this->assertSame([600, 600], [$w, $h]);
         $this->assertSame(4, $candidate->candidate_number, 'Next number after candidates 1 to 3 is allocated automatically.');
+    }
+
+    public function test_candidate_rank_must_be_a_real_nis_rank(): void
+    {
+        $election = $this->openElection(1, status: ElectionStatus::DRAFT);
+        $ep = $election->electionPositions()->first();
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+
+        $this->actingAsAdmin($ea)->post(route('admin.candidates.store', $election), [
+            'election_position_id' => $ep->id, 'surname' => 'BELLO', 'first_name' => 'Musa', 'rank' => 'GENERAL',
+        ])->assertSessionHasErrors('rank');
+
+        $this->actingAsAdmin($ea)->post(route('admin.candidates.store', $election), [
+            'election_position_id' => $ep->id, 'surname' => 'BELLO', 'first_name' => 'Musa', 'rank' => NisRank::DCI->value,
+        ])->assertSessionHasNoErrors();
+
+        $candidate = Candidate::query()->where('surname', 'BELLO')->firstOrFail();
+        $this->assertSame(NisRank::DCI->value, $candidate->rank);
+        $this->assertSame('Deputy Comptroller of Immigration (DCI)', $candidate->rankLabel());
+        $this->assertSame('DCI', $candidate->rankShortLabel());
+    }
+
+    public function test_voter_rank_must_be_a_real_nis_rank(): void
+    {
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+
+        $this->actingAsAdmin($ea)->post(route('admin.voters.store'), [
+            'service_number' => '19001', 'surname' => 'YUSUF', 'first_name' => 'Aisha',
+            'email' => 'yusuf@example.com', 'membership_status' => 'ACTIVE', 'rank' => 'CAPTAIN',
+        ])->assertSessionHasErrors('rank');
+
+        $this->actingAsAdmin($ea)->post(route('admin.voters.store'), [
+            'service_number' => '19001', 'surname' => 'YUSUF', 'first_name' => 'Aisha',
+            'email' => 'yusuf@example.com', 'membership_status' => 'ACTIVE', 'rank' => NisRank::IA3->value,
+        ])->assertSessionHasNoErrors();
+
+        $voter = Voter::query()->where('service_number', '19001')->firstOrFail();
+        $this->assertSame(NisRank::IA3->value, $voter->rank);
+        $this->assertSame('Immigration Assistant 3 (IA3)', $voter->rankLabel());
     }
 
     public function test_candidate_create_redirects_to_positions_when_election_has_none(): void

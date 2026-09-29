@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Enums\MembershipStatus;
+use App\Enums\NisRank;
 use App\Models\Voter;
 use App\Support\PhoneNumber;
 use App\Support\ServiceNumber;
@@ -40,7 +41,7 @@ class VoterRequest extends FormRequest
             'surname' => ['required', 'string', 'max:100', $name],
             'first_name' => ['required', 'string', 'max:100', $name],
             'other_names' => ['nullable', 'string', 'max:150', $name],
-            'rank' => ['nullable', 'string', 'max:80'],
+            'rank' => ['nullable', Rule::enum(NisRank::class)],
             'command' => ['nullable', 'string', 'max:120'],
             'formation' => ['nullable', 'string', 'max:120'],
             'phone' => ['nullable', 'string', 'max:25'],
@@ -79,9 +80,10 @@ class VoterRequest extends FormRequest
     {
         $data = $this->safe()->except('phone');
         $data['phone'] = $this->input('phone_normalised');
-        foreach (['rank', 'command', 'formation'] as $field) {
+        foreach (['command', 'formation'] as $field) {
             $data[$field] = isset($data[$field]) && $data[$field] !== '' ? mb_strtoupper(trim($data[$field])) : null;
         }
+        $data['rank'] = $data['rank'] ?? null ?: null;
 
         return $data;
     }

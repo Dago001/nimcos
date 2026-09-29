@@ -13,7 +13,7 @@
     <div class="stack">
         <div class="panel"><div class="panel-body">
             <dl class="dl">
-                <dt>Rank</dt><dd>{{ $voter->rank ?? '-' }}</dd>
+                <dt>Rank</dt><dd>{{ $voter->rankLabel() ?? '-' }}</dd>
                 <dt>Command</dt><dd>{{ $voter->command ?? '-' }}</dd>
                 <dt>Formation</dt><dd>{{ $voter->formation ?? '-' }}</dd>
                 <dt>Phone</dt><dd>{{ \App\Support\PhoneNumber::display($voter->phone) ?: '-' }}</dd>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\AccountStatus;
 use App\Enums\AuditResult;
 use App\Enums\EligibilityStatus;
+use App\Enums\NisRank;
 use App\Enums\VerificationStatus;
 use App\Enums\VoterEligibility;
 use App\Http\Controllers\Controller;
@@ -84,7 +85,7 @@ class VoterController extends Controller
             'roll' => $roll,
             'elections' => $elections,
             'election' => $election,
-            'ranks' => $distinct('rank'),
+            'ranks' => NisRank::cases(),
             'commands' => $distinct('command'),
             'formations' => $distinct('formation'),
             'filters' => $request->query(),

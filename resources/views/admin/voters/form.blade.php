@@ -16,7 +16,6 @@
             ['surname', 'Surname', true, ''],
             ['first_name', 'First name', true, ''],
             ['other_names', 'Other names', false, ''],
-            ['rank', 'Rank', false, ''],
             ['command', 'Command', false, ''],
             ['formation', 'Formation', false, ''],
         ] as [$field, $label, $required, $class])
@@ -27,6 +26,16 @@
                 @error($field)<div class="error-text">{{ $message }}</div>@enderror
             </div>
         @endforeach
+        <div class="field">
+            <label for="rank">Rank</label>
+            <select class="input" id="rank" name="rank" @error('rank') aria-invalid="true" @enderror>
+                <option value="">Select rank</option>
+                @foreach (\App\Enums\NisRank::cases() as $r)
+                    <option value="{{ $r->value }}" @selected(old('rank', $voter->rank) === $r->value)>{{ $r->label() }}</option>
+                @endforeach
+            </select>
+            @error('rank')<div class="error-text">{{ $message }}</div>@enderror
+        </div>
         <div class="field">
             <label for="phone">Mobile phone</label>
             <input class="input" id="phone" name="phone" type="tel" inputmode="tel" value="{{ old('phone', $voter->phone ? \App\Support\PhoneNumber::display($voter->phone) : '') }}" placeholder="0803 123 4567">

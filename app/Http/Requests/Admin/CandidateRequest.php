@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\NisRank;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Support\ServiceNumber;
@@ -38,7 +39,7 @@ class CandidateRequest extends FormRequest
             'other_names' => ['nullable', 'string', 'max:150', "regex:/^[\pL\pM' .\-]+$/u"],
             'service_number' => ['nullable', 'string', 'max:20',
                 Rule::unique('candidates', 'service_number')->where('election_id', $election->getKey())->ignore($candidate?->getKey())],
-            'rank' => ['nullable', 'string', 'max:80'],
+            'rank' => ['nullable', Rule::enum(NisRank::class)],
             'command' => ['nullable', 'string', 'max:120'],
             'biography' => ['nullable', 'string', 'max:3000'],
             'display_order' => ['nullable', 'integer', 'min:0', 'max:10000'],

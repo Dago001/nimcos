@@ -82,7 +82,7 @@
                                     <span class="candidate-text">
                                         <span class="candidate-no">CANDIDATE {{ $candidate->candidate_number }}</span>
                                         <span class="candidate-name">{{ $candidate->displayName() }}</span>
-                                        <span class="candidate-meta">{{ $candidate->rank }}@if ($candidate->rank && $candidate->command) · @endif{{ $candidate->command }}</span>
+                                        <span class="candidate-meta">{{ $candidate->rankShortLabel() }}@if ($candidate->rank && $candidate->command) · @endif{{ $candidate->command }}</span>
                                     </span>
                                     <span class="select-indicator" aria-hidden="true">
                                         <span class="ring"></span>

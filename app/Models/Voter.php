@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AccountStatus;
 use App\Enums\MembershipStatus;
+use App\Enums\NisRank;
 use App\Enums\VerificationStatus;
 use App\Enums\VoterEligibility;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -47,6 +48,12 @@ class Voter extends Model implements Authenticatable
     public function fullName(): string
     {
         return trim($this->surname.', '.$this->first_name.' '.($this->other_names ?? ''));
+    }
+
+    /** Full rank title for display, e.g. "Deputy Comptroller of Immigration (DCI)". Falls back to the raw value for legacy/imported data that predates the fixed rank list. */
+    public function rankLabel(): ?string
+    {
+        return $this->rank ? (NisRank::tryFrom($this->rank)?->label() ?? $this->rank) : null;
     }
 
     /** Can this register entry be authorised for elections at all? */

@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Enums\ElectionStatus;
+use App\Enums\NisRank;
 use App\Services\Auth\Totp;
 use App\Support\PhoneNumber;
 use PHPUnit\Framework\TestCase;
@@ -52,5 +53,28 @@ class SupportTest extends TestCase
         $this->assertFalse(ElectionStatus::DRAFT->canTransitionTo(ElectionStatus::OPEN));
         $this->assertFalse(ElectionStatus::OPEN->canTransitionTo(ElectionStatus::RESULTS_PUBLISHED));
         $this->assertSame([], ElectionStatus::ARCHIVED->allowedTransitions());
+    }
+
+    public function test_nis_rank_list_runs_from_comptroller_to_immigration_assistant_3(): void
+    {
+        $this->assertSame([
+            'CIS', 'DCI', 'ACI', 'CSI', 'SI', 'DSI', 'ASI1', 'ASI2',
+            'II', 'AII', 'CIA', 'SIA', 'IA1', 'IA2', 'IA3',
+        ], NisRank::values());
+        $this->assertSame('Deputy Comptroller of Immigration (DCI)', NisRank::DCI->label());
+        $this->assertSame('Immigration Assistant 3 (IA3)', NisRank::IA3->label());
+        $this->assertSame('DCI', NisRank::DCI->shortLabel());
+    }
+
+    public function test_nis_rank_from_text_accepts_full_title_or_abbreviation(): void
+    {
+        $this->assertSame(NisRank::DCI, NisRank::fromText('DCI'));
+        $this->assertSame(NisRank::DCI, NisRank::fromText('dci'));
+        $this->assertSame(NisRank::DCI, NisRank::fromText('Deputy Comptroller of Immigration (DCI)'));
+        $this->assertSame(NisRank::DCI, NisRank::fromText('Deputy Comptroller of Immigration'));
+        $this->assertSame(NisRank::IA3, NisRank::fromText(' ia3 '));
+        $this->assertNull(NisRank::fromText('DSP'));
+        $this->assertNull(NisRank::fromText(''));
+        $this->assertNull(NisRank::fromText(null));
     }
 }

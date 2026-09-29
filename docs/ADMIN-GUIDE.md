@@ -17,7 +17,7 @@ Sign in at `https://<your-site>/admin` with your email, password and (when enabl
 
 ## 1. Prepare the voter register
 
-1. **Import voters → Download template.** Fill in one row per member. Required columns: SERVICE NUMBER, SURNAME, FIRST NAME, EMAIL. Each email address must belong to one member only (it receives their code). PHONE NUMBER is optional. In Excel, format the Service Number column as Text so leading zeros are kept.
+1. **Import voters → Download template.** Fill in one row per member. Required columns: SERVICE NUMBER, SURNAME, FIRST NAME, EMAIL. Each email address must belong to one member only (it receives their code). PHONE NUMBER is optional. In Excel, format the Service Number column as Text so leading zeros are kept. RANK must be a real NIS rank (the full title, e.g. "Deputy Comptroller of Immigration", or the abbreviation, e.g. "DCI") — rows with an unrecognised rank are rejected.
 2. **Upload and validate.** The preview shows total, new, updated, duplicate, invalid and rejected rows. Nothing changes yet.
 3. Download the **error report**, correct the rows at source, and re-upload them if needed.
 4. Tick the confirmation and **Confirm and import**. The whole file is applied in one transaction: if anything fails, nothing changes.
@@ -29,7 +29,7 @@ Individual members can be added, edited, suspended or reinstated from the voter 
 
 1. **Create election:** name (e.g. NIMCOS 2026 ELECTIVE CONGRESS), code (e.g. NIMCOS-2026-EC), voting opens / closes (West Africa Time), automatic opening/closing, and **Show live vote counts** (on by default: the dashboard shows every contestant with a running count while voting is open, to officials with the "View results" permission; untick to keep results sealed until close).
 2. **Positions tab → Add all active positions.** This adds the 14 offices. Adjust seats, order or "required" if needed. (The catalogue itself is under *Positions*.)
-3. **Candidates:** add each candidate under the correct position, with rank, command, a short profile and a photograph (JPEG/PNG/WebP, at least 200×200 px). Numbers are assigned automatically. Withdrawn or disqualified candidates never appear on the ballot.
+3. **Candidates:** add each candidate under the correct position, with rank (chosen from the fixed NIS rank list, Comptroller of Immigration Service down to Immigration Assistant 3), command, a short profile and a photograph (JPEG/PNG/WebP, at least 200×200 px). Numbers are assigned automatically. Withdrawn or disqualified candidates never appear on the ballot.
 4. **Eligibility tab → Authorise all verified members**, or authorise individuals by Service Number. Eligibility is per election: voting in one election does not affect the next.
 5. On the **Overview** tab, fix anything listed under *Not ready*, then **Schedule election** (password required). The ballot is locked from this point. Use *Return to draft* to correct it before voting opens.
 

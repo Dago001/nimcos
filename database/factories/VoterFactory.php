@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\AccountStatus;
 use App\Enums\MembershipStatus;
+use App\Enums\NisRank;
 use App\Enums\VerificationStatus;
 use App\Enums\VoterEligibility;
 use App\Models\Voter;
@@ -23,7 +24,7 @@ class VoterFactory extends Factory
             'surname' => mb_strtoupper(fake()->lastName()),
             'first_name' => fake()->firstName(),
             'other_names' => null,
-            'rank' => 'INSPECTOR OF IMMIGRATION',
+            'rank' => NisRank::II->value,
             'command' => 'TEST COMMAND',
             'formation' => 'TEST FORMATION',
             'phone' => '+23470'.str_pad((string) fake()->unique()->numberBetween(0, 99999999), 8, '0', STR_PAD_LEFT),

@@ -34,7 +34,7 @@ class VoterImportController extends Controller
         return response()->streamDownload(function () {
             $out = fopen('php://output', 'wb');
             fputcsv($out, array_keys(VoterFileParser::COLUMNS), ',', '"', '');
-            fputcsv($out, ['12345', 'ADEYEMI', 'Tunde', 'Olusegun', 'ASSISTANT COMPTROLLER', 'LAGOS COMMAND', 'MMIA', '08031234567', 'officer@example.com', 'ACTIVE'], ',', '"', '');
+            fputcsv($out, ['12345', 'ADEYEMI', 'Tunde', 'Olusegun', 'ACI', 'LAGOS COMMAND', 'MMIA', '08031234567', 'officer@example.com', 'ACTIVE'], ',', '"', '');
             fclose($out);
         }, 'nimcos-voter-register-template.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }

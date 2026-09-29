@@ -43,9 +43,9 @@ class VoterImportTest extends TestCase
     public function test_preview_validates_and_reports_without_changing_the_register(): void
     {
         $import = $this->upload($this->csv([
-            ['1001', 'ADEYEMI', 'Tunde', '', 'ASP', 'LAGOS', 'MMIA', '08031234567', 'a@example.com', 'ACTIVE'],
-            [' 1002 ', 'bello', 'aisha', '', 'DSP', 'FCT', 'HQ', '+234 803 123 4568', 'B@Example.com', ''],
-            ['1001', 'ADEYEMI', 'Tunde', '', 'ASP', 'LAGOS', 'MMIA', '08031234567', 'a@example.com', 'ACTIVE'],
+            ['1001', 'ADEYEMI', 'Tunde', '', 'ASI1', 'LAGOS', 'MMIA', '08031234567', 'a@example.com', 'ACTIVE'],
+            [' 1002 ', 'bello', 'aisha', '', 'DSI', 'FCT', 'HQ', '+234 803 123 4568', 'B@Example.com', ''],
+            ['1001', 'ADEYEMI', 'Tunde', '', 'ASI1', 'LAGOS', 'MMIA', '08031234567', 'a@example.com', 'ACTIVE'],
             ['1003', '', 'Musa', '', '', '', '', '08031234569', 'c@example.com', 'ACTIVE'],
             ['1004', 'EZE', 'Ngozi', '', '', '', '', '12345', 'd@example.com', 'ACTIVE'],
             ['1005', 'OKAFOR', 'Emeka', '', '', '', '', '', 'a@example.com', 'ACTIVE'],
@@ -78,7 +78,7 @@ class VoterImportTest extends TestCase
 
         $import = $this->upload($this->csv([
             ['2001', 'NEWNAME', 'Kemi', '', 'CSI', 'KANO', '', '08031111111', 'kemi@example.com', 'ACTIVE'],
-            ['2002', 'LAWAL', 'Femi', '', 'ASI', 'KANO', '', '08032222222', 'femi@example.com', 'ACTIVE'],
+            ['2002', 'LAWAL', 'Femi', '', 'ASI1', 'KANO', '', '08032222222', 'femi@example.com', 'ACTIVE'],
         ]));
         $this->assertSame(1, $import->imported_count);
         $this->assertSame(1, $import->updated_count);

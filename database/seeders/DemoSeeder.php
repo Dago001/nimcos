@@ -10,6 +10,7 @@ use App\Enums\ElectionStatus;
 use App\Enums\ElectionType;
 use App\Enums\EligibilityStatus;
 use App\Enums\MembershipStatus;
+use App\Enums\NisRank;
 use App\Enums\RecordStatus;
 use App\Enums\ResultStatus;
 use App\Enums\UserStatus;
@@ -39,8 +40,6 @@ class DemoSeeder extends Seeder
     public const ADMIN_PASSWORD = 'Demo-Only-2026!';
 
     private const COMMANDS = ['FCT COMMAND', 'LAGOS COMMAND', 'KANO COMMAND', 'RIVERS COMMAND', 'ENUGU COMMAND', 'SERVICE HEADQUARTERS'];
-
-    private const RANKS = ['ASSISTANT INSPECTOR', 'INSPECTOR OF IMMIGRATION', 'ASSISTANT SUPERINTENDENT', 'DEPUTY SUPERINTENDENT', 'SUPERINTENDENT', 'CHIEF SUPERINTENDENT'];
 
     private const SURNAMES = ['ADEBAYO', 'OKONKWO', 'MUSA', 'EZE', 'BELLO', 'OKAFOR', 'IBRAHIM', 'OGUNDIPE', 'NWOSU', 'ABUBAKAR', 'ADEYEMI', 'CHUKWU', 'DANJUMA', 'EFFIONG', 'FASHOLA', 'GARBA', 'IHEANACHO', 'JIMOH', 'KALU', 'LAWAL', 'MOHAMMED', 'NNAMDI', 'OLATUNJI', 'SANI'];
 
@@ -100,7 +99,7 @@ class DemoSeeder extends Seeder
                 $voter->fill([
                     'surname' => self::SURNAMES[$i - 1],
                     'first_name' => self::FIRST_NAMES[$i - 1],
-                    'rank' => self::RANKS[$i % count(self::RANKS)],
+                    'rank' => NisRank::cases()[$i % count(NisRank::cases())]->value,
                     'command' => self::COMMANDS[$i % count(self::COMMANDS)],
                     'formation' => 'DEMO FORMATION',
                     'phone' => sprintf('+2347000000%03d', $i),
@@ -178,7 +177,7 @@ class DemoSeeder extends Seeder
                     'candidate_number' => $candidateNumber,
                     'surname' => self::SURNAMES[($nameIndex + 7) % 24],
                     'first_name' => self::FIRST_NAMES[($nameIndex + 11) % 24],
-                    'rank' => self::RANKS[$nameIndex % count(self::RANKS)],
+                    'rank' => NisRank::cases()[$nameIndex % count(NisRank::cases())]->value,
                     'command' => self::COMMANDS[$nameIndex % count(self::COMMANDS)],
                     'biography' => 'Demo candidate profile (fictitious).',
                     'display_order' => $c + 1,
