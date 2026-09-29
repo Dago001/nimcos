@@ -4,6 +4,9 @@
     $can = fn (string ...$p) => collect($p)->contains(fn ($x) => $admin->hasPermission($x));
     $openAlerts = $can('view_audit_logs') ? \App\Models\SecurityAlert::query()->where('status', 'OPEN')->count() : 0;
     $is = fn (string ...$patterns) => request()->routeIs(...$patterns) ? 'active' : '';
+    // A group starts open only when the current page is inside it, so the sidebar
+    // reflects where you are without hiding every other section by default.
+    $inGroup = fn (string ...$patterns) => request()->routeIs(...$patterns);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -33,68 +36,71 @@
         </div>
 
         @if ($can('manage_elections', 'view_live_statistics', 'view_results', 'manage_positions', 'manage_candidates'))
-            <div class="nav-group">
-                <div class="nav-group-title">Elections</div>
-                @if ($can('manage_elections', 'view_live_statistics', 'view_results'))
-                    <a class="nav-link {{ $is('admin.elections.*', 'admin.eligibility.*', 'admin.election-positions.*', 'admin.monitor.*', 'admin.results.*') }}" href="{{ route('admin.elections.index') }}">Elections</a>
-                @endif
-                @if ($can('manage_elections'))
-                    <a class="nav-link" href="{{ route('admin.elections.create') }}">Create election</a>
-                @endif
-                @if ($can('manage_positions'))
-                    <a class="nav-link {{ $is('admin.positions.*') }}" href="{{ route('admin.positions.index') }}">Positions</a>
-                @endif
-                @if ($can('manage_candidates'))
-                    <a class="nav-link {{ $is('admin.candidates.*') }}" href="{{ route('admin.candidates.index') }}">Candidates</a>
-                @endif
-            </div>
+            <details class="nav-group nav-accordion" @if ($inGroup('admin.elections.*', 'admin.eligibility.*', 'admin.election-positions.*', 'admin.monitor.*', 'admin.results.*', 'admin.positions.*', 'admin.candidates.*')) open @endif>
+                <summary class="nav-group-title">Elections</summary>
+                <div class="nav-accordion-body">
+                    @if ($can('manage_elections', 'view_live_statistics', 'view_results'))
+                        <a class="nav-link {{ $is('admin.elections.*', 'admin.eligibility.*', 'admin.election-positions.*', 'admin.monitor.*', 'admin.results.*') }}" href="{{ route('admin.elections.index') }}">Elections</a>
+                    @endif
+                    @if ($can('manage_positions'))
+                        <a class="nav-link {{ $is('admin.positions.*') }}" href="{{ route('admin.positions.index') }}">Positions</a>
+                    @endif
+                    @if ($can('manage_candidates'))
+                        <a class="nav-link {{ $is('admin.candidates.*') }}" href="{{ route('admin.candidates.index') }}">Candidates</a>
+                    @endif
+                </div>
+            </details>
         @endif
 
         @if ($can('manage_voters', 'import_voters'))
-            <div class="nav-group">
-                <div class="nav-group-title">Voter register</div>
-                @if ($can('manage_voters'))
-                    <a class="nav-link {{ $is('admin.voters.index', 'admin.voters.show', 'admin.voters.edit') }}" href="{{ route('admin.voters.index') }}">Voter list</a>
-                    <a class="nav-link {{ $is('admin.voters.create') }}" href="{{ route('admin.voters.create') }}">Add voter</a>
-                    <a class="nav-link {{ $is('admin.voters.suspended') }}" href="{{ route('admin.voters.suspended') }}">Suspended voters</a>
-                @endif
-                @if ($can('import_voters'))
-                    <a class="nav-link {{ $is('admin.imports.create') }}" href="{{ route('admin.imports.create') }}">Import voters</a>
-                    <a class="nav-link {{ $is('admin.imports.index', 'admin.imports.show') }}" href="{{ route('admin.imports.index') }}">Import history</a>
-                @endif
-            </div>
+            <details class="nav-group nav-accordion" @if ($inGroup('admin.voters.*', 'admin.imports.*')) open @endif>
+                <summary class="nav-group-title">Voter register</summary>
+                <div class="nav-accordion-body">
+                    @if ($can('manage_voters'))
+                        <a class="nav-link {{ $is('admin.voters.index', 'admin.voters.show', 'admin.voters.edit', 'admin.voters.create') }}" href="{{ route('admin.voters.index') }}">Voter list</a>
+                        <a class="nav-link {{ $is('admin.voters.suspended') }}" href="{{ route('admin.voters.suspended') }}">Suspended voters</a>
+                    @endif
+                    @if ($can('import_voters'))
+                        <a class="nav-link {{ $is('admin.imports.index', 'admin.imports.show', 'admin.imports.create') }}" href="{{ route('admin.imports.index') }}">Import history</a>
+                    @endif
+                </div>
+            </details>
         @endif
 
         @if ($can('generate_reports', 'view_audit_logs'))
-            <div class="nav-group">
-                <div class="nav-group-title">Oversight</div>
-                @if ($can('generate_reports'))
-                    <a class="nav-link {{ $is('admin.reports.*') }}" href="{{ route('admin.reports.index') }}">Reports</a>
-                @endif
-                @if ($can('view_audit_logs'))
-                    <a class="nav-link {{ $is('admin.audit.*') }}" href="{{ route('admin.audit.index') }}">Audit logs</a>
-                    <a class="nav-link {{ $is('admin.alerts.*') }}" href="{{ route('admin.alerts.index') }}">
-                        Security alerts
-                        @if ($openAlerts > 0)<span class="nav-count" aria-label="{{ $openAlerts }} open">{{ $openAlerts }}</span>@endif
-                    </a>
-                @endif
-            </div>
+            <details class="nav-group nav-accordion" @if ($inGroup('admin.reports.*', 'admin.audit.*', 'admin.alerts.*')) open @endif>
+                <summary class="nav-group-title">Oversight</summary>
+                <div class="nav-accordion-body">
+                    @if ($can('generate_reports'))
+                        <a class="nav-link {{ $is('admin.reports.*') }}" href="{{ route('admin.reports.index') }}">Reports</a>
+                    @endif
+                    @if ($can('view_audit_logs'))
+                        <a class="nav-link {{ $is('admin.audit.*') }}" href="{{ route('admin.audit.index') }}">Audit logs</a>
+                        <a class="nav-link {{ $is('admin.alerts.*') }}" href="{{ route('admin.alerts.index') }}">
+                            Security alerts
+                            @if ($openAlerts > 0)<span class="nav-count" aria-label="{{ $openAlerts }} open">{{ $openAlerts }}</span>@endif
+                        </a>
+                    @endif
+                </div>
+            </details>
         @endif
 
         @if ($can('manage_admins', 'manage_system_settings', 'manage_announcements'))
-            <div class="nav-group">
-                <div class="nav-group-title">Administration</div>
-                @if ($can('manage_announcements'))
-                    <a class="nav-link {{ $is('admin.announcements.*') }}" href="{{ route('admin.announcements.index') }}">Announcements</a>
-                @endif
-                @if ($can('manage_admins'))
-                    <a class="nav-link {{ $is('admin.users.*') }}" href="{{ route('admin.users.index') }}">Users</a>
-                    <a class="nav-link {{ $is('admin.roles.*') }}" href="{{ route('admin.roles.index') }}">Roles &amp; permissions</a>
-                @endif
-                @if ($can('manage_system_settings'))
-                    <a class="nav-link {{ $is('admin.settings.*') }}" href="{{ route('admin.settings.edit') }}">System settings</a>
-                @endif
-            </div>
+            <details class="nav-group nav-accordion" @if ($inGroup('admin.announcements.*', 'admin.users.*', 'admin.roles.*', 'admin.settings.*')) open @endif>
+                <summary class="nav-group-title">Administration</summary>
+                <div class="nav-accordion-body">
+                    @if ($can('manage_announcements'))
+                        <a class="nav-link {{ $is('admin.announcements.*') }}" href="{{ route('admin.announcements.index') }}">Announcements</a>
+                    @endif
+                    @if ($can('manage_admins'))
+                        <a class="nav-link {{ $is('admin.users.*') }}" href="{{ route('admin.users.index') }}">Users</a>
+                        <a class="nav-link {{ $is('admin.roles.*') }}" href="{{ route('admin.roles.index') }}">Roles &amp; permissions</a>
+                    @endif
+                    @if ($can('manage_system_settings'))
+                        <a class="nav-link {{ $is('admin.settings.*') }}" href="{{ route('admin.settings.edit') }}">System settings</a>
+                    @endif
+                </div>
+            </details>
         @endif
 
         <div class="sidebar-foot">

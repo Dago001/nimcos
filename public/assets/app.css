@@ -314,6 +314,18 @@ dialog.modal::backdrop { background: rgba(10, 20, 12, .55); }
 .nav-link { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .5rem .65rem; border-radius: var(--radius); color: #e7efe8; text-decoration: none; font-size: .9rem; }
 .nav-link:hover { background: rgba(255, 255, 255, .08); color: #fff; }
 .nav-link.active { background: #fff; color: var(--green-ink); font-weight: 650; }
+
+/* Nav sections open and close in place: they never push the topbar, the page
+   content or the rest of the sidebar's links around. The sidebar itself
+   already scrolls independently of the main content (see .sidebar), so an
+   accordion opening only ever grows inside that same scroll area. */
+.nav-accordion { padding: .5rem .6rem 0; }
+.nav-accordion > summary.nav-group-title { display: flex; align-items: center; justify-content: space-between; gap: .5rem; cursor: pointer; list-style: none; padding: .5rem .6rem; border-radius: var(--radius); }
+.nav-accordion > summary.nav-group-title::-webkit-details-marker { display: none; }
+.nav-accordion > summary.nav-group-title:hover { background: rgba(255, 255, 255, .06); color: #dfeae0; }
+.nav-accordion > summary.nav-group-title::after { content: ""; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; flex: none; }
+.nav-accordion[open] > summary.nav-group-title::after { transform: rotate(45deg); }
+.nav-accordion-body { display: flex; flex-direction: column; gap: .1rem; padding: .2rem .0 .5rem; }
 .nav-count { background: #d23a2e; color: #fff; font-size: .7rem; font-weight: 700; border-radius: 999px; padding: .05rem .45rem; }
 .sidebar-foot { margin-top: auto; padding: 1rem 1.1rem; font-size: .75rem; color: #9fbca3; border-top: 1px solid rgba(255, 255, 255, .1); }
 .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 55; }
