@@ -57,12 +57,15 @@ class SupportTest extends TestCase
         $this->assertSame([], ElectionStatus::ARCHIVED->allowedTransitions());
     }
 
-    public function test_nis_rank_list_runs_from_comptroller_to_immigration_assistant_3(): void
+    public function test_nis_rank_list_runs_from_comptroller_general_to_immigration_assistant_3(): void
     {
         $this->assertSame([
-            'CIS', 'DCI', 'ACI', 'CSI', 'SI', 'DSI', 'ASI1', 'ASI2',
+            'CGI', 'DCG', 'ACG', 'CIS', 'DCI', 'ACI', 'CSI', 'SI', 'DSI', 'ASI1', 'ASI2',
             'II', 'AII', 'CIA', 'SIA', 'IA1', 'IA2', 'IA3',
         ], NisRank::values());
+        $this->assertSame('Comptroller General of Immigration (CGI)', NisRank::CGI->label());
+        $this->assertSame('Deputy Comptroller General of Immigration (DCG)', NisRank::DCG->label());
+        $this->assertSame('Assistant Comptroller General of Immigration (ACG)', NisRank::ACG->label());
         $this->assertSame('Deputy Comptroller of Immigration (DCI)', NisRank::DCI->label());
         $this->assertSame('Immigration Assistant 3 (IA3)', NisRank::IA3->label());
         $this->assertSame('DCI', NisRank::DCI->shortLabel());

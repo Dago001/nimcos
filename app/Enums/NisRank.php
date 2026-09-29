@@ -5,7 +5,7 @@ namespace App\Enums;
 use App\Enums\Concerns\EnumHelpers;
 
 /**
- * Nigeria Immigration Service ranks, from Comptroller of Immigration Service
+ * Nigeria Immigration Service ranks, from Comptroller General of Immigration
  * down to Immigration Assistant 3. Used for both voters (NIS staff) and
  * candidates. Order matches the official NIS hierarchy (highest first).
  */
@@ -13,6 +13,9 @@ enum NisRank: string
 {
     use EnumHelpers;
 
+    case CGI = 'CGI';
+    case DCG = 'DCG';
+    case ACG = 'ACG';
     case CIS = 'CIS';
     case DCI = 'DCI';
     case ACI = 'ACI';
@@ -33,6 +36,9 @@ enum NisRank: string
     public function label(): string
     {
         return match ($this) {
+            self::CGI => 'Comptroller General of Immigration (CGI)',
+            self::DCG => 'Deputy Comptroller General of Immigration (DCG)',
+            self::ACG => 'Assistant Comptroller General of Immigration (ACG)',
             self::CIS => 'Comptroller of Immigration Service (CIS)',
             self::DCI => 'Deputy Comptroller of Immigration (DCI)',
             self::ACI => 'Assistant Comptroller of Immigration (ACI)',
