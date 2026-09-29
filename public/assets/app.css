@@ -129,17 +129,17 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .alert-info { background: var(--info-bg); border-color: #c4d6ee; color: var(--info); }
 .demo-banner { background: #fff5e0; border-bottom: 1px solid var(--warn-line); color: var(--warn); font-size: .85rem; text-align: center; padding: .4rem 1rem; font-weight: 600; }
 
-/* ---------- Badges ---------- */
+/* ---------- Status labels ---------- */
 [hidden] { display: none !important; }
-.badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .55rem; border-radius: 999px; border: 1px solid; white-space: nowrap; }
-.badge-neutral { background: #f1f3f1; color: var(--ink-2); border-color: var(--line); }
-.badge-info { background: var(--info-bg); color: var(--info); border-color: #c4d6ee; }
-.badge-live { background: var(--green); color: #fff; border-color: var(--green); }
-.badge-live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
-.badge-warning { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-line); }
-.badge-success { background: var(--success-bg); color: var(--success); border-color: #b8dcbb; }
-.badge-error { background: var(--error-bg); color: var(--error); border-color: var(--error-line); }
-.badge-muted { background: #f4f4f4; color: #777; border-color: #e3e3e3; }
+.badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; font-weight: 600; padding: .1rem 0 .1rem .55rem; border-left: 2px solid; white-space: nowrap; background: none; color: var(--ink-2); }
+.badge-neutral { border-color: var(--line-strong); color: var(--ink-2); }
+.badge-info { border-color: var(--info); color: var(--info); }
+.badge-live { border-color: var(--green); color: var(--green-ink); font-weight: 700; }
+.badge-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex: none; }
+.badge-warning { border-color: var(--warn); color: var(--warn); }
+.badge-success { border-color: var(--success); color: var(--success); }
+.badge-error { border-color: var(--error); color: var(--error); }
+.badge-muted { border-color: var(--line); color: #777; }
 
 /* ---------- Panels (bordered sections, used sparingly) ---------- */
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); }
