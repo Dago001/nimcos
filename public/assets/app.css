@@ -48,7 +48,7 @@ a { color: var(--green); text-underline-offset: 2px; }
 a:hover { color: var(--green-hover); }
 h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 .5rem; color: var(--ink); }
 h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.01em; }
-h2 { font-size: 1.25rem; font-weight: 650; }
+h2 { font-size: 1.1rem; font-weight: 650; }
 h3 { font-size: 1.05rem; font-weight: 650; }
 p { margin: 0 0 1rem; }
 small, .small { font-size: .875rem; }
@@ -537,7 +537,7 @@ dialog.modal::backdrop { background: rgba(10, 20, 12, .55); }
 
 .home-section { padding: 5.5rem 5%; }
 .home-band { padding: 5.5rem 5%; background: var(--home-tint); }
-.home-title { text-align: center; font-size: clamp(1.6rem, 3vw, 2rem); font-weight: 800; margin: 0 0 2.75rem; color: var(--ink); }
+.home-title { text-align: center; font-size: clamp(1.35rem, 2.2vw, 1.6rem); font-weight: 800; margin: 0 0 2.75rem; color: var(--ink); }
 .home-note { text-align: center; color: var(--muted); margin: -1.75rem 0 2.5rem; }
 .home-note strong { color: var(--ink); }
 .step-cards { list-style: none; margin: 0 auto; padding: 0; max-width: 1240px; display: grid; gap: 1.25rem; grid-template-columns: 1fr; }
