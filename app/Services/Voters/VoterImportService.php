@@ -4,6 +4,7 @@ namespace App\Services\Voters;
 
 use App\Enums\AuditResult;
 use App\Enums\ImportStatus;
+use App\Enums\VerificationStatus;
 use App\Jobs\ProcessVoterImport;
 use App\Models\User;
 use App\Models\Voter;
@@ -182,7 +183,13 @@ class VoterImportService
                         if (! $voter) {
                             $voter = new Voter;
                             $voter->fill($row);
-                            $voter->forceFill(['created_by' => $by->getKey(), 'updated_by' => $by->getKey(), 'registered_at' => now()])->save();
+                            // The register file is the source of truth for onboarding: a voter
+                            // from an approved import is verified on arrival, not left pending
+                            // for a separate manual step.
+                            $voter->forceFill([
+                                'created_by' => $by->getKey(), 'updated_by' => $by->getKey(), 'registered_at' => now(),
+                                'verification_status' => VerificationStatus::VERIFIED, 'verified_at' => now(), 'verified_by' => $by->getKey(),
+                            ])->save();
                             $counts['new']++;
 
                             continue;

@@ -20,10 +20,9 @@ Sign in at `https://<your-site>/admin` with your email, password and (when enabl
 1. **Import voters → Download template.** Fill in one row per member. Required columns: SERVICE NUMBER, SURNAME, FIRST NAME, EMAIL. Each email address must belong to one member only (it receives their code). PHONE NUMBER is optional. In Excel, format the Service Number column as Text so leading zeros are kept. RANK must be a real NIS rank (the full title, e.g. "Deputy Comptroller of Immigration", or the abbreviation, e.g. "DCI") — rows with an unrecognised rank are rejected.
 2. **Upload and validate.** The preview shows total, new, updated, duplicate, invalid and rejected rows. Nothing changes yet.
 3. Download the **error report**, correct the rows at source, and re-upload them if needed.
-4. Tick the confirmation and **Confirm and import**. The whole file is applied in one transaction: if anything fails, nothing changes.
-5. **Verify** records against official service records (Voter list → filter *Unverified* → select → *Verify selected records*). Only verified, active, eligible members can be authorised to vote.
+4. Tick the confirmation and **Confirm and import**. The whole file is applied in one transaction: if anything fails, nothing changes. Every new member from the import is marked **Verified** automatically (the register file is treated as the authorised source), so they can be authorised to vote as soon as they're on the register.
 
-Individual members can be added, edited, suspended or reinstated from the voter list. Changing a member's name, Service Number or contact details resets verification.
+Individual members can be added, edited, suspended or reinstated from the voter list. A member added or edited by hand, one row at a time, still starts **Unverified** and needs to be verified from the voter list before they can be authorised — only members that arrive through an approved import bulk are verified automatically. Changing a member's name, Service Number or contact details resets verification.
 
 ## 2. Create the election
 

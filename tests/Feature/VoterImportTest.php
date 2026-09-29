@@ -74,7 +74,7 @@ class VoterImportTest extends TestCase
 
     public function test_confirmed_import_creates_and_updates_voters(): void
     {
-        Voter::factory()->create(['service_number' => '2001', 'surname' => 'OLDNAME', 'phone' => '+2348031111111', 'email' => 'kemi@example.com']);
+        $existing = Voter::factory()->unverified()->create(['service_number' => '2001', 'surname' => 'OLDNAME', 'phone' => '+2348031111111', 'email' => 'kemi@example.com']);
 
         $import = $this->upload($this->csv([
             ['2001', 'NEWNAME', 'Kemi', '', 'CSI', 'KANO STATE COMMAND', '', '08031111111', 'kemi@example.com', 'ACTIVE'],
@@ -91,7 +91,13 @@ class VoterImportTest extends TestCase
         $new = Voter::query()->where('service_number', '2002')->firstOrFail();
         $this->assertSame('+2348032222222', $new->phone);
         $this->assertSame('femi@example.com', $new->email);
-        $this->assertSame('UNVERIFIED', $new->verification_status->value);
+        // A voter created by an approved import is verified on arrival (the register
+        // file is the authorised source); this does not apply to hand-added voters.
+        $this->assertSame('VERIFIED', $new->verification_status->value);
+        $this->assertNotNull($new->verified_at);
+        // Updating an existing record does not change their verification: import
+        // auto-verify only applies to brand-new rows, never re-verifies on update.
+        $this->assertSame('UNVERIFIED', $existing->fresh()->verification_status->value);
         $this->assertDatabaseHas('audit_logs', ['action' => 'voter_import.completed']);
     }
 
