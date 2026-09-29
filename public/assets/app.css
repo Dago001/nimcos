@@ -438,7 +438,7 @@ dialog.modal::backdrop { background: rgba(10, 20, 12, .55); }
 
 /* Print: receipts and results print cleanly */
 @media print {
-  .band, .voter-header, .voter-footer, .btn, .ballot-nav, .sidebar, .topbar, .no-print { display: none !important; }
+  .band, .voter-header, .voter-footer, .legal-footer, .btn, .ballot-nav, .sidebar, .topbar, .no-print { display: none !important; }
   body { background: #fff; }
   .receipt, .panel { border-color: #999; }
 }
@@ -575,6 +575,11 @@ dialog.modal::backdrop { background: rgba(10, 20, 12, .55); }
 .site-footer-links a { color: var(--ink-2); text-decoration: none; }
 .site-footer-links a:hover { color: var(--green); text-decoration: underline; }
 .site-footer-bar { background: var(--home-tint); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1.25rem 5%; font-size: .82rem; color: var(--muted); }
+
+.legal-footer { margin: 0; padding: .85rem 16px; text-align: center; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); background: #fff; }
+.legal-footer-sep { margin: 0 .5rem; color: var(--line-strong); }
+.admin-body .legal-footer { padding: .85rem 1.75rem; text-align: left; }
+.auth-panel .legal-footer { border-top: 0; background: none; padding: .5rem 0 0; text-align: left; }
 
 /* ---------- Announcements: scrolling ticker and pop-up ---------- */
 .ticker { display: flex; align-items: stretch; background: var(--green-deep); color: #fff; font-size: .9rem; overflow: hidden; }

@@ -189,9 +189,9 @@
         </div>
     </div>
     <div class="site-footer-bar">
-        <span>{{ config('nimcos.short_org') }}. All rights reserved © {{ now()->year }}</span>
         <span>Your vote is secret. Officials can see that you voted, never how.</span>
     </div>
+    @include('partials.legal-footer')
 </footer>
 
 <dialog class="modal" id="contact-support" aria-labelledby="contact-support-title">

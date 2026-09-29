@@ -134,6 +134,7 @@
             @include('partials.flash')
             @yield('content')
         </main>
+        @include('partials.legal-footer')
     </div>
 </div>
 </body>

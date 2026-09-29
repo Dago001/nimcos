@@ -26,6 +26,7 @@
         @include('partials.flash')
         @yield('content')
         <p class="small muted mt-4">All access to this system is logged and monitored.</p>
+        @include('partials.legal-footer')
     </main>
 </div>
 </body>

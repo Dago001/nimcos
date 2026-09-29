@@ -41,6 +41,8 @@ class DemoSeeder extends Seeder
 
     private const COMMANDS = ['FCT COMMAND', 'LAGOS COMMAND', 'KANO COMMAND', 'RIVERS COMMAND', 'ENUGU COMMAND', 'SERVICE HEADQUARTERS'];
 
+    private const FORMATIONS = ['MURTALA MUHAMMED INTERNATIONAL AIRPORT', 'NNAMDI AZIKIWE INTERNATIONAL AIRPORT', 'SENI FILEYE COMPLEX', 'SEME BORDER', 'PORT HARCOURT INTERNATIONAL AIRPORT', 'KANO INTERNATIONAL AIRPORT'];
+
     private const SURNAMES = ['ADEBAYO', 'OKONKWO', 'MUSA', 'EZE', 'BELLO', 'OKAFOR', 'IBRAHIM', 'OGUNDIPE', 'NWOSU', 'ABUBAKAR', 'ADEYEMI', 'CHUKWU', 'DANJUMA', 'EFFIONG', 'FASHOLA', 'GARBA', 'IHEANACHO', 'JIMOH', 'KALU', 'LAWAL', 'MOHAMMED', 'NNAMDI', 'OLATUNJI', 'SANI'];
 
     private const FIRST_NAMES = ['Aisha', 'Chinedu', 'Fatima', 'Emeka', 'Halima', 'Tunde', 'Ngozi', 'Yusuf', 'Adaeze', 'Babatunde', 'Zainab', 'Ifeanyi', 'Hauwa', 'Segun', 'Amaka', 'Umar', 'Kemi', 'Obinna', 'Hadiza', 'Femi', 'Chioma', 'Aliyu', 'Bisi', 'Kelechi'];
@@ -71,10 +73,10 @@ class DemoSeeder extends Seeder
     private function admins(): void
     {
         $accounts = [
-            'superadmin@nimcos.test' => ['Demo Super Admin', Role::SUPER_ADMIN],
-            'electionadmin@nimcos.test' => ['Demo Election Administrator', Role::ELECTION_ADMINISTRATOR],
-            'returningofficer@nimcos.test' => ['Demo Returning Officer', Role::RETURNING_OFFICER],
-            'auditor@nimcos.test' => ['Demo Auditor', Role::AUDITOR],
+            'superadmin@nimcos.test' => ['Ngozi Okafor', Role::SUPER_ADMIN],
+            'electionadmin@nimcos.test' => ['Ibrahim Suleiman', Role::ELECTION_ADMINISTRATOR],
+            'returningofficer@nimcos.test' => ['Grace Adeyemi', Role::RETURNING_OFFICER],
+            'auditor@nimcos.test' => ['Emeka Nwachukwu', Role::AUDITOR],
         ];
         foreach ($accounts as $email => [$name, $roleName]) {
             $user = User::query()->firstOrNew(['email' => $email]);
@@ -101,7 +103,7 @@ class DemoSeeder extends Seeder
                     'first_name' => self::FIRST_NAMES[$i - 1],
                     'rank' => NisRank::cases()[$i % count(NisRank::cases())]->value,
                     'command' => self::COMMANDS[$i % count(self::COMMANDS)],
-                    'formation' => 'DEMO FORMATION',
+                    'formation' => self::FORMATIONS[$i % count(self::FORMATIONS)],
                     'phone' => sprintf('+2347000000%03d', $i),
                     'email' => sprintf('voter%02d@nimcos.test', $i),
                     'membership_status' => MembershipStatus::ACTIVE,
@@ -179,7 +181,7 @@ class DemoSeeder extends Seeder
                     'first_name' => self::FIRST_NAMES[($nameIndex + 11) % 24],
                     'rank' => NisRank::cases()[$nameIndex % count(NisRank::cases())]->value,
                     'command' => self::COMMANDS[$nameIndex % count(self::COMMANDS)],
-                    'biography' => 'Demo candidate profile (fictitious).',
+                    'biography' => 'Profile to be updated by the candidate.',
                     'display_order' => $c + 1,
                 ]);
                 $candidate->forceFill(['election_id' => $election->id, 'status' => CandidateStatus::ACTIVE, 'is_test_data' => true])->save();
