@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
 use App\Models\Candidate;
+use App\Models\Election;
 use App\Models\ElectionVoter;
 use App\Models\Role;
 use App\Models\Voter;
@@ -92,6 +93,19 @@ class EligibilityAndCandidateTest extends TestCase
         [$w, $h] = getimagesize(Storage::disk('local')->path($candidate->photo_path));
         $this->assertSame([600, 600], [$w, $h]);
         $this->assertSame(4, $candidate->candidate_number, 'Next number after candidates 1 to 3 is allocated automatically.');
+    }
+
+    public function test_candidate_create_redirects_to_positions_when_election_has_none(): void
+    {
+        $election = Election::factory()->create();
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+
+        $this->actingAsAdmin($ea)->get(route('admin.candidates.create', $election))
+            ->assertRedirect(route('admin.election-positions.index', $election))
+            ->assertSessionHas('error');
+
+        $this->actingAsAdmin($ea)->get(route('admin.candidates.index', ['election' => $election->id]))
+            ->assertOk()->assertSee('has no positions yet');
     }
 
     public function test_non_image_upload_is_rejected(): void

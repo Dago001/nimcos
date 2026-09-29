@@ -58,12 +58,18 @@ class CandidateController extends Controller
         ]);
     }
 
-    public function create(Request $request, Election $election): View
+    public function create(Request $request, Election $election): View|RedirectResponse
     {
+        $positions = $election->electionPositions()->with('position')->get();
+        if ($positions->isEmpty()) {
+            return redirect()->route('admin.election-positions.index', $election)
+                ->with('error', 'Attach at least one position to this election before adding candidates.');
+        }
+
         return view('admin.candidates.form', [
             'election' => $election,
             'candidate' => new Candidate(['election_position_id' => $request->query('position')]),
-            'positions' => $election->electionPositions()->with('position')->get(),
+            'positions' => $positions,
         ]);
     }
 

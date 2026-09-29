@@ -12,6 +12,8 @@
 
 @if ($election && ! $election->status->isStructureEditable())
     <div class="alert alert-info">This election is {{ $election->status->label() }}; candidates are locked. Changes are only possible while the election is in draft.</div>
+@elseif ($election && $positions->isEmpty())
+    <div class="alert alert-warning">This election has no positions yet. <a href="{{ route('admin.election-positions.index', $election) }}">Attach positions</a> before adding candidates.</div>
 @endif
 
 <form class="filters" method="GET">
