@@ -16,7 +16,7 @@
 <form class="filters" method="GET">
     <div class="field grow"><label for="q">Service Number or name</label><input class="input" id="q" name="q" value="{{ $filters['q'] ?? '' }}"></div>
     <div class="field"><label for="rank">Rank</label><select class="input" id="rank" name="rank"><option value="">All</option>@foreach ($ranks as $r)<option value="{{ $r->value }}" @selected(($filters['rank'] ?? '') === $r->value)>{{ $r->label() }}</option>@endforeach</select></div>
-    <div class="field"><label for="command">Command</label><select class="input" id="command" name="command"><option value="">All</option>@foreach ($commands as $c)<option @selected(($filters['command'] ?? '') === $c)>{{ $c }}</option>@endforeach</select></div>
+    <div class="field"><label for="command">Command</label><select class="input" id="command" name="command"><option value="">All</option>@foreach ($commands as $group => $groupCommands)<optgroup label="{{ $group }}">@foreach ($groupCommands as $c)<option value="{{ $c->value }}" @selected(($filters['command'] ?? '') === $c->value)>{{ $c->label() }}</option>@endforeach</optgroup>@endforeach</select></div>
     <div class="field"><label for="formation">Formation</label><select class="input" id="formation" name="formation"><option value="">All</option>@foreach ($formations as $f)<option @selected(($filters['formation'] ?? '') === $f)>{{ $f }}</option>@endforeach</select></div>
     <div class="field"><label for="eligibility">Eligibility</label><select class="input" id="eligibility" name="eligibility"><option value="">All</option>@foreach (\App\Enums\VoterEligibility::cases() as $e)<option value="{{ $e->value }}" @selected(($filters['eligibility'] ?? '') === $e->value)>{{ $e->label() }}</option>@endforeach</select></div>
     <div class="field"><label for="verification">Verification</label><select class="input" id="verification" name="verification"><option value="">All</option>@foreach (\App\Enums\VerificationStatus::cases() as $v)<option value="{{ $v->value }}" @selected(($filters['verification'] ?? '') === $v->value)>{{ $v->label() }}</option>@endforeach</select></div>
@@ -44,7 +44,7 @@
                     <td class="mono">{{ $voter->service_number }} @if ($voter->is_test_data)<span class="badge badge-warning">Test</span>@endif</td>
                     <td><a href="{{ route('admin.voters.show', $voter) }}">{{ $voter->fullName() }}</a></td>
                     <td class="small">{{ $voter->rankLabel() }}</td>
-                    <td class="small">{{ $voter->command }}<br><span class="muted">{{ $voter->formation }}</span></td>
+                    <td class="small">{{ $voter->commandLabel() }}<br><span class="muted">{{ $voter->formation }}</span></td>
                     <td>
                         <x-status-badge :status="$voter->verification_status" />
                         @if ($voter->account_status->value !== 'ACTIVE')<x-status-badge :status="$voter->account_status" />@endif

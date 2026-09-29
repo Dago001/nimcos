@@ -3,6 +3,7 @@
 namespace App\Services\Voters;
 
 use App\Enums\MembershipStatus;
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use App\Support\PhoneNumber;
 use App\Support\ServiceNumber;
@@ -180,13 +181,19 @@ class VoterFileParser
             $messages[] = "Rank \"{$rawRank}\" is not a recognised NIS rank. Use the full title (e.g. \"Deputy Comptroller of Immigration\") or the abbreviation (e.g. \"DCI\").";
         }
 
+        $rawCommand = $clean($raw['command'] ?? null, 120);
+        $command = $rawCommand !== null ? NisCommand::fromText($rawCommand) : null;
+        if ($rawCommand !== null && $command === null) {
+            $messages[] = "Command \"{$rawCommand}\" is not a recognised NIS Command.";
+        }
+
         return [[
             'service_number' => $sn,
             'surname' => $surname !== null ? mb_strtoupper($surname) : null,
             'first_name' => $first !== null ? mb_convert_case($first, MB_CASE_TITLE) : null,
             'other_names' => ($o = $clean($raw['other_names'] ?? null, 150)) !== null ? mb_convert_case($o, MB_CASE_TITLE) : null,
             'rank' => $rank?->value,
-            'command' => ($c = $clean($raw['command'] ?? null, 120)) !== null ? mb_strtoupper($c) : null,
+            'command' => $command?->value,
             'formation' => ($f = $clean($raw['formation'] ?? null, 120)) !== null ? mb_strtoupper($f) : null,
             'phone' => $phone,
             'email' => $email,

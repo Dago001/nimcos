@@ -16,7 +16,6 @@
             ['surname', 'Surname', true, ''],
             ['first_name', 'First name', true, ''],
             ['other_names', 'Other names', false, ''],
-            ['command', 'Command', false, ''],
             ['formation', 'Formation', false, ''],
         ] as [$field, $label, $required, $class])
             <div class="field">
@@ -26,6 +25,20 @@
                 @error($field)<div class="error-text">{{ $message }}</div>@enderror
             </div>
         @endforeach
+        <div class="field">
+            <label for="command">Command</label>
+            <select class="input" id="command" name="command" @error('command') aria-invalid="true" @enderror>
+                <option value="">Select command</option>
+                @foreach (\App\Enums\NisCommand::grouped() as $group => $commands)
+                    <optgroup label="{{ $group }}">
+                        @foreach ($commands as $c)
+                            <option value="{{ $c->value }}" @selected(old('command', $voter->command) === $c->value)>{{ $c->label() }}</option>
+                        @endforeach
+                    </optgroup>
+                @endforeach
+            </select>
+            @error('command')<div class="error-text">{{ $message }}</div>@enderror
+        </div>
         <div class="field">
             <label for="rank">Rank</label>
             <select class="input" id="rank" name="rank" @error('rank') aria-invalid="true" @enderror>

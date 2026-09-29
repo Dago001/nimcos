@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\AccountStatus;
 use App\Enums\MembershipStatus;
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use App\Enums\VerificationStatus;
 use App\Enums\VoterEligibility;
@@ -54,6 +55,12 @@ class Voter extends Model implements Authenticatable
     public function rankLabel(): ?string
     {
         return $this->rank ? (NisRank::tryFrom($this->rank)?->label() ?? $this->rank) : null;
+    }
+
+    /** Full Command title for display, e.g. "Lagos State Command". Falls back to the raw value for legacy/imported data that predates the fixed Command list. */
+    public function commandLabel(): ?string
+    {
+        return $this->command ? (NisCommand::tryFrom($this->command)?->label() ?? $this->command) : null;
     }
 
     /** Can this register entry be authorised for elections at all? */

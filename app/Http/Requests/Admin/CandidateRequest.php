@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use App\Models\Candidate;
 use App\Models\Election;
@@ -40,7 +41,7 @@ class CandidateRequest extends FormRequest
             'service_number' => ['nullable', 'string', 'max:20',
                 Rule::unique('candidates', 'service_number')->where('election_id', $election->getKey())->ignore($candidate?->getKey())],
             'rank' => ['nullable', Rule::enum(NisRank::class)],
-            'command' => ['nullable', 'string', 'max:120'],
+            'command' => ['nullable', Rule::enum(NisCommand::class)],
             'biography' => ['nullable', 'string', 'max:3000'],
             'display_order' => ['nullable', 'integer', 'min:0', 'max:10000'],
             // mimes checks the sniffed content type, not just the extension.

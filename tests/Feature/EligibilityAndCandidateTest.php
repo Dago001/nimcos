@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use App\Models\Candidate;
 use App\Models\Election;
@@ -133,6 +134,44 @@ class EligibilityAndCandidateTest extends TestCase
         $voter = Voter::query()->where('service_number', '19001')->firstOrFail();
         $this->assertSame(NisRank::IA3->value, $voter->rank);
         $this->assertSame('Immigration Assistant 3 (IA3)', $voter->rankLabel());
+    }
+
+    public function test_candidate_command_must_be_a_real_nis_command(): void
+    {
+        $election = $this->openElection(1, status: ElectionStatus::DRAFT);
+        $ep = $election->electionPositions()->first();
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+
+        $this->actingAsAdmin($ea)->post(route('admin.candidates.store', $election), [
+            'election_position_id' => $ep->id, 'surname' => 'OKORO', 'first_name' => 'Chidi', 'command' => 'MADE UP COMMAND',
+        ])->assertSessionHasErrors('command');
+
+        $this->actingAsAdmin($ea)->post(route('admin.candidates.store', $election), [
+            'election_position_id' => $ep->id, 'surname' => 'OKORO', 'first_name' => 'Chidi', 'command' => NisCommand::RIVERS_STATE_COMMAND->value,
+        ])->assertSessionHasNoErrors();
+
+        $candidate = Candidate::query()->where('surname', 'OKORO')->firstOrFail();
+        $this->assertSame(NisCommand::RIVERS_STATE_COMMAND->value, $candidate->command);
+        $this->assertSame('Rivers State Command', $candidate->commandLabel());
+    }
+
+    public function test_voter_command_must_be_a_real_nis_command(): void
+    {
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+
+        $this->actingAsAdmin($ea)->post(route('admin.voters.store'), [
+            'service_number' => '19002', 'surname' => 'BALA', 'first_name' => 'Amina',
+            'email' => 'bala@example.com', 'membership_status' => 'ACTIVE', 'command' => 'MADE UP COMMAND',
+        ])->assertSessionHasErrors('command');
+
+        $this->actingAsAdmin($ea)->post(route('admin.voters.store'), [
+            'service_number' => '19002', 'surname' => 'BALA', 'first_name' => 'Amina',
+            'email' => 'bala@example.com', 'membership_status' => 'ACTIVE', 'command' => NisCommand::FCT_COMMAND->value,
+        ])->assertSessionHasNoErrors();
+
+        $voter = Voter::query()->where('service_number', '19002')->firstOrFail();
+        $this->assertSame(NisCommand::FCT_COMMAND->value, $voter->command);
+        $this->assertSame('FCT Command', $voter->commandLabel());
     }
 
     public function test_candidate_create_redirects_to_positions_when_election_has_none(): void

@@ -49,7 +49,9 @@
         </select></div>
     <div class="field"><label for="cm">Command</label>
         <select class="input" id="cm" name="command"><option value="">All</option>
-            @foreach ($commands as $c)<option value="{{ $c }}" @selected(($filters['command'] ?? '') === $c)>{{ $c }}</option>@endforeach
+            @foreach ($commands as $group => $groupCommands)<optgroup label="{{ $group }}">
+                @foreach ($groupCommands as $c)<option value="{{ $c->value }}" @selected(($filters['command'] ?? '') === $c->value)>{{ $c->label() }}</option>@endforeach
+            </optgroup>@endforeach
         </select></div>
     <button class="btn btn-secondary" type="submit">Filter</button>
 </form>
@@ -62,7 +64,7 @@
             <tr>
                 <td class="mono">{{ $ev->voter->service_number }}</td>
                 <td><a href="{{ route('admin.voters.show', $ev->voter) }}">{{ $ev->voter->fullName() }}</a></td>
-                <td class="small">{{ $ev->voter->rankLabel() }}<br><span class="muted">{{ $ev->voter->command }}</span></td>
+                <td class="small">{{ $ev->voter->rankLabel() }}<br><span class="muted">{{ $ev->voter->commandLabel() }}</span></td>
                 <td><x-status-badge :status="$ev->eligibility_status" /></td>
                 <td class="small muted">{{ $ev->eligibility_reason }}</td>
                 <td class="actions">

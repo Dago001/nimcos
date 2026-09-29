@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Enums\ElectionStatus;
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use App\Services\Auth\Totp;
 use App\Support\PhoneNumber;
@@ -98,5 +99,42 @@ class SupportTest extends TestCase
         // 20 MB, before Laravel's own validation error can ever be shown.
         $this->assertSame(2 * 1024, min(PhpIniSize::toKb('2M'), PhpIniSize::toKb('8M')));
         $this->assertSame(20 * 1024, min(PhpIniSize::toKb('20M'), PhpIniSize::toKb('25M')));
+    }
+
+    public function test_nis_command_list_has_every_command_exactly_once(): void
+    {
+        $this->assertCount(77, NisCommand::cases());
+        $this->assertSame(77, count(array_unique(NisCommand::values())));
+        $labels = array_map(fn ($c) => $c->label(), NisCommand::cases());
+        $this->assertSame(77, count(array_unique($labels)), 'Every command must have a distinct label.');
+
+        $grouped = NisCommand::grouped();
+        $this->assertSame(
+            ['State Commands', 'Zonal Commands', 'Land Border Control Posts', 'Airport Commands', 'Marine & Seaport Commands', 'Training Institutions'],
+            array_keys($grouped)
+        );
+        $flat = array_merge(...array_values($grouped));
+        $this->assertSame(77, count($flat), 'grouped() must place every command in exactly one category.');
+        $this->assertSame(77, count(array_unique(array_map(fn ($c) => $c->value, $flat))));
+
+        $this->assertSame('FCT Command', NisCommand::FCT_COMMAND->label());
+        $this->assertSame('Lagos State Command', NisCommand::LAGOS_STATE_COMMAND->label());
+    }
+
+    public function test_nis_command_from_text_is_tolerant_of_case_spacing_and_missing_state_word(): void
+    {
+        // Regression guard: str_replace() on the label must uppercase FIRST, or a
+        // title-case label like "Lagos State Command" never matches "STATE COMMAND"
+        // and the short-form fallback (e.g. bare "Lagos") silently fails.
+        $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('Lagos State Command'));
+        $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('LAGOS STATE COMMAND'));
+        $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('LAGOS_STATE_COMMAND'));
+        $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('lagos command'));
+        $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('  Lagos   Command  '));
+        $this->assertSame(NisCommand::FCT_COMMAND, NisCommand::fromText('FCT Command'));
+        $this->assertSame(NisCommand::MURTALA_MUHAMMED_INTERNATIONAL_AIRPORT, NisCommand::fromText('Murtala Muhammed International Airport'));
+        $this->assertNull(NisCommand::fromText('Not A Real Command'));
+        $this->assertNull(NisCommand::fromText(''));
+        $this->assertNull(NisCommand::fromText(null));
     }
 }

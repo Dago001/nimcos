@@ -43,7 +43,7 @@
                 <td><div class="person"><x-candidate-avatar :candidate="$candidate" size="small" />
                     <div><strong>{{ $candidate->displayName() }}</strong>@if ($candidate->service_number)<div class="small muted mono">{{ $candidate->service_number }}</div>@endif</div></div></td>
                 <td>{{ $candidate->electionPosition->position->name }}</td>
-                <td class="small">{{ $candidate->rankLabel() }}<br><span class="muted">{{ $candidate->command }}</span></td>
+                <td class="small">{{ $candidate->rankLabel() }}<br><span class="muted">{{ $candidate->commandLabel() }}</span></td>
                 <td><x-status-badge :status="$candidate->status" /></td>
                 <td class="actions">
                     @if ($candidate->election->status->isStructureEditable())

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\AuditResult;
 use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
+use App\Enums\NisCommand;
 use App\Http\Controllers\Controller;
 use App\Models\Election;
 use App\Models\ElectionVoter;
@@ -55,7 +56,7 @@ class EligibilityController extends Controller
             'counts' => $counts,
             'authorisable' => Voter::query()->authorisable()
                 ->whereNotIn('id', ElectionVoter::query()->where('election_id', $election->getKey())->select('voter_id'))->count(),
-            'commands' => Voter::query()->whereNotNull('command')->distinct()->orderBy('command')->pluck('command'),
+            'commands' => NisCommand::grouped(),
             'filters' => $request->query(),
             'canGrant' => $election->status->isEligibilityEditable(),
         ]);

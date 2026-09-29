@@ -10,6 +10,7 @@ use App\Enums\ElectionStatus;
 use App\Enums\ElectionType;
 use App\Enums\EligibilityStatus;
 use App\Enums\MembershipStatus;
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use App\Enums\RecordStatus;
 use App\Enums\ResultStatus;
@@ -38,8 +39,6 @@ use RuntimeException;
 class DemoSeeder extends Seeder
 {
     public const ADMIN_PASSWORD = 'Demo-Only-2026!';
-
-    private const COMMANDS = ['FCT COMMAND', 'LAGOS COMMAND', 'KANO COMMAND', 'RIVERS COMMAND', 'ENUGU COMMAND', 'SERVICE HEADQUARTERS'];
 
     private const FORMATIONS = ['MURTALA MUHAMMED INTERNATIONAL AIRPORT', 'NNAMDI AZIKIWE INTERNATIONAL AIRPORT', 'SENI FILEYE COMPLEX', 'SEME BORDER', 'PORT HARCOURT INTERNATIONAL AIRPORT', 'KANO INTERNATIONAL AIRPORT'];
 
@@ -102,7 +101,7 @@ class DemoSeeder extends Seeder
                     'surname' => self::SURNAMES[$i - 1],
                     'first_name' => self::FIRST_NAMES[$i - 1],
                     'rank' => NisRank::cases()[$i % count(NisRank::cases())]->value,
-                    'command' => self::COMMANDS[$i % count(self::COMMANDS)],
+                    'command' => NisCommand::cases()[$i % count(NisCommand::cases())]->value,
                     'formation' => self::FORMATIONS[$i % count(self::FORMATIONS)],
                     'phone' => sprintf('+2347000000%03d', $i),
                     'email' => sprintf('voter%02d@nimcos.test', $i),
@@ -180,7 +179,7 @@ class DemoSeeder extends Seeder
                     'surname' => self::SURNAMES[($nameIndex + 7) % 24],
                     'first_name' => self::FIRST_NAMES[($nameIndex + 11) % 24],
                     'rank' => NisRank::cases()[$nameIndex % count(NisRank::cases())]->value,
-                    'command' => self::COMMANDS[$nameIndex % count(self::COMMANDS)],
+                    'command' => NisCommand::cases()[$nameIndex % count(NisCommand::cases())]->value,
                     'biography' => 'Profile to be updated by the candidate.',
                     'display_order' => $c + 1,
                 ]);

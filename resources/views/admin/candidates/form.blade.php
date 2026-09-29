@@ -64,7 +64,17 @@
             </div>
             <div class="field">
                 <label for="command">Command</label>
-                <input class="input" id="command" name="command" value="{{ old('command', $candidate->command) }}" maxlength="120">
+                <select class="input" id="command" name="command" @error('command') aria-invalid="true" @enderror>
+                    <option value="">Select command</option>
+                    @foreach (\App\Enums\NisCommand::grouped() as $group => $commands)
+                        <optgroup label="{{ $group }}">
+                            @foreach ($commands as $c)
+                                <option value="{{ $c->value }}" @selected(old('command', $candidate->command) === $c->value)>{{ $c->label() }}</option>
+                            @endforeach
+                        </optgroup>
+                    @endforeach
+                </select>
+                @error('command')<div class="error-text">{{ $message }}</div>@enderror
             </div>
             <div class="field span-2">
                 <label for="biography">Profile / biography</label>

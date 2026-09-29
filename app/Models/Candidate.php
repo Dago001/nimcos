@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CandidateStatus;
+use App\Enums\NisCommand;
 use App\Enums\NisRank;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -69,5 +70,11 @@ class Candidate extends Model
     public function rankShortLabel(): ?string
     {
         return $this->rank ? (NisRank::tryFrom($this->rank)?->shortLabel() ?? $this->rank) : null;
+    }
+
+    /** Full Command title for display, e.g. "Lagos State Command". Falls back to the raw value for legacy/imported data that predates the fixed Command list. */
+    public function commandLabel(): ?string
+    {
+        return $this->command ? (NisCommand::tryFrom($this->command)?->label() ?? $this->command) : null;
     }
 }
