@@ -129,8 +129,8 @@ class DemoSeeder extends Seeder
         $author = User::query()->where('email', 'superadmin@nimcos.test')->value('id');
 
         foreach ([
-            ['DEMO: Voting is now open', "Voting for the NIMCOS 2026 Elective Congress is open until 17:00 today (WAT).\nSign in with your Service Number and the code sent to your registered email.", AnnouncementDisplay::BOTH, AnnouncementLevel::IMPORTANT, '/vote', 'Vote now'],
-            ['DEMO: Never share your code', 'NIMCOS officials will never ask for your verification code. Report anyone who does to the Electoral Committee.', AnnouncementDisplay::TICKER, AnnouncementLevel::INFO, null, null],
+            ['Voting is now open', "Voting for the NIMCOS 2026 Elective Congress is open until 17:00 today (WAT).\nSign in with your Service Number and the code sent to your registered email.", AnnouncementDisplay::BOTH, AnnouncementLevel::IMPORTANT, '/vote', 'Vote now'],
+            ['Never share your code', 'NIMCOS officials will never ask for your verification code. Report anyone who does to the Electoral Committee.', AnnouncementDisplay::TICKER, AnnouncementLevel::INFO, null, null],
         ] as [$title, $body, $display, $level, $url, $label]) {
             $a = new Announcement(['title' => $title, 'body' => $body, 'display' => $display, 'level' => $level, 'link_url' => $url, 'link_label' => $label, 'is_active' => true]);
             $a->forceFill(['created_by' => $author, 'updated_by' => $author])->save();
@@ -148,7 +148,7 @@ class DemoSeeder extends Seeder
         $election->fill([
             'name' => 'NIMCOS 2026 ELECTIVE CONGRESS',
             'code' => 'NIMCOS-2026-EC',
-            'description' => 'DEMO: Election of officers of the Nigeria Immigration Multi-Purpose Cooperative Society for the 2026 to 2028 tenure.',
+            'description' => 'Election of officers of the Nigeria Immigration Multi-Purpose Cooperative Society for the 2026 to 2028 tenure.',
             'election_type' => ElectionType::GENERAL,
             'starts_at' => now()->subMinutes(5),
             'ends_at' => now()->addHours(12),
