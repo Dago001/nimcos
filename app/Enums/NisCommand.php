@@ -190,6 +190,18 @@ enum NisCommand: string
     }
 
     /**
+     * Known real-world aliases and common misspellings seen in NIS registers
+     * that do not otherwise match the official directory text, mapped to the
+     * command they unambiguously refer to. Deliberately short: only additions
+     * confirmed against a real voter-register import, not guessed matches.
+     */
+    private const ALIASES = [
+        'ABUJA' => self::FCT_COMMAND,
+        'FCT AREA COMMAND' => self::FCT_COMMAND,
+        'MURTALA MOHAMMED INTERNATIONAL AIRPORT' => self::MURTALA_MUHAMMED_INTERNATIONAL_AIRPORT,
+    ];
+
+    /**
      * Best-effort match from free text (imports, legacy data), tolerant of case,
      * extra whitespace and (for state commands) a missing "State" word, e.g.
      * "lagos command" or "LAGOS STATE COMMAND" both match Lagos State Command.
@@ -213,6 +225,10 @@ enum NisCommand: string
             if ($value === $short.' COMMAND' || $value === $short) {
                 return $command;
             }
+        }
+
+        if (isset(self::ALIASES[$value])) {
+            return self::ALIASES[$value];
         }
 
         return null;

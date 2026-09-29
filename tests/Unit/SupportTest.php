@@ -140,4 +140,18 @@ class SupportTest extends TestCase
         $this->assertNull(NisCommand::fromText(''));
         $this->assertNull(NisCommand::fromText(null));
     }
+
+    public function test_nis_command_from_text_accepts_known_aliases_seen_in_real_registers(): void
+    {
+        // Found from a real 20,000-row voter register import: "Abuja" and "FCT Area
+        // Command" both mean FCT Command; "Murtala Mohammed" is a common misspelling
+        // of "Murtala Muhammed" International Airport.
+        $this->assertSame(NisCommand::FCT_COMMAND, NisCommand::fromText('Abuja'));
+        $this->assertSame(NisCommand::FCT_COMMAND, NisCommand::fromText('FCT Area Command'));
+        $this->assertSame(NisCommand::MURTALA_MUHAMMED_INTERNATIONAL_AIRPORT, NisCommand::fromText('Murtala Mohammed International Airport'));
+
+        // Genuinely not in the official 77-command directory: never silently guessed.
+        $this->assertNull(NisCommand::fromText('Sam Mbakwe Airport'));
+        $this->assertNull(NisCommand::fromText('Border Post Command'));
+    }
 }
