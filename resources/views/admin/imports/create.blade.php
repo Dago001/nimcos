@@ -6,6 +6,15 @@
 <div class="page-head"><div><h1>Import voter register</h1><div class="sub">Upload the approved register as CSV or Excel. Nothing changes until you review the preview and confirm.</div></div>
     <a class="btn btn-secondary" href="{{ route('admin.imports.template') }}">Download template (CSV)</a></div>
 
+@php($configuredMaxKb = (int) config('nimcos.uploads.import_max_kb'))
+@if ($phpUploadLimitKb > 0 && $phpUploadLimitKb < $configuredMaxKb)
+    <div class="alert alert-warning">
+        <strong>This server's PHP configuration only allows uploads up to {{ number_format($phpUploadLimitKb / 1024, 1) }} MB</strong>,
+        below the {{ (int) ($configuredMaxKb / 1024) }} MB this page allows. A larger file will fail to upload with no useful error.
+        Raise <span class="mono">upload_max_filesize</span> and <span class="mono">post_max_size</span> in <span class="mono">php.ini</span> and restart PHP.
+    </div>
+@endif
+
 <div class="grid-2">
     <form method="POST" action="{{ route('admin.imports.store') }}" enctype="multipart/form-data" class="panel" data-submit-once>
         @csrf
@@ -13,7 +22,8 @@
             <div class="field">
                 <label for="file">Register file <span class="req">*</span></label>
                 <input class="input" type="file" id="file" name="file" accept=".csv,.xlsx,.xls,text/csv" required>
-                <div class="help">CSV (.csv) or Excel (.xlsx) · maximum {{ (int) (config('nimcos.uploads.import_max_kb') / 1024) }} MB · first row must contain column headings.</div>
+                @php($effectiveMaxKb = $phpUploadLimitKb > 0 ? min($phpUploadLimitKb, $configuredMaxKb) : $configuredMaxKb)
+                <div class="help">CSV (.csv) or Excel (.xlsx) · maximum {{ number_format($effectiveMaxKb / 1024, $effectiveMaxKb % 1024 === 0 ? 0 : 1) }} MB · first row must contain column headings.</div>
                 @error('file')<div class="error-text">{{ $message }}</div>@enderror
             </div>
             <label class="check mb-2"><input type="checkbox" name="update_existing" value="1" checked>

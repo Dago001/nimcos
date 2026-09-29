@@ -6,6 +6,7 @@ use App\Enums\ElectionStatus;
 use App\Enums\NisRank;
 use App\Services\Auth\Totp;
 use App\Support\PhoneNumber;
+use App\Support\PhpIniSize;
 use PHPUnit\Framework\TestCase;
 
 class SupportTest extends TestCase
@@ -76,5 +77,26 @@ class SupportTest extends TestCase
         $this->assertNull(NisRank::fromText('DSP'));
         $this->assertNull(NisRank::fromText(''));
         $this->assertNull(NisRank::fromText(null));
+    }
+
+    public function test_php_ini_size_parses_upload_shorthand_to_kilobytes(): void
+    {
+        $this->assertSame(20 * 1024, PhpIniSize::toKb('20M'));
+        $this->assertSame(2 * 1024, PhpIniSize::toKb('2M'));
+        $this->assertSame(1024 * 1024, PhpIniSize::toKb('1G'));
+        $this->assertSame(512, PhpIniSize::toKb('512K'));
+        $this->assertSame(0, PhpIniSize::toKb('0'));
+        $this->assertSame(0, PhpIniSize::toKb(''));
+        // Bare number, no unit, is bytes per the php.ini convention.
+        $this->assertSame(1, PhpIniSize::toKb('1024'));
+    }
+
+    public function test_php_ini_effective_upload_limit_is_the_smaller_of_the_two_directives(): void
+    {
+        // A regression guard for the exact bug this was written to catch: PHP's stock
+        // 2M/8M defaults silently reject a voter-register upload the app allows up to
+        // 20 MB, before Laravel's own validation error can ever be shown.
+        $this->assertSame(2 * 1024, min(PhpIniSize::toKb('2M'), PhpIniSize::toKb('8M')));
+        $this->assertSame(20 * 1024, min(PhpIniSize::toKb('20M'), PhpIniSize::toKb('25M')));
     }
 }

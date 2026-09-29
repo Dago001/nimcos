@@ -9,6 +9,8 @@
 | PostgreSQL | 16 or newer | tested on 18 |
 | Node.js | not required | CSS/JS are plain files in `public/assets` |
 
+**PHP's own limits, not just this app's:** the stock `php.ini` that ships with WAMP/XAMPP allows uploads of only 2 MB, well under the voter register's 20 MB limit. Set `upload_max_filesize = 20M`, `post_max_size = 25M` and `memory_limit = 512M` in `php.ini` (find it with `php --ini`), then restart the PHP server. Skipping this makes a real voter-register import fail with a generic "file failed to upload" — Laravel never even sees the request, because PHP rejected it first.
+
 ## 1. Get the code and dependencies
 
 ```bash

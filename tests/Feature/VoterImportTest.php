@@ -104,6 +104,26 @@ class VoterImportTest extends TestCase
         $this->assertSame(1, Voter::query()->count());
     }
 
+    public function test_import_page_warns_when_server_php_limit_is_below_the_app_configured_max(): void
+    {
+        // The app's own limit set far above whatever this box's real php.ini allows,
+        // so the page must show the mismatch instead of a silent later failure.
+        config(['nimcos.uploads.import_max_kb' => 999 * 1024]);
+
+        $this->actingAsAdmin($this->ea)->get(route('admin.imports.create'))
+            ->assertOk()
+            ->assertSee("This server's PHP configuration only allows uploads up to", false);
+    }
+
+    public function test_import_page_shows_no_warning_when_app_limit_is_within_the_server_php_limit(): void
+    {
+        config(['nimcos.uploads.import_max_kb' => 1]); // 1 KB: certainly not above any real server limit
+
+        $this->actingAsAdmin($this->ea)->get(route('admin.imports.create'))
+            ->assertOk()
+            ->assertDontSee("This server's PHP configuration only allows uploads up to", false);
+    }
+
     public function test_file_missing_required_columns_is_rejected(): void
     {
         $file = UploadedFile::fake()->createWithContent('bad.csv', "NAME,PHONE\nX,080\n");

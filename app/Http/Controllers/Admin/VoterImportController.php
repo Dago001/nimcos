@@ -8,6 +8,7 @@ use App\Models\VoterImport;
 use App\Services\Reports\ReportRenderer;
 use App\Services\Voters\VoterFileParser;
 use App\Services\Voters\VoterImportService;
+use App\Support\PhpIniSize;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,7 +27,14 @@ class VoterImportController extends Controller
 
     public function create(): View
     {
-        return view('admin.imports.create', ['columns' => array_keys(VoterFileParser::COLUMNS), 'required' => VoterFileParser::REQUIRED_COLUMNS]);
+        return view('admin.imports.create', [
+            'columns' => array_keys(VoterFileParser::COLUMNS),
+            'required' => VoterFileParser::REQUIRED_COLUMNS,
+            // PHP rejects an oversized upload before Laravel's own validation ever
+            // runs, with no useful error — warn here rather than let an admin hit
+            // a confusing "file failed to upload" on a real register.
+            'phpUploadLimitKb' => PhpIniSize::effectiveUploadLimitKb(),
+        ]);
     }
 
     public function template(): StreamedResponse
