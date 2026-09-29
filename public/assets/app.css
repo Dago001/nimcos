@@ -368,8 +368,8 @@ dialog.modal::backdrop { background: rgba(10, 20, 12, .55); }
 .stat { padding: 1.1rem 1.25rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .stat:nth-child(2n) { border-right: 0; }
 @media (min-width: 900px) { .stat { border-bottom: 0; } .stat:nth-child(2n) { border-right: 1px solid var(--line); } .stat:nth-child(4n) { border-right: 0; } }
-.stat-label { font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 650; }
-.stat-value { font-size: 1.85rem; font-weight: 750; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; margin-top: .25rem; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.stat-value { font-size: 1.4rem; font-weight: 600; letter-spacing: -.01em; color: var(--ink); line-height: 1.2; margin-top: .25rem; font-variant-numeric: tabular-nums; }
 .stat-value.green { color: var(--green); }
 .stat-note { font-size: .8rem; color: var(--muted); margin-top: .15rem; }
 
