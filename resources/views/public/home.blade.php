@@ -24,7 +24,7 @@
 </head>
 <body class="home-body">
 <a class="skip-link" href="#main">Skip to main content</a>
-@if (config('nimcos.demo_mode'))
+@if (config('nimcos.show_demo_banner'))
     <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT: test data only. Votes cast here are not real.</div>
 @endif
 

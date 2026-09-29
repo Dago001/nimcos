@@ -9,9 +9,9 @@
 
 @if (session('temporary_password'))
     <div class="alert alert-warning" role="alert">
-        <strong>DEMO MODE: temporary password (shown once):</strong>
+        <strong>Temporary password (shown once):</strong>
         <span class="mono">{{ session('temporary_password') }}</span><br>
-        In production it is only emailed to the administrator. They must change it at first sign-in.
+        It is also emailed to the administrator. They must change it at first sign-in.
     </div>
 @endif
 

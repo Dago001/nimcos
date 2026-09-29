@@ -20,7 +20,7 @@
     </div>
     <main class="auth-panel" id="main">
         <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS seal" width="72" height="72" class="entry-seal">
-        @if (config('nimcos.demo_mode'))
+        @if (config('nimcos.show_demo_banner'))
             <div class="alert alert-warning">Demonstration environment: fictitious data only.</div>
         @endif
         @include('partials.flash')

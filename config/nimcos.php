@@ -13,6 +13,11 @@ return [
     // The application refuses to boot with demo mode on in production.
     'demo_mode' => (bool) env('NIMCOS_DEMO_MODE', false),
 
+    // Purely cosmetic: shows the "DEMONSTRATION ENVIRONMENT" banner and demo-mode
+    // labels in the UI. Independent of demo_mode itself, so the on-screen OTP and
+    // other demo_mode behaviour can stay on for local testing without the banner.
+    'show_demo_banner' => (bool) env('NIMCOS_SHOW_DEMO_BANNER', env('NIMCOS_DEMO_MODE', false)),
+
     'otp' => [
         'length' => 6,
         'ttl_minutes' => (int) env('NIMCOS_OTP_TTL', 5),

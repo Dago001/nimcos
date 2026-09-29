@@ -18,7 +18,7 @@
 </head>
 <body class="admin-body">
 <a class="skip-link" href="#main">Skip to main content</a>
-@if (config('nimcos.demo_mode'))
+@if (config('nimcos.show_demo_banner'))
     <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT: fictitious test data only.</div>
 @endif
 <div class="admin-shell">
