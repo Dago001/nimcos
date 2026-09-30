@@ -24,6 +24,11 @@
                 <strong>Demo environment</strong>
                 Your test code is <span class="mono">{{ $demoCode }}</span>. (Codes are never shown on screen in production.)
             </div>
+        @else
+            <div class="alert alert-info" role="note">
+                <strong>Live election</strong>
+                Check your email for the code. If it has not arrived within a couple of minutes, check your spam folder or use Resend code below.
+            </div>
         @endif
 
         <form method="POST" action="{{ route('voter.otp.verify') }}" data-submit-once novalidate>
