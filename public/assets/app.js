@@ -613,6 +613,13 @@
     });
   }
 
+  /* ---------- Disable right-click context menu app-wide ---------- */
+  function initDisableRightClick() {
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     applyWidths();
     initDialogs();
@@ -634,5 +641,6 @@
     initCandidateVoterLookup();
     initHumanCheck();
     initPasswordToggle();
+    initDisableRightClick();
   });
 })();
