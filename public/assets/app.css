@@ -631,3 +631,12 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .sn-lookup-msg.success { color: var(--success); font-weight: 600; }
 .sn-lookup-msg.info { color: var(--muted); }
 .sn-lookup-msg.error { color: var(--error); font-weight: 500; }
+
+/* ---------- "I am not a robot" check (voter sign-in) ---------- */
+.human-check { border: 1px solid var(--line-strong); border-radius: var(--radius); padding: .75rem .9rem; margin-bottom: 1.1rem; background: #fafbfa; }
+.human-check.is-invalid { border-color: var(--error); background: var(--error-bg); }
+.human-check-row { display: flex; gap: .6rem; align-items: center; margin: 0; font-weight: 600; cursor: pointer; }
+.human-check-row input { width: 22px; height: 22px; accent-color: var(--green); flex: none; }
+.human-check-question { margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--line); }
+.human-check-question label { display: block; font-weight: 600; margin-bottom: .35rem; font-size: .92rem; }
+.human-check-question .input { max-width: 140px; }

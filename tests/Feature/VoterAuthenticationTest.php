@@ -19,7 +19,7 @@ class VoterAuthenticationTest extends TestCase
 {
     private function requestOtp(string $serviceNumber)
     {
-        return $this->post(route('voter.access'), ['service_number' => $serviceNumber]);
+        return $this->post(route('voter.access'), ['service_number' => $serviceNumber] + $this->humanCheckFields());
     }
 
     /** Issue an OTP directly so the test knows the plain code. */
@@ -253,5 +253,66 @@ class VoterAuthenticationTest extends TestCase
         }
 
         $this->assertDatabaseHas('security_alerts', ['type' => 'REPEATED_SERVICE_NUMBER_LOOKUPS', 'status' => 'OPEN']);
+    }
+
+    public function test_sign_in_is_refused_without_solving_the_human_check(): void
+    {
+        Queue::fake();
+        $voter = Voter::factory()->create(['service_number' => '5001']);
+        $this->openElection(1, [$voter]);
+
+        // No human_check fields at all (a scripted POST straight to the endpoint).
+        $this->post(route('voter.access'), ['service_number' => '5001'])
+            ->assertSessionHasErrors('human_check');
+        Queue::assertNothingPushed();
+
+        // Box ticked and a real token, but the answer field left blank.
+        $fields = $this->humanCheckFields();
+        $fields['human_check_answer'] = '';
+        $this->post(route('voter.access'), ['service_number' => '5001'] + $fields)
+            ->assertSessionHasErrors('human_check');
+        Queue::assertNothingPushed();
+    }
+
+    public function test_sign_in_is_refused_with_a_wrong_human_check_answer(): void
+    {
+        Queue::fake();
+        $voter = Voter::factory()->create(['service_number' => '5002']);
+        $this->openElection(1, [$voter]);
+
+        $fields = $this->humanCheckFields();
+        $fields['human_check_answer'] = (string) ((int) $fields['human_check_answer'] + 1);
+
+        $this->post(route('voter.access'), ['service_number' => '5002'] + $fields)
+            ->assertSessionHasErrors('human_check');
+        Queue::assertNothingPushed();
+    }
+
+    public function test_a_human_check_token_cannot_be_replayed_for_a_second_attempt(): void
+    {
+        Queue::fake();
+        Voter::factory()->create(['service_number' => '5003']);
+        $this->openElection(1, [Voter::factory()->create(['service_number' => '5004'])]);
+        $fields = $this->humanCheckFields();
+
+        // First use, with a wrong Service Number, still consumes the challenge.
+        $this->post(route('voter.access'), ['service_number' => '00000'] + $fields);
+        // Reusing the same token/answer for a second attempt must fail even
+        // though the arithmetic answer itself was correct.
+        $this->post(route('voter.access'), ['service_number' => '5004'] + $fields)
+            ->assertSessionHasErrors('human_check');
+        Queue::assertNothingPushed();
+    }
+
+    public function test_human_check_is_not_required_when_no_election_is_open(): void
+    {
+        // The sign-in form (and its question) is not shown at all in this state,
+        // so a direct POST must not be told apart from one that solved a
+        // question it was never offered.
+        Voter::factory()->create(['service_number' => '5005']);
+
+        $this->post(route('voter.access'), ['service_number' => '5005'])
+            ->assertSessionDoesntHaveErrors('human_check')
+            ->assertSessionHasErrors('service_number');
     }
 }

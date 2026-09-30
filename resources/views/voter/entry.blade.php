@@ -37,6 +37,24 @@
                         <div class="help" id="sn-help">Enter your Service Number as it appears on the NIMCOS register.</div>
                     @enderror
                 </div>
+
+                <div class="human-check @error('human_check') is-invalid @enderror" data-human-check>
+                    <label class="human-check-row">
+                        <input type="checkbox" id="human_check" name="human_check" value="1" required
+                               @error('human_check') aria-invalid="true" aria-describedby="human-check-error" @enderror>
+                        <span>I am not a robot</span>
+                    </label>
+                    <div class="human-check-question" data-human-check-question>
+                        <label for="human_check_answer">{{ $challenge['question'] }}</label>
+                        <input class="input" type="text" inputmode="numeric" pattern="[0-9]*" id="human_check_answer" name="human_check_answer"
+                               value="{{ old('human_check_answer') }}" autocomplete="off" maxlength="3">
+                    </div>
+                    <input type="hidden" name="human_check_token" value="{{ $challenge['token'] }}">
+                    @error('human_check')
+                        <div class="error-text" id="human-check-error" role="alert">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <button type="submit" class="btn btn-primary btn-lg btn-block" data-busy-text="Checking…">Continue</button>
             </form>
 

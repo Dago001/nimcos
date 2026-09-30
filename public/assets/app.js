@@ -542,6 +542,38 @@
     }
   }
 
+  /* ---------- "I am not a robot" check on the voter sign-in form ---------- */
+  function initHumanCheck() {
+    var wrap = $('[data-human-check]');
+    if (!wrap) return;
+    var checkbox = $('input[type=checkbox]', wrap);
+    var question = $('[data-human-check-question]', wrap);
+    var answer = $('#human_check_answer', wrap);
+    var submit = $('button[type=submit]', wrap.closest('form'));
+    if (!checkbox || !question || !answer) return;
+
+    // With JS running, the question only appears once the box is ticked, and the
+    // Continue button stays disabled until it is answered — the checkbox alone
+    // proves nothing on its own, so this is a visual gate on top of the real,
+    // server-side check that runs regardless of JavaScript.
+    question.hidden = true;
+    if (submit) submit.disabled = true;
+
+    function refresh() {
+      question.hidden = !checkbox.checked;
+      if (!checkbox.checked) {
+        if (submit) submit.disabled = true;
+        return;
+      }
+      if (submit) submit.disabled = answer.value.trim() === '';
+      if (document.activeElement !== answer) answer.focus();
+    }
+
+    checkbox.addEventListener('change', refresh);
+    answer.addEventListener('input', refresh);
+    refresh();
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     applyWidths();
     initDialogs();
@@ -561,5 +593,6 @@
     initTicker();
     initAnnouncementPopup();
     initCandidateVoterLookup();
+    initHumanCheck();
   });
 })();

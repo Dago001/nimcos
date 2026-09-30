@@ -15,6 +15,7 @@ use App\Services\Audit\AuditLogger;
 use App\Services\Security\SecurityAlertService;
 use App\Services\Settings\SettingsService;
 use App\Services\Voting\Exceptions\OtpException;
+use App\Services\Voting\HumanChallenge;
 use App\Services\Voting\OtpService;
 use App\Services\Voting\VoterAccessService;
 use App\Services\Voting\VotingSessionService;
@@ -37,9 +38,10 @@ class AccessController extends Controller
         private readonly AuditLogger $audit,
         private readonly SecurityAlertService $alerts,
         private readonly SettingsService $settings,
+        private readonly HumanChallenge $humanChallenge,
     ) {}
 
-    public function entry(): View
+    public function entry(Request $request): View
     {
         $open = Election::query()->acceptingVotes()->orderBy('ends_at')->get();
         $upcoming = $open->isEmpty()
@@ -51,6 +53,7 @@ class AccessController extends Controller
             'openElections' => $open,
             'upcoming' => $upcoming,
             'support' => $this->settings->get('support_contact'),
+            'challenge' => $this->humanChallenge->issue($request),
         ]);
     }
 

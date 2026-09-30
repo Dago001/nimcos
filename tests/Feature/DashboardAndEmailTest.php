@@ -90,7 +90,7 @@ class DashboardAndEmailTest extends TestCase
         $voter = Voter::factory()->create(['email' => null]);
         $this->openElection(1, [$voter]);
 
-        $this->post(route('voter.access'), ['service_number' => $voter->service_number])->assertSessionHasErrors();
+        $this->post(route('voter.access'), ['service_number' => $voter->service_number] + $this->humanCheckFields())->assertSessionHasErrors();
         $this->assertDatabaseCount('otp_verifications', 0);
     }
 

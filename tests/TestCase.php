@@ -157,4 +157,29 @@ abstract class TestCase extends BaseTestCase
 
         return $response;
     }
+
+    /**
+     * Visit the real sign-in page, solve its "I am not a robot" question, and
+     * return the fields to merge into the following POST to voter.access.
+     * The answer is never exposed by the app outside the rendered question
+     * text, so this solves it the way a real visitor would rather than
+     * reaching into the session. Returns an empty array when no election is
+     * open, since the sign-in form (and its question) is not shown then.
+     *
+     * @return array{human_check?: string, human_check_token?: string, human_check_answer?: string}
+     */
+    protected function humanCheckFields(): array
+    {
+        $html = $this->get(route('voter.entry'))->getContent();
+        if (! preg_match('/What is (\d+) \+ (\d+)\?/', $html, $m)) {
+            return [];
+        }
+        preg_match('/name="human_check_token" value="([0-9a-f]+)"/', $html, $t) or throw new RuntimeException('Human-check token not found on the sign-in page.');
+
+        return [
+            'human_check' => '1',
+            'human_check_token' => $t[1],
+            'human_check_answer' => (string) ((int) $m[1] + (int) $m[2]),
+        ];
+    }
 }
