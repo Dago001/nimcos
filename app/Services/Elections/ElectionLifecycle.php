@@ -2,6 +2,7 @@
 
 namespace App\Services\Elections;
 
+use App\Enums\AuditResult;
 use App\Enums\CandidateStatus;
 use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
@@ -10,6 +11,8 @@ use App\Models\Election;
 use App\Models\User;
 use App\Services\Audit\AuditAction;
 use App\Services\Audit\AuditLogger;
+use App\Services\Settings\SettingsService;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -108,6 +111,57 @@ class ElectionLifecycle
             ->update(['status' => VotingSessionStatus::EXPIRED->value, 'ended_at' => now(), 'updated_at' => now()]);
 
         return $closed;
+    }
+
+    /** Extend voting time for an open or scheduled election. */
+    public function extend(Election $election, CarbonInterface $newEndsAt, User $by): Election
+    {
+        if (! in_array($election->status, [ElectionStatus::OPEN, ElectionStatus::SCHEDULED], true)) {
+            throw ValidationException::withMessages([
+                'ends_at' => 'Voting time can only be extended for open or scheduled elections.',
+            ]);
+        }
+
+        if ($newEndsAt->lessThanOrEqualTo($election->ends_at)) {
+            throw ValidationException::withMessages([
+                'ends_at' => 'The extended end time must be after the current closing time ('.display_time($election->ends_at, 'H:i, j M Y').' WAT).',
+            ]);
+        }
+
+        if ($newEndsAt->isPast()) {
+            throw ValidationException::withMessages([
+                'ends_at' => 'The extended end time must be in the future.',
+            ]);
+        }
+
+        $oldEndsAt = $election->ends_at;
+
+        DB::transaction(function () use ($election, $newEndsAt, $oldEndsAt) {
+            $election->ends_at = $newEndsAt;
+            $election->save();
+
+            // Give any active sessions that were capped at the previous ends_at the benefit of the extension
+            $sessionTtl = (int) app(SettingsService::class)->get('voting_session_minutes');
+            $maxExpiry = now()->addMinutes($sessionTtl);
+            $cap = $maxExpiry->lessThan($newEndsAt) ? $maxExpiry : $newEndsAt;
+
+            DB::table('voting_sessions')
+                ->whereIn('election_voter_id', fn ($q) => $q->select('id')->from('election_voters')->where('election_id', $election->getKey()))
+                ->where('status', VotingSessionStatus::ACTIVE->value)
+                ->where('expires_at', '<=', $oldEndsAt)
+                ->update([
+                    'expires_at' => $cap,
+                    'updated_at' => now(),
+                ]);
+        });
+
+        $this->audit->log(AuditAction::ELECTION_EXTENDED, AuditResult::SUCCESS, $election, [
+            'previous_ends_at' => $oldEndsAt->toIso8601String(),
+            'new_ends_at' => $newEndsAt->toIso8601String(),
+            'extended_by' => $by->name,
+        ]);
+
+        return $election;
     }
 
     public function archive(Election $election, User $by): Election

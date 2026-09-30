@@ -64,4 +64,9 @@ return [
 
     // Behind a TLS-terminating proxy / load balancer: comma-separated IPs/CIDRs, or "*".
     'trusted_proxies' => env('TRUSTED_PROXIES'),
+
+    'contact' => [
+        'email' => env('NIMCOS_CONTACT_EMAIL', 'support@nimcoselection.com'),
+        'support' => env('NIMCOS_SUPPORT_CONTACT', 'support@nimcoselection.com'),
+    ],
 ];

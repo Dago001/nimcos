@@ -101,6 +101,8 @@ final class AuditAction
 
     public const ELECTION_CLOSED = 'election.closed';
 
+    public const ELECTION_EXTENDED = 'election.extended';
+
     public const ELECTION_ARCHIVED = 'election.archived';
 
     public const ELECTION_POSITIONS_CHANGED = 'election.positions_changed';

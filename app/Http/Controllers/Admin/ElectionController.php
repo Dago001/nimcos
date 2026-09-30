@@ -8,6 +8,7 @@ use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ElectionRequest;
+use App\Http\Requests\Admin\ExtendVotingTimeRequest;
 use App\Http\Requests\Admin\ReauthenticatedRequest;
 use App\Models\Election;
 use App\Services\Audit\AuditAction;
@@ -142,6 +143,14 @@ class ElectionController extends Controller
         $this->lifecycle->open($election, $request->user());
 
         return redirect()->route('admin.monitor.show', $election)->with('success', 'The election is now OPEN. Voters can sign in and vote.');
+    }
+
+    public function extend(ExtendVotingTimeRequest $request, Election $election): RedirectResponse
+    {
+        $newEndsAt = $request->newEndsAt();
+        $this->lifecycle->extend($election, $newEndsAt, $request->user());
+
+        return back()->with('success', 'Voting time extended until '.display_time($newEndsAt, 'l j F Y, H:i').' WAT.');
     }
 
     public function close(ReauthenticatedRequest $request, Election $election): RedirectResponse

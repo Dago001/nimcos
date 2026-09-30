@@ -15,7 +15,24 @@
             @endif
             <span class="small muted">Refreshes every 15 s · updated <span data-poll-stamp>{{ display_time(now(), 'H:i:s') }}</span> · server time <strong data-stat="summary.server_time">{{ $summary['server_time'] }}</strong> WAT</span>
         </div>
-        <span class="small muted">Figures show participation only. Candidate totals are never shown here.</span>
+        <div class="btn-row">
+            @if ($election->status === \App\Enums\ElectionStatus::OPEN && auth()->user()->hasPermission('manage_elections'))
+                <x-reauth-dialog id="dlg-extend-mon" :action="route('admin.elections.extend', $election)" title="Extend voting time" button="Confirm extension" trigger="Extend voting time" trigger-class="btn btn-secondary btn-sm">
+                    <div class="modal-summary mb-2">
+                        <strong>{{ $election->name }}</strong><br>
+                        Current closing time: <strong>{{ display_time($election->ends_at, 'l j F Y, H:i') }} WAT</strong>
+                    </div>
+                    <div class="field">
+                        <label for="ends_at_mon">New closing date and time (WAT) <span class="req">*</span></label>
+                        <input class="input" type="datetime-local" id="ends_at_mon" name="ends_at"
+                               value="{{ old('ends_at', display_time($election->ends_at->addHour(), 'Y-m-d\TH:i')) }}"
+                               min="{{ display_time(now(), 'Y-m-d\TH:i') }}" required>
+                        <div class="help">Enter the extended date and time when voting should close (WAT). Must be after current closing time.</div>
+                    </div>
+                </x-reauth-dialog>
+            @endif
+            <span class="small muted">Figures show participation only. Candidate totals are never shown here.</span>
+        </div>
     </div>
 
     <div class="stats">

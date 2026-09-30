@@ -65,7 +65,7 @@
             @elseif ($nextElection)
                 <p class="hero-status">Next election: {{ $nextElection->name }}, opens {{ display_time($nextElection->starts_at, 'H:i, j M Y') }} (WAT)</p>
             @endif
-            <h1 id="hero-title">Elect your NIMCOS officers<span class="hero-accent">Vote Now!</span></h1>
+            <h1 id="hero-title">Elect your NIMCOS officials<span class="hero-accent">Vote Now!</span></h1>
             <div class="hero-actions">
                 <div class="hero-action">
                     <span>Ready to vote?</span>
@@ -199,9 +199,13 @@
     <div class="modal-body">
         <p>Having trouble signing in or did not receive your code? Before contacting us, check that you are using your Service Number and look in your email spam folder.</p>
         <dl class="dl">
-            @if ($contact['support'])<dt>Election support</dt><dd>{{ $contact['support'] }}</dd>@endif
+            @if ($contact['email'])
+                <dt>Support email</dt><dd><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></dd>
+            @endif
+            @if ($contact['support'] && $contact['support'] !== $contact['email'])
+                <dt>Election support</dt><dd>@if (filter_var($contact['support'], FILTER_VALIDATE_EMAIL))<a href="mailto:{{ $contact['support'] }}">{{ $contact['support'] }}</a>@else{{ $contact['support'] }}@endif</dd>
+            @endif
             @if ($contact['phone'])<dt>Phone</dt><dd><a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></dd>@endif
-            @if ($contact['email'])<dt>Email</dt><dd><a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></dd>@endif
             @if ($contact['hours'])<dt>Hours</dt><dd>{{ $contact['hours'] }}</dd>@endif
             @if ($contact['address'])<dt>Office</dt><dd>{{ $contact['address'] }}</dd>@endif
         </dl>

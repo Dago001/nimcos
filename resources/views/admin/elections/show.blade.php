@@ -92,6 +92,19 @@
                         </x-reauth-dialog>
                     @endif
                     @if ($user->hasPermission('manage_elections'))
+                        <x-reauth-dialog id="dlg-extend-sched" :action="route('admin.elections.extend', $election)" title="Extend voting time" button="Confirm extension" trigger="Extend voting time" trigger-class="btn btn-secondary">
+                            <div class="modal-summary mb-2">
+                                <strong>{{ $election->name }}</strong><br>
+                                Current closing time: <strong>{{ display_time($election->ends_at, 'l j F Y, H:i') }} WAT</strong>
+                            </div>
+                            <div class="field">
+                                <label for="ends_at_sched">New closing date and time (WAT) <span class="req">*</span></label>
+                                <input class="input" type="datetime-local" id="ends_at_sched" name="ends_at"
+                                       value="{{ old('ends_at', display_time($election->ends_at->addHour(), 'Y-m-d\TH:i')) }}"
+                                       min="{{ display_time(now(), 'Y-m-d\TH:i') }}" required>
+                                <div class="help">Enter the extended date and time when voting should close (WAT). Must be after current closing time.</div>
+                            </div>
+                        </x-reauth-dialog>
                         <x-reauth-dialog id="dlg-unschedule" :action="route('admin.elections.unschedule', $election)" title="Return to draft" button="Return to draft" trigger-class="btn btn-secondary">
                             <p>The election returns to draft so the ballot can be corrected. It must be scheduled again before it can open.</p>
                         </x-reauth-dialog>
@@ -103,6 +116,21 @@
                 <div class="btn-row">
                     @if ($user->hasPermission('view_live_statistics'))
                         <a class="btn btn-secondary" href="{{ route('admin.monitor.show', $election) }}">Live monitor</a>
+                    @endif
+                    @if ($user->hasPermission('manage_elections'))
+                        <x-reauth-dialog id="dlg-extend-open" :action="route('admin.elections.extend', $election)" title="Extend voting time" button="Confirm extension" trigger="Extend voting time" trigger-class="btn btn-secondary">
+                            <div class="modal-summary mb-2">
+                                <strong>{{ $election->name }}</strong><br>
+                                Current closing time: <strong>{{ display_time($election->ends_at, 'l j F Y, H:i') }} WAT</strong>
+                            </div>
+                            <div class="field">
+                                <label for="ends_at_open">New closing date and time (WAT) <span class="req">*</span></label>
+                                <input class="input" type="datetime-local" id="ends_at_open" name="ends_at"
+                                       value="{{ old('ends_at', display_time($election->ends_at->addHour(), 'Y-m-d\TH:i')) }}"
+                                       min="{{ display_time(now(), 'Y-m-d\TH:i') }}" required>
+                                <div class="help">Enter the extended date and time when voting should close (WAT). Must be after current closing time.</div>
+                            </div>
+                        </x-reauth-dialog>
                     @endif
                     @if ($user->hasPermission('close_election'))
                         <x-reauth-dialog id="dlg-close" :action="route('admin.elections.close', $election)" title="CLOSE ELECTION" button="Close election" variant="danger" trigger-class="btn btn-danger">

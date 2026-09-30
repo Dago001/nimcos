@@ -99,6 +99,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/elections/{election}', [Admin\ElectionController::class, 'destroy'])->name('elections.destroy');
             Route::post('/elections/{election}/schedule', [Admin\ElectionController::class, 'schedule'])->name('elections.schedule');
             Route::post('/elections/{election}/unschedule', [Admin\ElectionController::class, 'unschedule'])->name('elections.unschedule');
+            Route::post('/elections/{election}/extend', [Admin\ElectionController::class, 'extend'])->name('elections.extend');
             Route::post('/elections/{election}/archive', [Admin\ElectionController::class, 'archive'])->name('elections.archive');
 
             Route::get('/elections/{election}/eligibility', [Admin\EligibilityController::class, 'index'])->name('eligibility.index');

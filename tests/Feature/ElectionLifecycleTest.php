@@ -144,4 +144,63 @@ class ElectionLifecycleTest extends TestCase
         $this->expectException(QueryException::class);
         DB::table('ballots')->insert(['id' => (string) Str::uuid(), 'election_id' => $election->id, 'ballot_token_id' => $tokenId, 'reference' => 'NIM-TEST-1']);
     }
+
+    public function test_administrator_can_extend_voting_time_for_open_election(): void
+    {
+        $voter = Voter::factory()->create();
+        $election = $this->openElection(1, [$voter], status: ElectionStatus::OPEN);
+        $oldEndsAt = now()->addHour();
+        $election->forceFill(['ends_at' => $oldEndsAt])->save();
+
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+        $newEndsAtDisplay = display_time(now()->addHours(3), 'Y-m-d\TH:i');
+
+        $this->actingAsAdmin($ea)
+            ->post(route('admin.elections.extend', $election), [
+                'ends_at' => $newEndsAtDisplay,
+                'confirm_password' => UserFactory::PASSWORD,
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertTrue($election->fresh()->ends_at->greaterThan($oldEndsAt));
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'election.extended',
+            'entity_id' => $election->id,
+            'result' => 'SUCCESS',
+        ]);
+    }
+
+    public function test_extending_voting_time_refuses_earlier_time(): void
+    {
+        $voter = Voter::factory()->create();
+        $election = $this->openElection(1, [$voter], status: ElectionStatus::OPEN);
+        $election->forceFill(['ends_at' => now()->addHours(3)])->save();
+
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+        $earlierDisplay = display_time(now()->addHour(), 'Y-m-d\TH:i');
+
+        $this->actingAsAdmin($ea)
+            ->post(route('admin.elections.extend', $election), [
+                'ends_at' => $earlierDisplay,
+                'confirm_password' => UserFactory::PASSWORD,
+            ])
+            ->assertSessionHasErrors('ends_at');
+    }
+
+    public function test_cannot_extend_voting_time_for_closed_election(): void
+    {
+        $voter = Voter::factory()->create();
+        $election = $this->openElection(1, [$voter], status: ElectionStatus::CLOSED);
+
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+        $newEndsAtDisplay = display_time(now()->addHours(3), 'Y-m-d\TH:i');
+
+        $this->actingAsAdmin($ea)
+            ->post(route('admin.elections.extend', $election), [
+                'ends_at' => $newEndsAtDisplay,
+                'confirm_password' => UserFactory::PASSWORD,
+            ])
+            ->assertSessionHasErrors('ends_at');
+    }
 }
