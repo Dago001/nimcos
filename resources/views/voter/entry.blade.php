@@ -34,7 +34,7 @@
                     @error('service_number')
                         <div class="error-text" id="sn-error" role="alert">{{ $message }}</div>
                     @else
-                        <div class="help" id="sn-help">Enter your Service Number as it appears on the NIMCOS register.</div>
+                        <div class="help" id="sn-help">Enter your Service Number</div>
                     @enderror
                 </div>
 
