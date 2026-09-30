@@ -1,11 +1,21 @@
 @extends('layouts.voter')
 
 @section('title', 'Verify your identity')
+@section('main-class', 'entry-wrap')
 
 @section('content')
-<div class="panel maxw-sm">
-    <div class="panel-body">
-        <div class="step-label">Step 2 of 3 · Verify</div>
+<div class="entry">
+    <div class="entry-photo hq" role="img" aria-label="Nigeria Immigration Service Headquarters building at dusk">
+        <div class="caption">
+            <strong>Nigeria Immigration Multi-Purpose Cooperative Society</strong>
+            <span>Electronic Voting Platform</span>
+        </div>
+    </div>
+
+    <div class="entry-form">
+        <img class="entry-seal" src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="Seal of the NIS Staff Multi-Purpose Co-operative Society Limited" width="88" height="88">
+
+        <div class="step-label">Step 2 of 3 · Verify your identity</div>
         <h1 class="page-title">Verify your identity</h1>
         <p class="lede">We have sent a {{ config('nimcos.otp.length') }}-digit code to your registered {{ $destination }}. It expires in {{ $ttl }} minutes.</p>
 

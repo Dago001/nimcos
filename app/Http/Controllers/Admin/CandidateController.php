@@ -4,13 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\AuditResult;
 use App\Enums\CandidateStatus;
+use App\Enums\NisCommand;
+use App\Enums\NisRank;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CandidateRequest;
 use App\Models\Candidate;
 use App\Models\Election;
+use App\Models\Voter;
 use App\Services\Audit\AuditAction;
 use App\Services\Audit\AuditLogger;
 use App\Services\Candidates\CandidatePhotoService;
+use App\Support\ServiceNumber;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +60,54 @@ class CandidateController extends Controller
             'positions' => $election?->electionPositions()->with('position')->get() ?? collect(),
             'candidates' => $query->paginate(40)->withQueryString(),
             'filters' => $request->only(['q', 'position', 'status']),
+        ]);
+    }
+
+    public function lookupVoter(Request $request): JsonResponse
+    {
+        $rawSn = (string) $request->query('service_number');
+        $sn = ServiceNumber::normalise($rawSn);
+
+        if ($sn === '') {
+            return response()->json([
+                'found' => false,
+                'message' => 'Service Number is required.',
+            ], 400);
+        }
+
+        $voter = Voter::query()->where('service_number', $sn)->first();
+
+        if (! $voter) {
+            return response()->json([
+                'found' => false,
+                'message' => "No voter found with Service Number \"{$sn}\" on the register.",
+            ]);
+        }
+
+        $rankValue = null;
+        if ($voter->rank) {
+            $rankValue = NisRank::tryFrom($voter->rank)?->value ?? NisRank::fromText($voter->rank)?->value ?? null;
+        }
+
+        $commandValue = null;
+        if ($voter->command) {
+            $commandValue = NisCommand::tryFrom($voter->command)?->value ?? NisCommand::fromText($voter->command)?->value ?? null;
+        }
+
+        return response()->json([
+            'found' => true,
+            'voter' => [
+                'service_number' => $voter->service_number,
+                'surname' => $voter->surname,
+                'first_name' => $voter->first_name,
+                'other_names' => $voter->other_names ?? '',
+                'rank' => $rankValue,
+                'command' => $commandValue,
+                'formation' => $voter->formation ?? '',
+                'full_name' => $voter->fullName(),
+                'rank_label' => $voter->rankLabel(),
+                'command_label' => $voter->commandLabel(),
+            ],
         ]);
     }
 

@@ -153,6 +153,15 @@ class EligibilityAndCandidateTest extends TestCase
         $candidate = Candidate::query()->where('surname', 'OKORO')->firstOrFail();
         $this->assertSame(NisCommand::RIVERS_STATE_COMMAND->value, $candidate->command);
         $this->assertSame('Rivers State Command', $candidate->commandLabel());
+
+        // Service Headquarters (Abuja) is accepted and satisfies the DB check constraint
+        $this->actingAsAdmin($ea)->post(route('admin.candidates.store', $election), [
+            'election_position_id' => $ep->id, 'surname' => 'DAGOGO', 'first_name' => 'Gift', 'command' => NisCommand::SERVICE_HEADQUARTERS_ABUJA->value,
+        ])->assertSessionHasNoErrors();
+
+        $shqCandidate = Candidate::query()->where('surname', 'DAGOGO')->firstOrFail();
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA->value, $shqCandidate->command);
+        $this->assertSame('Service Headquarters (Abuja)', $shqCandidate->commandLabel());
     }
 
     public function test_voter_command_must_be_a_real_nis_command(): void
@@ -166,12 +175,12 @@ class EligibilityAndCandidateTest extends TestCase
 
         $this->actingAsAdmin($ea)->post(route('admin.voters.store'), [
             'service_number' => '19002', 'surname' => 'BALA', 'first_name' => 'Amina',
-            'email' => 'bala@example.com', 'membership_status' => 'ACTIVE', 'command' => NisCommand::FCT_COMMAND->value,
+            'email' => 'bala@example.com', 'membership_status' => 'ACTIVE', 'command' => NisCommand::SERVICE_HEADQUARTERS_ABUJA->value,
         ])->assertSessionHasNoErrors();
 
         $voter = Voter::query()->where('service_number', '19002')->firstOrFail();
-        $this->assertSame(NisCommand::FCT_COMMAND->value, $voter->command);
-        $this->assertSame('FCT Command', $voter->commandLabel());
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA->value, $voter->command);
+        $this->assertSame('Service Headquarters (Abuja)', $voter->commandLabel());
     }
 
     public function test_candidate_create_redirects_to_positions_when_election_has_none(): void
@@ -226,5 +235,59 @@ class EligibilityAndCandidateTest extends TestCase
         $result = app(AuditChainVerifier::class)->verify();
         $this->assertFalse($result['ok']);
         $this->assertStringContainsString('altered', $result['reason']);
+    }
+
+    public function test_candidate_voter_lookup_returns_voter_details(): void
+    {
+        $voter = Voter::factory()->create([
+            'service_number' => '54321',
+            'surname' => 'IBRAHIM',
+            'first_name' => 'Fatima',
+            'other_names' => 'Zainab',
+            'rank' => NisRank::DCI->value,
+            'command' => NisCommand::LAGOS_STATE_COMMAND->value,
+        ]);
+
+        $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
+
+        // Found voter
+        $this->actingAsAdmin($ea)
+            ->getJson(route('admin.candidates.lookup-voter', ['service_number' => '54321']))
+            ->assertOk()
+            ->assertJson([
+                'found' => true,
+                'voter' => [
+                    'service_number' => '54321',
+                    'surname' => 'IBRAHIM',
+                    'first_name' => 'Fatima',
+                    'other_names' => 'Zainab',
+                    'rank' => NisRank::DCI->value,
+                    'command' => NisCommand::LAGOS_STATE_COMMAND->value,
+                ],
+            ]);
+
+        // Voter not found
+        $this->actingAsAdmin($ea)
+            ->getJson(route('admin.candidates.lookup-voter', ['service_number' => '99999']))
+            ->assertOk()
+            ->assertJson([
+                'found' => false,
+            ]);
+
+        // Missing service number
+        $this->actingAsAdmin($ea)
+            ->getJson(route('admin.candidates.lookup-voter'))
+            ->assertStatus(400);
+
+        // Admin without manage_candidates permission is forbidden
+        $ro = $this->admin(Role::RETURNING_OFFICER);
+        $this->actingAsAdmin($ro)
+            ->getJson(route('admin.candidates.lookup-voter', ['service_number' => '54321']))
+            ->assertForbidden();
+
+        // Guest is unauthorized
+        $this->app['auth']->forgetGuards();
+        $this->getJson(route('admin.candidates.lookup-voter', ['service_number' => '54321']))
+            ->assertUnauthorized();
     }
 }

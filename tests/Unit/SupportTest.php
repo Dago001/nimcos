@@ -106,20 +106,21 @@ class SupportTest extends TestCase
 
     public function test_nis_command_list_has_every_command_exactly_once(): void
     {
-        $this->assertCount(77, NisCommand::cases());
-        $this->assertSame(77, count(array_unique(NisCommand::values())));
+        $this->assertCount(78, NisCommand::cases());
+        $this->assertSame(78, count(array_unique(NisCommand::values())));
         $labels = array_map(fn ($c) => $c->label(), NisCommand::cases());
-        $this->assertSame(77, count(array_unique($labels)), 'Every command must have a distinct label.');
+        $this->assertSame(78, count(array_unique($labels)), 'Every command must have a distinct label.');
 
         $grouped = NisCommand::grouped();
         $this->assertSame(
-            ['State Commands', 'Zonal Commands', 'Land Border Control Posts', 'Airport Commands', 'Marine & Seaport Commands', 'Training Institutions'],
+            ['Headquarters', 'State Commands', 'Zonal Commands', 'Land Border Control Posts', 'Airport Commands', 'Marine & Seaport Commands', 'Training Institutions'],
             array_keys($grouped)
         );
         $flat = array_merge(...array_values($grouped));
-        $this->assertSame(77, count($flat), 'grouped() must place every command in exactly one category.');
-        $this->assertSame(77, count(array_unique(array_map(fn ($c) => $c->value, $flat))));
+        $this->assertSame(78, count($flat), 'grouped() must place every command in exactly one category.');
+        $this->assertSame(78, count(array_unique(array_map(fn ($c) => $c->value, $flat))));
 
+        $this->assertSame('Service Headquarters (Abuja)', NisCommand::SERVICE_HEADQUARTERS_ABUJA->label());
         $this->assertSame('FCT Command', NisCommand::FCT_COMMAND->label());
         $this->assertSame('Lagos State Command', NisCommand::LAGOS_STATE_COMMAND->label());
     }
@@ -134,6 +135,10 @@ class SupportTest extends TestCase
         $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('LAGOS_STATE_COMMAND'));
         $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('lagos command'));
         $this->assertSame(NisCommand::LAGOS_STATE_COMMAND, NisCommand::fromText('  Lagos   Command  '));
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA, NisCommand::fromText('Service Headquarters (Abuja)'));
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA, NisCommand::fromText('SERVICE HEADQUARTERS ABUJA'));
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA, NisCommand::fromText('SERVICE_HEADQUARTERS_ABUJA'));
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA, NisCommand::fromText('SHQ'));
         $this->assertSame(NisCommand::FCT_COMMAND, NisCommand::fromText('FCT Command'));
         $this->assertSame(NisCommand::MURTALA_MUHAMMED_INTERNATIONAL_AIRPORT, NisCommand::fromText('Murtala Muhammed International Airport'));
         $this->assertNull(NisCommand::fromText('Not A Real Command'));
@@ -149,8 +154,10 @@ class SupportTest extends TestCase
         $this->assertSame(NisCommand::FCT_COMMAND, NisCommand::fromText('Abuja'));
         $this->assertSame(NisCommand::FCT_COMMAND, NisCommand::fromText('FCT Area Command'));
         $this->assertSame(NisCommand::MURTALA_MUHAMMED_INTERNATIONAL_AIRPORT, NisCommand::fromText('Murtala Mohammed International Airport'));
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA, NisCommand::fromText('Service Headquarters'));
+        $this->assertSame(NisCommand::SERVICE_HEADQUARTERS_ABUJA, NisCommand::fromText('NIS SHQ'));
 
-        // Genuinely not in the official 77-command directory: never silently guessed.
+        // Genuinely not in the official directory: never silently guessed.
         $this->assertNull(NisCommand::fromText('Sam Mbakwe Airport'));
         $this->assertNull(NisCommand::fromText('Border Post Command'));
     }

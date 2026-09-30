@@ -131,15 +131,15 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
 /* ---------- Status labels ---------- */
 [hidden] { display: none !important; }
-.badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; font-weight: 600; padding: .1rem 0 .1rem .55rem; border-left: 2px solid; white-space: nowrap; background: none; color: var(--ink-2); }
-.badge-neutral { border-color: var(--line-strong); color: var(--ink-2); }
-.badge-info { border-color: var(--info); color: var(--info); }
-.badge-live { border-color: var(--green); color: var(--green-ink); font-weight: 700; }
+.badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; font-weight: 600; padding: .2rem .6rem; border-radius: 4px; white-space: nowrap; line-height: 1.2; border: none; }
+.badge-neutral { background: var(--line); color: var(--ink-2); }
+.badge-info { background: var(--info-bg); color: var(--info); }
+.badge-live { background: var(--green-tint-2); color: var(--green-ink); font-weight: 700; }
 .badge-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex: none; }
-.badge-warning { border-color: var(--warn); color: var(--warn); }
-.badge-success { border-color: var(--success); color: var(--success); }
-.badge-error { border-color: var(--error); color: var(--error); }
-.badge-muted { border-color: var(--line); color: #777; }
+.badge-warning { background: var(--warn-bg); color: var(--warn); }
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-error { background: var(--error-bg); color: var(--error); }
+.badge-muted { background: var(--bg); color: #777; border: 1px solid var(--line); }
 
 /* ---------- Panels (bordered sections, used sparingly) ---------- */
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); }
@@ -167,7 +167,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .voter-main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 1.5rem 16px 3rem; }
 .voter-main.wide { max-width: 960px; }
 .voter-footer { border-top: 1px solid var(--line); background: #fff; font-size: .8rem; color: var(--muted); }
-.voter-footer .inner { max-width: 960px; margin: 0 auto; padding: 1rem 16px; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; justify-content: space-between; }
+.voter-footer .inner { max-width: 960px; margin: 0 auto; padding: 1rem 16px; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; justify-content: center; }
 .voter-footer a { color: var(--muted); }
 
 .page-title { margin-bottom: .25rem; }
@@ -194,7 +194,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .election-card { border: 1px solid var(--line); border-radius: var(--radius-lg); background: #fff; padding: 1.25rem; }
 .election-card + .election-card { margin-top: 1rem; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1.25rem 0; }
-.fact { border-left: 3px solid var(--green); padding: .1rem 0 .1rem .75rem; }
+.fact { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: .6rem .85rem; }
 .fact span { display: block; font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
 .fact strong { font-size: 1.05rem; }
 .notice-list { margin: 0 0 1.5rem; padding: 0; list-style: none; }
@@ -203,7 +203,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 
 /* ---------- Ballot ---------- */
 .ballot-top { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid var(--line); }
-.ballot-top .inner { max-width: 960px; margin: 0 auto; padding: .6rem 16px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .88rem; }
+.ballot-top .inner { max-width: 960px; margin: 0 auto; padding: .55rem 16px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .8rem; }
 .progress { height: 6px; background: var(--green-tint-2); border-radius: 999px; overflow: hidden; }
 .progress > span { display: block; height: 100%; width: 0; background: var(--green); transition: width .2s; }
 .ballot-layout { display: grid; gap: 1.5rem; }
@@ -212,7 +212,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 @media (min-width: 900px) {
   .ballot-index { display: block; position: sticky; top: 70px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: .75rem; }
   .ballot-index ol { list-style: none; margin: 0; padding: 0; counter-reset: pos; }
-  .ballot-index li a { display: flex; gap: .5rem; align-items: center; padding: .35rem .5rem; border-radius: var(--radius); text-decoration: none; color: var(--ink-2); font-size: .85rem; }
+  .ballot-index li a { display: flex; gap: .5rem; align-items: center; padding: .32rem .5rem; border-radius: var(--radius); text-decoration: none; color: var(--ink-2); font-size: .78rem; }
   .ballot-index li a:hover { background: var(--green-tint); }
   .ballot-index .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line-strong); flex: none; display: grid; place-items: center; font-size: .65rem; color: #fff; }
   .ballot-index li.done .dot { background: var(--green); border-color: var(--green); }
@@ -220,13 +220,13 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .ballot-index li.has-error a { color: var(--error); }
 }
 
-.position { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem; scroll-margin-top: 80px; }
+.position { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.15rem; scroll-margin-top: 80px; }
 .position + .position { margin-top: 1.25rem; }
 .position.has-error { border-color: var(--error-line); box-shadow: 0 0 0 1px var(--error-line); }
 .position legend { padding: 0; margin-bottom: .2rem; width: 100%; }
-.position-count { font-size: .78rem; color: var(--muted); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
-.position-name { display: block; font-size: 1.35rem; font-weight: 800; color: var(--green-ink); letter-spacing: .01em; margin-top: .1rem; }
-.position-instruction { color: var(--muted); font-size: .92rem; margin: .15rem 0 1rem; }
+.position-count { font-size: .7rem; color: var(--muted); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.position-name { display: block; font-size: 1.15rem; font-weight: 800; color: var(--green-ink); letter-spacing: .01em; margin-top: .1rem; }
+.position-instruction { color: var(--muted); font-size: .82rem; margin: .15rem 0 .9rem; }
 
 .options { display: grid; gap: .75rem; grid-template-columns: 1fr; }
 @media (min-width: 560px) { .options { grid-template-columns: repeat(2, 1fr); } }
@@ -235,35 +235,35 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .option-card {
   height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center;
-  padding: 1rem .85rem .9rem; border: 2px solid var(--line); border-radius: var(--radius-lg); background: #fff;
+  padding: .9rem .8rem .85rem; border: 2px solid var(--line); border-radius: var(--radius-lg); background: #fff;
   transition: border-color .12s, background-color .12s;
 }
 .option:hover .option-card { border-color: var(--line-strong); }
 .option input:focus-visible + .option-card { box-shadow: var(--focus); }
 .option input:checked + .option-card { border-color: var(--green); background: var(--green-tint); }
-.candidate-photo { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); background: var(--green-tint-2); }
-.candidate-initials { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; font-size: 2rem; font-weight: 700; color: var(--green-ink); background: var(--green-tint-2); border: 1px solid var(--line); }
-.candidate-no { font-size: .72rem; color: var(--muted); font-weight: 700; letter-spacing: .06em; margin-top: .6rem; }
-.candidate-name { font-weight: 700; font-size: 1.05rem; line-height: 1.25; margin-top: .15rem; }
-.candidate-meta { font-size: .85rem; color: var(--muted); margin-top: .15rem; }
+.candidate-photo { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); background: var(--green-tint-2); }
+.candidate-initials { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; font-size: 1.65rem; font-weight: 700; color: var(--green-ink); background: var(--green-tint-2); border: 1px solid var(--line); }
+.candidate-no { font-size: .65rem; color: var(--muted); font-weight: 700; letter-spacing: .06em; margin-top: .5rem; }
+.candidate-name { font-weight: 700; font-size: .92rem; line-height: 1.25; margin-top: .15rem; }
+.candidate-meta { font-size: .78rem; color: var(--muted); margin-top: .15rem; }
 .select-indicator {
-  margin-top: .85rem; display: inline-flex; align-items: center; gap: .5rem; min-height: 38px; padding: .35rem .9rem;
-  border: 1px solid var(--line-strong); border-radius: 999px; font-weight: 700; font-size: .85rem; color: var(--ink-2);
+  margin-top: .75rem; display: inline-flex; align-items: center; gap: .45rem; min-height: 34px; padding: .3rem .8rem;
+  border: 1px solid var(--line-strong); border-radius: 999px; font-weight: 700; font-size: .78rem; color: var(--ink-2);
 }
-.select-indicator .ring { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--muted); display: grid; place-items: center; }
-.option input[type="checkbox"] + .option-card .ring { border-radius: 4px; }
+.select-indicator .ring { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--muted); display: grid; place-items: center; }
+.option input[type="checkbox"] + .option-card .ring { border-radius: 3px; }
 .option input:checked + .option-card .select-indicator { background: var(--green); border-color: var(--green); color: #fff; }
 .option input:checked + .option-card .ring { border-color: #fff; background: #fff; }
-.option input:checked + .option-card .ring::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.option input:checked + .option-card .ring::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 .option input[type="checkbox"]:checked + .option-card .ring::after { border-radius: 1px; }
 .select-indicator .when-on { display: none; }
 .option input:checked + .option-card .when-on { display: inline; }
 .option input:checked + .option-card .when-off { display: none; }
-.clear-choice { margin-top: .75rem; }
+.clear-choice { margin-top: .75rem; font-size: .82rem; }
 
 .ballot-nav { position: sticky; bottom: 0; z-index: 15; background: #fff; border-top: 1px solid var(--line); margin: 1.5rem -16px 0; padding: .75rem 16px calc(.75rem + env(safe-area-inset-bottom)); }
 .ballot-nav .inner { max-width: 960px; margin: 0 auto; display: flex; gap: .75rem; align-items: center; justify-content: space-between; }
-.ballot-nav .status { font-size: .85rem; color: var(--muted); text-align: center; flex: 1; }
+.ballot-nav .status { font-size: .78rem; color: var(--muted); text-align: center; flex: 1; }
 .js-stepper .position:not(.is-current) { display: none; }
 .js-stepper .position + .position { margin-top: 0; }
 
@@ -625,3 +625,9 @@ dialog.announce-modal { width: min(560px, calc(100vw - 32px)); }
 .announce-urgent h3 { color: var(--error); }
 .announce-static { background: var(--warn-bg); border-bottom: 1px solid var(--warn-line); padding: .75rem 5%; }
 fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400; margin-bottom: .35rem; }
+.input-with-button { display: flex; gap: .5rem; align-items: center; }
+.input-with-button .input { flex: 1; }
+.sn-lookup-msg { font-size: .85rem; margin-top: .35rem; line-height: 1.3; }
+.sn-lookup-msg.success { color: var(--success); font-weight: 600; }
+.sn-lookup-msg.info { color: var(--muted); }
+.sn-lookup-msg.error { color: var(--error); font-weight: 500; }

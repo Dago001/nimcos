@@ -124,6 +124,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         Route::middleware('permission:'.P::MANAGE_CANDIDATES)->group(function () {
+            Route::get('/candidates/lookup-voter', [Admin\CandidateController::class, 'lookupVoter'])->name('candidates.lookup-voter');
             Route::get('/candidates', [Admin\CandidateController::class, 'index'])->name('candidates.index');
             Route::get('/elections/{election}/candidates/create', [Admin\CandidateController::class, 'create'])->name('candidates.create');
             Route::post('/elections/{election}/candidates', [Admin\CandidateController::class, 'store'])->name('candidates.store');

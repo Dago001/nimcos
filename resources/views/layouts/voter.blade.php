@@ -45,7 +45,6 @@
 </main>
 <footer class="voter-footer">
     <div class="inner">
-        <span>© {{ now()->year }} {{ config('nimcos.short_org') }}. Your vote is confidential.</span>
         <span>
             <a href="{{ route('public.receipt') }}">Verify a ballot receipt</a>
             · <a href="{{ route('public.results') }}">Published results</a>

@@ -101,6 +101,27 @@ class VoterImportTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'voter_import.completed']);
     }
 
+    public function test_unrecognised_rank_or_command_never_blocks_onboarding(): void
+    {
+        // What matters for onboarding is Service Number, names, email and phone.
+        // An unrecognised Rank or Command must not keep an officer off the register:
+        // the row imports with that field left blank, not rejected.
+        $import = $this->upload($this->csv([
+            ['4001', 'BELLO', 'Musa', '', 'NOT A REAL RANK', 'NOT A REAL COMMAND', 'Some Formation', '08034444444', 'musa@example.com', 'ACTIVE'],
+        ]));
+
+        $this->assertSame(1, $import->valid_rows);
+        $this->assertSame(0, $import->invalid_count);
+
+        $this->post(route('admin.imports.confirm', $import), ['acknowledge' => '1'])->assertRedirect();
+
+        $voter = Voter::query()->where('service_number', '4001')->firstOrFail();
+        $this->assertNull($voter->rank);
+        $this->assertNull($voter->command);
+        $this->assertSame('SOME FORMATION', $voter->formation);
+        $this->assertSame('VERIFIED', $voter->verification_status->value);
+    }
+
     public function test_import_cannot_be_confirmed_twice(): void
     {
         $import = $this->upload($this->csv([['3001', 'KALU', 'Obinna', '', '', '', '', '08033333333', 'obinna@example.com', 'ACTIVE']]));

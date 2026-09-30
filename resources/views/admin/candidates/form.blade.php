@@ -32,6 +32,18 @@
                 @error('candidate_number')<div class="error-text">{{ $message }}</div>@enderror
             </div>
             <div class="field">
+                <label for="service_number">Service Number</label>
+                <div class="input-with-button">
+                    <input class="input mono" id="service_number" name="service_number"
+                           value="{{ old('service_number', $candidate->service_number) }}"
+                           maxlength="20" placeholder="e.g. 10001" autocomplete="off"
+                           data-voter-lookup="{{ route('admin.candidates.lookup-voter') }}">
+                    <button type="button" class="btn btn-secondary btn-sm" data-voter-lookup-btn>Fetch details</button>
+                </div>
+                <div class="sn-lookup-msg info" data-voter-lookup-status>Enter Service Number to auto-fill name, rank and command from the voter register.</div>
+                @error('service_number')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+            <div class="field">
                 <label for="surname">Surname <span class="req">*</span></label>
                 <input class="input" id="surname" name="surname" value="{{ old('surname', $candidate->surname) }}" required maxlength="100">
                 @error('surname')<div class="error-text">{{ $message }}</div>@enderror
@@ -45,12 +57,6 @@
                 <label for="other_names">Other names</label>
                 <input class="input" id="other_names" name="other_names" value="{{ old('other_names', $candidate->other_names) }}" maxlength="150">
                 @error('other_names')<div class="error-text">{{ $message }}</div>@enderror
-            </div>
-            <div class="field">
-                <label for="service_number">Service Number</label>
-                <input class="input mono" id="service_number" name="service_number" value="{{ old('service_number', $candidate->service_number) }}" maxlength="20">
-                <div class="help">Only if the NIMCOS election rules permit it to be recorded. Never shown to voters.</div>
-                @error('service_number')<div class="error-text">{{ $message }}</div>@enderror
             </div>
             <div class="field">
                 <label for="rank">Rank</label>

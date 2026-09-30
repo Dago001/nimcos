@@ -175,17 +175,15 @@ class VoterFileParser
             $messages[] = 'Membership status must be one of: '.implode(', ', MembershipStatus::values()).'.';
         }
 
+        // Rank, Command and Formation never block onboarding: what matters is the
+        // Service Number, names, email and phone. An unrecognised Rank or Command
+        // is simply left blank (correctable later from the voter's record) rather
+        // than keeping the officer off the register.
         $rawRank = $clean($raw['rank'] ?? null, 80);
         $rank = $rawRank !== null ? NisRank::fromText($rawRank) : null;
-        if ($rawRank !== null && $rank === null) {
-            $messages[] = "Rank \"{$rawRank}\" is not a recognised NIS rank. Use the full title (e.g. \"Deputy Comptroller of Immigration\") or the abbreviation (e.g. \"DCI\").";
-        }
 
         $rawCommand = $clean($raw['command'] ?? null, 120);
         $command = $rawCommand !== null ? NisCommand::fromText($rawCommand) : null;
-        if ($rawCommand !== null && $command === null) {
-            $messages[] = "Command \"{$rawCommand}\" is not a recognised NIS Command.";
-        }
 
         return [[
             'service_number' => $sn,

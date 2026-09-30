@@ -17,6 +17,9 @@ enum NisCommand: string
 {
     use EnumHelpers;
 
+    // Headquarters
+    case SERVICE_HEADQUARTERS_ABUJA = 'SERVICE_HEADQUARTERS_ABUJA';
+
     // State Commands
     case ABIA_STATE_COMMAND = 'ABIA_STATE_COMMAND';
     case ADAMAWA_STATE_COMMAND = 'ADAMAWA_STATE_COMMAND';
@@ -109,6 +112,7 @@ enum NisCommand: string
     public function label(): string
     {
         return match ($this) {
+            self::SERVICE_HEADQUARTERS_ABUJA => 'Service Headquarters (Abuja)',
             self::ABIA_STATE_COMMAND => 'Abia State Command',
             self::ADAMAWA_STATE_COMMAND => 'Adamawa State Command',
             self::AKWA_IBOM_STATE_COMMAND => 'Akwa Ibom State Command',
@@ -199,6 +203,21 @@ enum NisCommand: string
         'ABUJA' => self::FCT_COMMAND,
         'FCT AREA COMMAND' => self::FCT_COMMAND,
         'MURTALA MOHAMMED INTERNATIONAL AIRPORT' => self::MURTALA_MUHAMMED_INTERNATIONAL_AIRPORT,
+        'SERVICE HEADQUARTERS' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SERVICE HEADQUARTERS ABUJA' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SERVICE HEADQUARTERS (ABUJA)' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SERVICE HEADQUARTERS, ABUJA' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SERVICE HQ' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SERVICE HQ ABUJA' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SERVICE HQ (ABUJA)' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SHQ' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'SHQ ABUJA' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'NIS SHQ' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'NIS SERVICE HEADQUARTERS' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'NIS HEADQUARTERS' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'HEADQUARTERS' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'HEADQUARTERS ABUJA' => self::SERVICE_HEADQUARTERS_ABUJA,
+        'HEADQUARTERS (ABUJA)' => self::SERVICE_HEADQUARTERS_ABUJA,
     ];
 
     /**
@@ -238,6 +257,9 @@ enum NisCommand: string
     public static function grouped(): array
     {
         return [
+            'Headquarters' => [
+                self::SERVICE_HEADQUARTERS_ABUJA,
+            ],
             'State Commands' => [
                 self::ABIA_STATE_COMMAND,
                 self::ADAMAWA_STATE_COMMAND,

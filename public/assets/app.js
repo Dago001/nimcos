@@ -434,6 +434,114 @@
     $$('[data-print]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
   }
 
+  /* ---------- Candidate form: auto-fill from voter register ---------- */
+  function initCandidateVoterLookup() {
+    var input = $('input[data-voter-lookup]');
+    if (!input) return;
+
+    var url = input.getAttribute('data-voter-lookup');
+    var btn = $('[data-voter-lookup-btn]');
+    var status = $('[data-voter-lookup-status]');
+    var form = input.form;
+    if (!url || !form) return;
+
+    var surname = $('input[name=surname]', form);
+    var firstName = $('input[name=first_name]', form);
+    var otherNames = $('input[name=other_names]', form);
+    var rank = $('select[name=rank]', form);
+    var command = $('select[name=command]', form);
+
+    var lastFetched = '';
+    var debounceTimer = null;
+
+    function setStatus(text, type) {
+      if (!status) return;
+      status.textContent = text;
+      status.className = 'sn-lookup-msg ' + (type || 'info');
+    }
+
+    function doFetch() {
+      var sn = (input.value || '').trim();
+      if (!sn) {
+        setStatus('Enter Service Number to auto-fill name, rank and command from the voter register.', 'info');
+        return;
+      }
+      if (sn === lastFetched) return;
+      if (sn.length < 3) {
+        setStatus('Enter at least 3 digits to fetch details.', 'info');
+        return;
+      }
+
+      setStatus('Fetching voter details…', 'info');
+      if (btn) btn.disabled = true;
+
+      fetch(url + '?service_number=' + encodeURIComponent(sn), {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (btn) btn.disabled = false;
+        if (!data || !data.found || !data.voter) {
+          setStatus(data && data.message ? data.message : 'No voter found with this Service Number on the register.', 'error');
+          return;
+        }
+
+        var v = data.voter;
+        lastFetched = sn;
+
+        if (surname && v.surname) surname.value = v.surname;
+        if (firstName && v.first_name) firstName.value = v.first_name;
+        if (otherNames) otherNames.value = v.other_names || '';
+
+        if (rank && v.rank) {
+          rank.value = v.rank;
+        }
+        if (command && v.command) {
+          command.value = v.command;
+        }
+
+        var nameStr = (v.first_name || '') + ' ' + (v.surname || '');
+        var rankStr = v.rank_label ? ' (' + v.rank_label + ')' : '';
+        setStatus('✓ Loaded details for ' + nameStr.trim() + rankStr + ' from register.', 'success');
+      })
+      .catch(function () {
+        if (btn) btn.disabled = false;
+        setStatus('Unable to look up voter details. You can enter details manually.', 'error');
+      });
+    }
+
+    input.addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      var sn = (input.value || '').trim();
+      if (sn.length >= 4) {
+        debounceTimer = setTimeout(doFetch, 400);
+      }
+    });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(debounceTimer);
+        doFetch();
+      }
+    });
+
+    input.addEventListener('blur', function () {
+      clearTimeout(debounceTimer);
+      if (input.value.trim().length >= 3 && input.value.trim() !== lastFetched) {
+        doFetch();
+      }
+    });
+
+    if (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        clearTimeout(debounceTimer);
+        doFetch();
+      });
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     applyWidths();
     initDialogs();
@@ -452,5 +560,6 @@
     initSiteNav();
     initTicker();
     initAnnouncementPopup();
+    initCandidateVoterLookup();
   });
 })();
