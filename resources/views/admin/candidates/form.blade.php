@@ -40,8 +40,20 @@
                            data-voter-lookup="{{ route('admin.candidates.lookup-voter') }}">
                     <button type="button" class="btn btn-secondary btn-sm" data-voter-lookup-btn>Fetch details</button>
                 </div>
-                <div class="sn-lookup-msg info" data-voter-lookup-status>Enter Service Number to auto-fill name, rank and command from the voter register.</div>
+                <div class="sn-lookup-msg info" data-voter-lookup-status>Enter Service Number to auto-fill Membership ID, name, rank and command from the voter register.</div>
                 @error('service_number')<div class="error-text">{{ $message }}</div>@enderror
+            </div>
+            <div class="field">
+                <label for="membership_id">Membership ID</label>
+                <div class="input-with-button">
+                    <input class="input mono" id="membership_id" name="membership_id"
+                           value="{{ old('membership_id', $candidate->membership_id) }}"
+                           maxlength="50" placeholder="e.g. NMC-10001" autocomplete="off"
+                           data-membership-lookup>
+                    <button type="button" class="btn btn-secondary btn-sm" data-membership-lookup-btn>Fetch details</button>
+                </div>
+                <div class="sn-lookup-msg info" data-membership-lookup-status>Enter Membership ID to auto-fill Service Number, name, rank and command.</div>
+                @error('membership_id')<div class="error-text">{{ $message }}</div>@enderror
             </div>
             <div class="field">
                 <label for="surname">Surname <span class="req">*</span></label>

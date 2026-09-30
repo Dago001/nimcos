@@ -11,6 +11,11 @@ use App\Services\Audit\AuditAction;
 use App\Services\Audit\AuditLogger;
 use App\Services\Auth\Totp;
 use App\Services\Security\SecurityAlertService;
+use App\Services\Settings\SettingsService;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,10 +26,13 @@ class AuthController extends Controller
 {
     private const FAILED = 'The email address or password is incorrect.';
 
+    public const PENDING_SECRET = 'admin.mfa_pending_secret';
+
     public function __construct(
         private readonly AuditLogger $audit,
         private readonly SecurityAlertService $alerts,
         private readonly Totp $totp,
+        private readonly SettingsService $settings,
     ) {}
 
     public function showLogin(): View
@@ -73,13 +81,20 @@ class AuthController extends Controller
 
         $request->session()->regenerate(true);
         Auth::guard('web')->login($user);
-        $request->session()->put(EnsureAdminSession::MFA_PASSED, ! $user->hasMfa());
 
-        $this->audit->log(AuditAction::ADMIN_LOGIN, AuditResult::SUCCESS, $user, ['mfa_pending' => $user->hasMfa()]);
+        $mfaRequired = (bool) config('nimcos.admin.require_mfa') || (bool) $this->settings->get('require_admin_mfa');
 
-        return $user->hasMfa()
-            ? redirect()->route('admin.mfa.challenge')
-            : redirect()->intended(route('admin.dashboard'));
+        if ($user->hasMfa() || $mfaRequired) {
+            $request->session()->put(EnsureAdminSession::MFA_PASSED, false);
+            $this->audit->log(AuditAction::ADMIN_LOGIN, AuditResult::SUCCESS, $user, ['mfa_pending' => true]);
+
+            return redirect()->route('admin.mfa.challenge');
+        }
+
+        $request->session()->put(EnsureAdminSession::MFA_PASSED, true);
+        $this->audit->log(AuditAction::ADMIN_LOGIN, AuditResult::SUCCESS, $user, ['mfa_pending' => false]);
+
+        return redirect()->intended(route('admin.dashboard'));
     }
 
     public function mfaChallenge(Request $request): View|RedirectResponse
@@ -88,18 +103,75 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        /** @var User|null $user */
+        $user = $request->user('web');
+        if (! $user) {
+            return redirect()->route('admin.login');
+        }
+
+        if (! $user->hasMfa()) {
+            $secret = $request->session()->get(self::PENDING_SECRET) ?? $this->totp->generateSecret();
+            $request->session()->put(self::PENDING_SECRET, $secret);
+
+            $uri = $this->totp->provisioningUri($secret, $user->email, 'NIMCOS E-Voting');
+            $qr = (new Writer(new ImageRenderer(new RendererStyle(140, 1), new SvgImageBackEnd)))->writeString($uri);
+            $qr = 'data:image/svg+xml;base64,'.base64_encode($qr);
+
+            return view('admin.auth.mfa-setup', [
+                'user' => $user,
+                'qr' => $qr,
+                'secret' => trim(chunk_split($secret, 4, ' ')),
+            ]);
+        }
+
         return view('admin.auth.mfa');
     }
 
     public function verifyMfa(Request $request): RedirectResponse
     {
         $data = $request->validate(['mfa_code' => ['required', 'string', 'max:10']]);
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $request->user('web');
+        if (! $user) {
+            return redirect()->route('admin.login');
+        }
 
-        if (! $user->hasMfa() || $this->totp->verify($user->mfa_secret, $data['mfa_code'])) {
+        if (! $user->hasMfa()) {
+            $secret = $request->session()->get(self::PENDING_SECRET);
+
+            if (! $secret || ! $this->totp->verify($secret, $data['mfa_code'])) {
+                $this->audit->failure(AuditAction::ADMIN_MFA_FAILED, $user, ['stage' => 'setup']);
+
+                return back()->withErrors(['mfa_code' => 'The authenticator code is incorrect. Check the code in Google Authenticator and try again.']);
+            }
+
+            $user->forceFill([
+                'mfa_secret' => $secret,
+                'mfa_confirmed_at' => now(),
+            ])->save();
+
+            $request->session()->forget(self::PENDING_SECRET);
             $request->session()->regenerate(true);
             $request->session()->put(EnsureAdminSession::MFA_PASSED, true);
+            $this->audit->log(AuditAction::ADMIN_MFA_ENABLED, AuditResult::SUCCESS, $user);
+
+            if ($user->must_change_password) {
+                return redirect()->route('admin.profile.password')
+                    ->with('warning', 'Two-factor authentication configured. You must change your temporary password before continuing.');
+            }
+
+            return redirect()->intended(route('admin.dashboard'))
+                ->with('success', 'Two-factor authentication configured successfully. Welcome to NIMCOS.');
+        }
+
+        if ($this->totp->verify($user->mfa_secret, $data['mfa_code'])) {
+            $request->session()->regenerate(true);
+            $request->session()->put(EnsureAdminSession::MFA_PASSED, true);
+
+            if ($user->must_change_password) {
+                return redirect()->route('admin.profile.password')
+                    ->with('warning', 'You must change your temporary password before continuing.');
+            }
 
             return redirect()->intended(route('admin.dashboard'));
         }

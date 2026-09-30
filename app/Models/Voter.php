@@ -24,13 +24,14 @@ class Voter extends Model implements Authenticatable
     use HasFactory, HasUuids;
 
     protected $fillable = [
-        'service_number', 'surname', 'first_name', 'other_names', 'rank',
+        'service_number', 'membership_id', 'surname', 'first_name', 'other_names', 'gender', 'dob', 'rank',
         'command', 'formation', 'phone', 'email', 'membership_status',
     ];
 
     protected function casts(): array
     {
         return [
+            'dob' => 'date',
             'membership_status' => MembershipStatus::class,
             'eligibility_status' => VoterEligibility::class,
             'verification_status' => VerificationStatus::class,

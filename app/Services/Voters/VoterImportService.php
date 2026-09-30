@@ -27,7 +27,7 @@ class VoterImportService
 {
     private const DISK = 'local';
 
-    private const TRACKED_FIELDS = ['surname', 'first_name', 'other_names', 'rank', 'command', 'formation', 'phone', 'email', 'membership_status'];
+    private const TRACKED_FIELDS = ['membership_id', 'surname', 'first_name', 'other_names', 'gender', 'dob', 'rank', 'command', 'formation', 'phone', 'email', 'membership_status'];
 
     public function __construct(
         private readonly VoterFileParser $parser,

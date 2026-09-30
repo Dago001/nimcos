@@ -24,6 +24,8 @@ class VoterRequest extends FormRequest
         $phone = (string) $this->input('phone');
         $this->merge([
             'service_number' => ServiceNumber::normalise($this->input('service_number')),
+            'membership_id' => $this->input('membership_id') ? mb_strtoupper(trim((string) $this->input('membership_id'))) : null,
+            'gender' => $this->input('gender') ? mb_strtoupper(trim((string) $this->input('gender'))) : null,
             'phone_normalised' => PhoneNumber::normalise($phone),
             'email' => $this->input('email') ? mb_strtolower(trim((string) $this->input('email'))) : null,
             'surname' => mb_strtoupper(trim((string) $this->input('surname'))),
@@ -39,9 +41,12 @@ class VoterRequest extends FormRequest
         return [
             'service_number' => ['required', 'string', 'max:5', 'regex:'.config('nimcos.voters.service_number_pattern'),
                 Rule::unique('voters', 'service_number')->ignore($voter?->getKey())],
+            'membership_id' => ['nullable', 'string', 'max:50'],
             'surname' => ['required', 'string', 'max:100', $name],
             'first_name' => ['required', 'string', 'max:100', $name],
             'other_names' => ['nullable', 'string', 'max:150', $name],
+            'gender' => ['nullable', 'string', 'max:20'],
+            'dob' => ['nullable', 'date', 'before:today'],
             'rank' => ['nullable', Rule::enum(NisRank::class)],
             'command' => ['nullable', Rule::enum(NisCommand::class)],
             'formation' => ['nullable', 'string', 'max:120'],
@@ -84,6 +89,9 @@ class VoterRequest extends FormRequest
         foreach (['formation'] as $field) {
             $data[$field] = isset($data[$field]) && $data[$field] !== '' ? mb_strtoupper(trim($data[$field])) : null;
         }
+        $data['membership_id'] = $this->input('membership_id') ?: null;
+        $data['gender'] = $this->input('gender') ?: null;
+        $data['dob'] = $this->input('dob') ?: null;
         $data['rank'] = $data['rank'] ?? null ?: null;
         $data['command'] = $data['command'] ?? null ?: null;
 

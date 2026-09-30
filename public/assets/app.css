@@ -457,7 +457,7 @@ dialog.modal::backdrop { background: rgba(10, 20, 12, .55); }
 .auth-visual::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16, 61, 21, .15), rgba(16, 61, 21, .82)); }
 .auth-visual .caption { position: absolute; left: 2rem; right: 2rem; bottom: 2rem; color: #fff; z-index: 1; }
 @media (min-width: 960px) { .auth-visual { display: block; } }
-.auth-panel { display: flex; flex-direction: column; justify-content: center; padding: 2rem 16px; max-width: 460px; width: 100%; margin: 0 auto; }
+.auth-panel { display: flex; flex-direction: column; justify-content: safe center; padding: 1.5rem 16px; max-width: 440px; width: 100%; margin: auto; box-sizing: border-box; }
 
 /* Public results */
 .public-results .position-result { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1rem; }
@@ -654,3 +654,15 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .human-check-question { margin-top: .7rem; padding-top: .7rem; border-top: 1px solid var(--line); }
 .human-check-question label { display: block; font-weight: 600; margin-bottom: .35rem; font-size: .92rem; }
 .human-check-question .input { max-width: 140px; }
+
+/* ---------- QR Code Box & Utilities ---------- */
+.text-center { text-align: center; }
+.qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: #f8fafc; border: 1px solid var(--line); border-radius: var(--radius-md); padding: 0.75rem; margin-bottom: 0.85rem; }
+.qr-box img { background: #fff; padding: 0.25rem; border-radius: var(--radius-sm); border: 1px solid var(--line); max-width: 140px; width: 140px; height: 140px; display: block; margin: 0 auto; }
+
+/* ---------- MFA Code Input (compact) ---------- */
+.mfa-field { text-align: center; margin-bottom: 0.9rem; }
+.mfa-field label { display: block; font-size: .88rem; font-weight: 600; margin-bottom: .35rem; color: var(--ink-2); }
+.mfa-input { font-family: var(--mono); font-size: 1.15rem; text-align: center; letter-spacing: .2em; padding: .45rem .6rem; max-width: 200px; width: 100%; margin: 0 auto; display: block; }
+.mfa-input::placeholder { color: var(--muted); opacity: .5; letter-spacing: .2em; }
+

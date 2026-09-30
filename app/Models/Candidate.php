@@ -17,7 +17,7 @@ class Candidate extends Model
 
     protected $fillable = [
         'election_position_id', 'candidate_number', 'surname', 'first_name', 'other_names',
-        'service_number', 'rank', 'command', 'biography', 'display_order',
+        'service_number', 'membership_id', 'rank', 'command', 'biography', 'display_order',
     ];
 
     protected function casts(): array

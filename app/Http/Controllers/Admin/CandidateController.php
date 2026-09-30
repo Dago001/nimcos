@@ -41,7 +41,7 @@ class CandidateController extends Controller
 
         if ($search = trim((string) $request->query('q'))) {
             $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $search).'%';
-            $query->where(fn ($q) => $q->where('candidates.surname', 'ilike', $like)->orWhere('candidates.first_name', 'ilike', $like)->orWhere('candidates.service_number', 'ilike', $like));
+            $query->where(fn ($q) => $q->where('candidates.surname', 'ilike', $like)->orWhere('candidates.first_name', 'ilike', $like)->orWhere('candidates.service_number', 'ilike', $like)->orWhere('candidates.membership_id', 'ilike', $like));
         }
         if ($position = $request->query('position')) {
             $query->where('candidates.election_position_id', $position);
@@ -66,21 +66,31 @@ class CandidateController extends Controller
     public function lookupVoter(Request $request): JsonResponse
     {
         $rawSn = (string) $request->query('service_number');
+        $rawMemberId = (string) $request->query('membership_id');
         $sn = ServiceNumber::normalise($rawSn);
+        $memberId = trim($rawMemberId);
 
-        if ($sn === '') {
+        if ($sn === '' && $memberId === '') {
             return response()->json([
                 'found' => false,
-                'message' => 'Service Number is required.',
+                'message' => 'Service Number or Membership ID is required.',
             ], 400);
         }
 
-        $voter = Voter::query()->where('service_number', $sn)->first();
+        $voter = null;
+        if ($sn !== '') {
+            $voter = Voter::query()->where('service_number', $sn)->first();
+        }
+        if (! $voter && $memberId !== '') {
+            $voter = Voter::query()->whereRaw('upper(trim(membership_id)) = ?', [mb_strtoupper($memberId)])->first();
+        }
 
         if (! $voter) {
+            $identifier = $sn !== '' ? "Service Number \"{$sn}\"" : "Membership ID \"{$memberId}\"";
+
             return response()->json([
                 'found' => false,
-                'message' => "No voter found with Service Number \"{$sn}\" on the register.",
+                'message' => "No voter found with {$identifier} on the register.",
             ]);
         }
 
@@ -98,6 +108,7 @@ class CandidateController extends Controller
             'found' => true,
             'voter' => [
                 'service_number' => $voter->service_number,
+                'membership_id' => $voter->membership_id ?? '',
                 'surname' => $voter->surname,
                 'first_name' => $voter->first_name,
                 'other_names' => $voter->other_names ?? '',

@@ -47,10 +47,10 @@
         <h2>Preview (first {{ count($sample) }} valid rows)</h2>
         <div class="table-wrap mb-3">
             <table class="table">
-                <thead><tr><th>Row</th><th>Service No.</th><th>Name</th><th>Rank</th><th>Command</th><th>Formation</th><th>Phone</th><th>Membership</th></tr></thead>
+                <thead><tr><th>Row</th><th>Service No.</th><th>Member ID</th><th>Name</th><th>Rank</th><th>Command</th><th>Formation</th><th>Phone</th><th>Membership</th></tr></thead>
                 <tbody>
                 @foreach ($sample as $row => $data)
-                    <tr><td>{{ $row }}</td><td class="mono">{{ $data['service_number'] }}</td><td>{{ $data['surname'] }}, {{ $data['first_name'] }} {{ $data['other_names'] }}</td>
+                    <tr><td>{{ $row }}</td><td class="mono">{{ $data['service_number'] }}</td><td class="mono small">{{ $data['membership_id'] ?? '-' }}</td><td>{{ $data['surname'] }}, {{ $data['first_name'] }} {{ $data['other_names'] }}</td>
                         <td class="small">{{ $data['rank'] }}</td><td class="small">{{ $data['command'] }}</td><td class="small">{{ $data['formation'] }}</td>
                         <td class="small">{{ \App\Support\PhoneNumber::display($data['phone']) }}</td><td class="small">{{ $data['membership_status'] }}</td></tr>
                 @endforeach

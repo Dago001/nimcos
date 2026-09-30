@@ -241,6 +241,7 @@ class EligibilityAndCandidateTest extends TestCase
     {
         $voter = Voter::factory()->create([
             'service_number' => '54321',
+            'membership_id' => 'NMC-54321',
             'surname' => 'IBRAHIM',
             'first_name' => 'Fatima',
             'other_names' => 'Zainab',
@@ -250,7 +251,7 @@ class EligibilityAndCandidateTest extends TestCase
 
         $ea = $this->admin(Role::ELECTION_ADMINISTRATOR);
 
-        // Found voter
+        // Found voter by service_number (returns membership_id too)
         $this->actingAsAdmin($ea)
             ->getJson(route('admin.candidates.lookup-voter', ['service_number' => '54321']))
             ->assertOk()
@@ -258,6 +259,24 @@ class EligibilityAndCandidateTest extends TestCase
                 'found' => true,
                 'voter' => [
                     'service_number' => '54321',
+                    'membership_id' => 'NMC-54321',
+                    'surname' => 'IBRAHIM',
+                    'first_name' => 'Fatima',
+                    'other_names' => 'Zainab',
+                    'rank' => NisRank::DCI->value,
+                    'command' => NisCommand::LAGOS_STATE_COMMAND->value,
+                ],
+            ]);
+
+        // Found voter by membership_id (returns service_number and all officer details)
+        $this->actingAsAdmin($ea)
+            ->getJson(route('admin.candidates.lookup-voter', ['membership_id' => 'NMC-54321']))
+            ->assertOk()
+            ->assertJson([
+                'found' => true,
+                'voter' => [
+                    'service_number' => '54321',
+                    'membership_id' => 'NMC-54321',
                     'surname' => 'IBRAHIM',
                     'first_name' => 'Fatima',
                     'other_names' => 'Zainab',
@@ -274,7 +293,7 @@ class EligibilityAndCandidateTest extends TestCase
                 'found' => false,
             ]);
 
-        // Missing service number
+        // Missing both identifiers
         $this->actingAsAdmin($ea)
             ->getJson(route('admin.candidates.lookup-voter'))
             ->assertStatus(400);
@@ -289,5 +308,24 @@ class EligibilityAndCandidateTest extends TestCase
         $this->app['auth']->forgetGuards();
         $this->getJson(route('admin.candidates.lookup-voter', ['service_number' => '54321']))
             ->assertUnauthorized();
+    }
+
+    public function test_candidate_can_be_created_with_membership_id(): void
+    {
+        $election = $this->openElection(1, status: ElectionStatus::DRAFT);
+        $ep = $election->electionPositions()->first();
+
+        $this->actingAsAdmin($this->admin(Role::ELECTION_ADMINISTRATOR))->post(route('admin.candidates.store', $election), [
+            'election_position_id' => $ep->id,
+            'service_number' => '33445',
+            'membership_id' => 'NMC-33445',
+            'surname' => 'MOHAMMED',
+            'first_name' => 'Ali',
+            'rank' => 'CSI',
+        ])->assertSessionHasNoErrors();
+
+        $candidate = Candidate::query()->where('membership_id', 'NMC-33445')->firstOrFail();
+        $this->assertSame('33445', $candidate->service_number);
+        $this->assertSame('MOHAMMED', $candidate->surname);
     }
 }

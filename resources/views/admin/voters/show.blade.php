@@ -13,6 +13,9 @@
     <div class="stack">
         <div class="panel"><div class="panel-body">
             <dl class="dl">
+                <dt>Membership ID</dt><dd class="mono">{{ $voter->membership_id ?: '-' }}</dd>
+                <dt>Gender</dt><dd>{{ $voter->gender ? ucfirst(strtolower($voter->gender)) : '-' }}</dd>
+                <dt>Date of birth</dt><dd>{{ $voter->dob ? $voter->dob->format('d M Y') : '-' }}</dd>
                 <dt>Rank</dt><dd>{{ $voter->rankLabel() ?? '-' }}</dd>
                 <dt>Command</dt><dd>{{ $voter->commandLabel() ?? '-' }}</dd>
                 <dt>Formation</dt><dd>{{ $voter->formation ?? '-' }}</dd>

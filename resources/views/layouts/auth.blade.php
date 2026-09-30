@@ -19,7 +19,9 @@
         </div>
     </div>
     <main class="auth-panel" id="main">
-        <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS seal" width="72" height="72" class="entry-seal">
+        @unless (View::hasSection('hide-logo') || request()->routeIs('admin.mfa*'))
+            <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS seal" width="72" height="72" class="entry-seal">
+        @endunless
         @if (config('nimcos.show_demo_banner'))
             <div class="alert alert-warning">Demonstration environment: fictitious data only.</div>
         @endif

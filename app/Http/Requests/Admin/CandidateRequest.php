@@ -20,7 +20,11 @@ class CandidateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $sn = $this->input('service_number');
-        $this->merge(['service_number' => $sn ? ServiceNumber::normalise($sn) : null]);
+        $memId = $this->input('membership_id');
+        $this->merge([
+            'service_number' => $sn ? ServiceNumber::normalise($sn) : null,
+            'membership_id' => $memId ? mb_strtoupper(trim((string) $memId)) : null,
+        ]);
     }
 
     public function rules(): array
@@ -40,6 +44,7 @@ class CandidateRequest extends FormRequest
             'other_names' => ['nullable', 'string', 'max:150', "regex:/^[\pL\pM' .\-]+$/u"],
             'service_number' => ['nullable', 'string', 'max:20',
                 Rule::unique('candidates', 'service_number')->where('election_id', $election->getKey())->ignore($candidate?->getKey())],
+            'membership_id' => ['nullable', 'string', 'max:50'],
             'rank' => ['nullable', Rule::enum(NisRank::class)],
             'command' => ['nullable', Rule::enum(NisCommand::class)],
             'biography' => ['nullable', 'string', 'max:3000'],

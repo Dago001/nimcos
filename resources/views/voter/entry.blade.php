@@ -13,8 +13,6 @@
     </div>
 
     <div class="entry-form">
-        <img class="entry-seal" src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="Seal of the NIS Staff Multi-Purpose Co-operative Society Limited" width="88" height="88">
-
         @if ($openElections->isNotEmpty())
             <div class="step-label">Step 1 of 3 · Identify yourself</div>
             <h1 class="page-title">NIMCOS E-VOTING</h1>
@@ -62,7 +60,7 @@
                 <li>A one-time code will be sent to the email address registered for you with NIMCOS.</li>
                 <li>Your choices are secret. Election officials can see <em>that</em> you voted, never <em>how</em>.</li>
                 @if ($support)
-                    <li>Need help? Contact the election administrator: {{ $support }}</li>
+                    <li>Need help or have complaints? Contact support: <a href="mailto:{{ $support }}">{{ $support }}</a></li>
                 @endif
             </ul>
         @else

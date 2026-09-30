@@ -13,6 +13,7 @@
     <div class="panel-body form-grid two">
         @foreach ([
             ['service_number', 'Service Number', true, 'mono'],
+            ['membership_id', 'Membership ID', false, 'mono'],
             ['surname', 'Surname', true, ''],
             ['first_name', 'First name', true, ''],
             ['other_names', 'Other names', false, ''],
@@ -25,6 +26,20 @@
                 @error($field)<div class="error-text">{{ $message }}</div>@enderror
             </div>
         @endforeach
+        <div class="field">
+            <label for="gender">Gender</label>
+            <select class="input" id="gender" name="gender" @error('gender') aria-invalid="true" @enderror>
+                <option value="">Select gender</option>
+                <option value="MALE" @selected(old('gender', $voter->gender) === 'MALE')>Male</option>
+                <option value="FEMALE" @selected(old('gender', $voter->gender) === 'FEMALE')>Female</option>
+            </select>
+            @error('gender')<div class="error-text">{{ $message }}</div>@enderror
+        </div>
+        <div class="field">
+            <label for="dob">Date of birth</label>
+            <input class="input" id="dob" name="dob" type="date" value="{{ old('dob', $voter->dob?->format('Y-m-d')) }}" max="{{ date('Y-m-d') }}" @error('dob') aria-invalid="true" @enderror>
+            @error('dob')<div class="error-text">{{ $message }}</div>@enderror
+        </div>
         <div class="field">
             <label for="command">Command</label>
             <select class="input" id="command" name="command" @error('command') aria-invalid="true" @enderror>

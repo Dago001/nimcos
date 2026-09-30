@@ -21,7 +21,7 @@
         <select class="input" id="el" name="election" data-autosubmit>
             @foreach ($elections as $e)<option value="{{ $e->id }}" @selected($election?->id === $e->id)>{{ $e->name }}</option>@endforeach
         </select></div>
-    <div class="field grow"><label for="q">Search</label><input class="input" id="q" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Name or Service Number"></div>
+    <div class="field grow"><label for="q">Search</label><input class="input" id="q" name="q" value="{{ $filters['q'] ?? '' }}" placeholder="Name, Service Number, or Membership ID"></div>
     <div class="field"><label for="pos">Position</label>
         <select class="input" id="pos" name="position"><option value="">All positions</option>
             @foreach ($positions as $p)<option value="{{ $p->id }}" @selected(($filters['position'] ?? '') === $p->id)>{{ $p->position->name }}</option>@endforeach
@@ -41,7 +41,7 @@
             <tr>
                 <td class="mono">{{ $candidate->candidate_number }}</td>
                 <td><div class="person"><x-candidate-avatar :candidate="$candidate" size="small" />
-                    <div><strong>{{ $candidate->displayName() }}</strong>@if ($candidate->service_number)<div class="small muted mono">{{ $candidate->service_number }}</div>@endif</div></div></td>
+                    <div><strong>{{ $candidate->displayName() }}</strong>@if ($candidate->service_number || $candidate->membership_id)<div class="small muted mono">{{ $candidate->service_number }}{{ $candidate->service_number && $candidate->membership_id ? ' · ' : '' }}{{ $candidate->membership_id }}</div>@endif</div></div></td>
                 <td>{{ $candidate->electionPosition->position->name }}</td>
                 <td class="small">{{ $candidate->rankLabel() }}<br><span class="muted">{{ $candidate->commandLabel() }}</span></td>
                 <td><x-status-badge :status="$candidate->status" /></td>

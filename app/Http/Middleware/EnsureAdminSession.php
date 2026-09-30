@@ -31,11 +31,11 @@ class EnsureAdminSession
             return redirect()->route('admin.login')->withErrors(['email' => 'Your account has been disabled.']);
         }
 
-        if ($user->hasMfa() && ! $request->session()->get(self::MFA_PASSED)) {
+        $mfaRequired = (bool) config('nimcos.admin.require_mfa') || (bool) $this->settings->get('require_admin_mfa');
+
+        if (! $request->session()->get(self::MFA_PASSED) && ($user->hasMfa() || $mfaRequired)) {
             return redirect()->route('admin.mfa.challenge');
         }
-
-        $mfaRequired = config('nimcos.admin.require_mfa') || $this->settings->get('require_admin_mfa');
         $exempt = ['admin.profile.mfa', 'admin.profile.mfa.enable', 'admin.profile.password', 'admin.profile.password.update', 'admin.logout'];
         $route = $request->route()?->getName();
 

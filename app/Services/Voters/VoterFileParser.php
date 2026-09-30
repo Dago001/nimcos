@@ -18,9 +18,12 @@ class VoterFileParser
 {
     public const COLUMNS = [
         'SERVICE NUMBER' => 'service_number',
+        'MEMBERSHIP ID' => 'membership_id',
         'SURNAME' => 'surname',
         'FIRST NAME' => 'first_name',
         'OTHER NAMES' => 'other_names',
+        'GENDER' => 'gender',
+        'DOB' => 'dob',
         'RANK' => 'rank',
         'COMMAND' => 'command',
         'FORMATION' => 'formation',
@@ -33,7 +36,10 @@ class VoterFileParser
 
     private const HEADER_ALIASES = [
         'SERVICE NO' => 'SERVICE NUMBER', 'SERVICE NO.' => 'SERVICE NUMBER', 'SVC NO' => 'SERVICE NUMBER',
+        'MEMBERSHIP NO' => 'MEMBERSHIP ID', 'MEMBERSHIP NO.' => 'MEMBERSHIP ID', 'MEMBER ID' => 'MEMBERSHIP ID', 'MEMBER NO' => 'MEMBERSHIP ID', 'MEMBER NO.' => 'MEMBERSHIP ID',
         'FIRSTNAME' => 'FIRST NAME', 'OTHER NAME' => 'OTHER NAMES', 'OTHERNAMES' => 'OTHER NAMES',
+        'SEX' => 'GENDER',
+        'DATE OF BIRTH' => 'DOB', 'BIRTH DATE' => 'DOB', 'BIRTHDATE' => 'DOB',
         'PHONE' => 'PHONE NUMBER', 'PHONE NO' => 'PHONE NUMBER', 'MOBILE' => 'PHONE NUMBER', 'GSM' => 'PHONE NUMBER',
         'EMAIL ADDRESS' => 'EMAIL', 'E-MAIL' => 'EMAIL', 'MEMBERSHIP' => 'MEMBERSHIP STATUS', 'STATUS' => 'MEMBERSHIP STATUS',
     ];
@@ -72,6 +78,7 @@ class VoterFileParser
         $seenServiceNumbers = [];
         $seenRecords = [];
         $seenEmails = [];
+        $seenMembershipIds = [];
 
         foreach ($rows as $i => $cells) {
             $rowNumber = $i + 2; // 1-based, after header
@@ -111,6 +118,10 @@ class VoterFileParser
                 $messages[] = "Email is already used by Service Number {$seenEmails[$data['email']]} in this file. Each voter needs their own email address for verification codes.";
             }
 
+            if ($messages === [] && ! empty($data['membership_id']) && isset($seenMembershipIds[$data['membership_id']])) {
+                $messages[] = "Membership ID \"{$data['membership_id']}\" is already used by row {$seenMembershipIds[$data['membership_id']]} in this file.";
+            }
+
             if ($messages !== []) {
                 $result['errors'][] = ['row' => $rowNumber, 'service_number' => $sn ?: null, 'type' => 'INVALID', 'messages' => $messages, 'raw' => $raw];
                 $result['invalid_count']++;
@@ -121,6 +132,9 @@ class VoterFileParser
             $seenServiceNumbers[$sn] = $rowNumber;
             $seenRecords[md5(json_encode($data))] = true;
             $seenEmails[$data['email']] = $sn;
+            if (! empty($data['membership_id'])) {
+                $seenMembershipIds[$data['membership_id']] = $rowNumber;
+            }
             $result['valid'][$rowNumber] = $data;
         }
 
@@ -140,6 +154,11 @@ class VoterFileParser
             $messages[] = "Service Number \"{$sn}\" is not in a valid format.";
         }
 
+        $membershipId = $clean($raw['membership_id'] ?? null, 50);
+        if ($membershipId !== null) {
+            $membershipId = mb_strtoupper($membershipId);
+        }
+
         $surname = $clean($raw['surname'] ?? null, 100);
         $first = $clean($raw['first_name'] ?? null, 100);
         if ($surname === null) {
@@ -151,6 +170,49 @@ class VoterFileParser
         foreach (['surname' => $surname, 'first name' => $first] as $label => $value) {
             if ($value !== null && ! preg_match("/^[\p{L}\p{M}' .\-]+$/u", $value)) {
                 $messages[] = ucfirst($label).' contains invalid characters.';
+            }
+        }
+
+        $rawGender = $clean($raw['gender'] ?? null, 20);
+        $gender = null;
+        if ($rawGender !== null) {
+            $upperGender = mb_strtoupper($rawGender);
+            if (in_array($upperGender, ['M', 'MALE'], true)) {
+                $gender = 'MALE';
+            } elseif (in_array($upperGender, ['F', 'FEMALE'], true)) {
+                $gender = 'FEMALE';
+            } else {
+                $gender = $upperGender;
+            }
+        }
+
+        $rawDob = $clean($raw['dob'] ?? null, 30);
+        $dob = null;
+        if ($rawDob !== null) {
+            $parsedDob = null;
+            if (is_numeric($rawDob) && (float) $rawDob > 1000 && (float) $rawDob < 100000) {
+                $excelTimestamp = ((float) $rawDob - 25569) * 86400;
+                $parsedDob = (new \DateTimeImmutable)->setTimestamp((int) $excelTimestamp);
+            } else {
+                foreach (['Y-m-d', 'd/m/Y', 'd-m-Y', 'm/d/Y', 'Y/m/d'] as $format) {
+                    $d = \DateTimeImmutable::createFromFormat($format, $rawDob);
+                    if ($d && $d->format($format) === $rawDob) {
+                        $parsedDob = $d;
+                        break;
+                    }
+                }
+                if (! $parsedDob) {
+                    try {
+                        $parsedDob = new \DateTimeImmutable($rawDob);
+                    } catch (\Throwable) {
+                        $parsedDob = null;
+                    }
+                }
+            }
+            if ($parsedDob) {
+                $dob = $parsedDob->format('Y-m-d');
+            } else {
+                $messages[] = "Date of birth \"{$rawDob}\" is not a valid date (use YYYY-MM-DD or DD/MM/YYYY).";
             }
         }
 
@@ -187,9 +249,12 @@ class VoterFileParser
 
         return [[
             'service_number' => $sn,
+            'membership_id' => $membershipId,
             'surname' => $surname !== null ? mb_strtoupper($surname) : null,
             'first_name' => $first !== null ? mb_convert_case($first, MB_CASE_TITLE) : null,
             'other_names' => ($o = $clean($raw['other_names'] ?? null, 150)) !== null ? mb_convert_case($o, MB_CASE_TITLE) : null,
+            'gender' => $gender,
+            'dob' => $dob,
             'rank' => $rank?->value,
             'command' => $command?->value,
             'formation' => ($f = $clean($raw['formation'] ?? null, 120)) !== null ? mb_strtoupper($f) : null,

@@ -199,4 +199,40 @@ class VoterImportTest extends TestCase
         $this->assertSame('-5', ReportRenderer::safeCell('-5'));
         $this->assertSame(42, ReportRenderer::safeCell(42));
     }
+
+    public function test_import_with_membership_id_gender_and_dob(): void
+    {
+        $file = UploadedFile::fake()->createWithContent('full_register.csv', implode("\n", [
+            'SERVICE NUMBER,MEMBERSHIP ID,SURNAME,FIRST NAME,OTHER NAMES,GENDER,DOB,RANK,COMMAND,FORMATION,PHONE NUMBER,EMAIL,MEMBERSHIP STATUS',
+            '6001,NMC-06001,DANJUMA,Aliyu,Bala,MALE,1990-05-20,CSI,KANO STATE COMMAND,HQ,08039999991,aliyu@example.com,ACTIVE',
+            '6002,NMC-06002,OKON,Blessing,Grace,FEMALE,15/08/1992,ASI1,LAGOS STATE COMMAND,MMIA,08039999992,blessing@example.com,ACTIVE',
+        ])."\n");
+
+        $import = $this->upload($file);
+        $this->assertSame(2, $import->valid_rows);
+        $this->assertSame(0, $import->invalid_count);
+
+        $this->post(route('admin.imports.confirm', $import), ['acknowledge' => '1'])->assertRedirect();
+
+        $voter1 = Voter::query()->where('service_number', '6001')->firstOrFail();
+        $this->assertSame('NMC-06001', $voter1->membership_id);
+        $this->assertSame('MALE', $voter1->gender);
+        $this->assertSame('1990-05-20', $voter1->dob->format('Y-m-d'));
+
+        $voter2 = Voter::query()->where('service_number', '6002')->firstOrFail();
+        $this->assertSame('NMC-06002', $voter2->membership_id);
+        $this->assertSame('FEMALE', $voter2->gender);
+        $this->assertSame('1992-08-15', $voter2->dob->format('Y-m-d'));
+    }
+
+    public function test_template_includes_membership_id_gender_and_dob(): void
+    {
+        $response = $this->actingAsAdmin($this->ea)->get(route('admin.imports.template'))->assertOk();
+        $content = $response->streamedContent();
+
+        $this->assertStringContainsString('SERVICE NUMBER', $content);
+        $this->assertStringContainsString('MEMBERSHIP ID', $content);
+        $this->assertStringContainsString('GENDER', $content);
+        $this->assertStringContainsString('DOB', $content);
+    }
 }

@@ -443,6 +443,9 @@
     var url = input.getAttribute('data-voter-lookup');
     var btn = $('[data-voter-lookup-btn]');
     var status = $('[data-voter-lookup-status]');
+    var memberInput = $('input[data-membership-lookup]');
+    var memberBtn = $('[data-membership-lookup-btn]');
+    var memberStatus = $('[data-membership-lookup-status]');
     var form = input.form;
     if (!url || !form) return;
 
@@ -452,28 +455,71 @@
     var rank = $('select[name=rank]', form);
     var command = $('select[name=command]', form);
 
-    var lastFetched = '';
-    var debounceTimer = null;
+    var lastFetchedSn = '';
+    var lastFetchedMemId = '';
+    var debounceTimerSn = null;
+    var debounceTimerMem = null;
 
-    function setStatus(text, type) {
+    function setSnStatus(text, type) {
       if (!status) return;
       status.textContent = text;
       status.className = 'sn-lookup-msg ' + (type || 'info');
     }
 
-    function doFetch() {
+    function setMemberStatus(text, type) {
+      if (!memberStatus) return;
+      memberStatus.textContent = text;
+      memberStatus.className = 'sn-lookup-msg ' + (type || 'info');
+    }
+
+    function populateVoter(v, sourceField) {
+      if (!v) return;
+
+      if (sourceField === 'service_number') {
+        lastFetchedSn = (input.value || '').trim();
+        if (memberInput && v.membership_id) {
+          memberInput.value = v.membership_id;
+          lastFetchedMemId = v.membership_id.trim();
+        }
+      } else if (sourceField === 'membership_id') {
+        lastFetchedMemId = memberInput ? (memberInput.value || '').trim() : '';
+        if (v.service_number) {
+          input.value = v.service_number;
+          lastFetchedSn = v.service_number.trim();
+        }
+      }
+
+      if (surname && v.surname) surname.value = v.surname;
+      if (firstName && v.first_name) firstName.value = v.first_name;
+      if (otherNames) otherNames.value = v.other_names || '';
+
+      if (rank && v.rank) {
+        rank.value = v.rank;
+      }
+      if (command && v.command) {
+        command.value = v.command;
+      }
+
+      var nameStr = (v.first_name || '') + ' ' + (v.surname || '');
+      var rankStr = v.rank_label ? ' (' + v.rank_label + ')' : '';
+      var successMsg = '✓ Loaded details for ' + nameStr.trim() + rankStr + ' from register.';
+      setSnStatus(successMsg, 'success');
+      setMemberStatus(successMsg, 'success');
+    }
+
+    function fetchBySn() {
       var sn = (input.value || '').trim();
       if (!sn) {
-        setStatus('Enter Service Number to auto-fill name, rank and command from the voter register.', 'info');
+        setSnStatus('Enter Service Number to auto-fill Membership ID, name, rank and command from the voter register.', 'info');
         return;
       }
-      if (sn === lastFetched) return;
+      if (sn === lastFetchedSn) return;
       if (sn.length < 3) {
-        setStatus('Enter at least 3 digits to fetch details.', 'info');
+        setSnStatus('Enter at least 3 digits to fetch details.', 'info');
         return;
       }
 
-      setStatus('Fetching voter details…', 'info');
+      setSnStatus('Fetching voter details…', 'info');
       if (btn) btn.disabled = true;
 
       fetch(url + '?service_number=' + encodeURIComponent(sn), {
@@ -483,62 +529,112 @@
       .then(function (data) {
         if (btn) btn.disabled = false;
         if (!data || !data.found || !data.voter) {
-          setStatus(data && data.message ? data.message : 'No voter found with this Service Number on the register.', 'error');
+          setSnStatus(data && data.message ? data.message : 'No voter found with this Service Number on the register.', 'error');
           return;
         }
-
-        var v = data.voter;
-        lastFetched = sn;
-
-        if (surname && v.surname) surname.value = v.surname;
-        if (firstName && v.first_name) firstName.value = v.first_name;
-        if (otherNames) otherNames.value = v.other_names || '';
-
-        if (rank && v.rank) {
-          rank.value = v.rank;
-        }
-        if (command && v.command) {
-          command.value = v.command;
-        }
-
-        var nameStr = (v.first_name || '') + ' ' + (v.surname || '');
-        var rankStr = v.rank_label ? ' (' + v.rank_label + ')' : '';
-        setStatus('✓ Loaded details for ' + nameStr.trim() + rankStr + ' from register.', 'success');
+        populateVoter(data.voter, 'service_number');
       })
       .catch(function () {
         if (btn) btn.disabled = false;
-        setStatus('Unable to look up voter details. You can enter details manually.', 'error');
+        setSnStatus('Unable to look up voter details. You can enter details manually.', 'error');
+      });
+    }
+
+    function fetchByMemberId() {
+      if (!memberInput) return;
+      var memId = (memberInput.value || '').trim();
+      if (!memId) {
+        setMemberStatus('Enter Membership ID to auto-fill Service Number, name, rank and command.', 'info');
+        return;
+      }
+      if (memId === lastFetchedMemId) return;
+      if (memId.length < 2) {
+        setMemberStatus('Enter at least 2 characters to fetch details.', 'info');
+        return;
+      }
+
+      setMemberStatus('Fetching voter details…', 'info');
+      if (memberBtn) memberBtn.disabled = true;
+
+      fetch(url + '?membership_id=' + encodeURIComponent(memId), {
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (memberBtn) memberBtn.disabled = false;
+        if (!data || !data.found || !data.voter) {
+          setMemberStatus(data && data.message ? data.message : 'No voter found with this Membership ID on the register.', 'error');
+          return;
+        }
+        populateVoter(data.voter, 'membership_id');
+      })
+      .catch(function () {
+        if (memberBtn) memberBtn.disabled = false;
+        setMemberStatus('Unable to look up voter details. You can enter details manually.', 'error');
       });
     }
 
     input.addEventListener('input', function () {
-      clearTimeout(debounceTimer);
+      clearTimeout(debounceTimerSn);
       var sn = (input.value || '').trim();
       if (sn.length >= 4) {
-        debounceTimer = setTimeout(doFetch, 400);
+        debounceTimerSn = setTimeout(fetchBySn, 400);
       }
     });
 
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        clearTimeout(debounceTimer);
-        doFetch();
+        clearTimeout(debounceTimerSn);
+        fetchBySn();
       }
     });
 
     input.addEventListener('blur', function () {
-      clearTimeout(debounceTimer);
-      if (input.value.trim().length >= 3 && input.value.trim() !== lastFetched) {
-        doFetch();
+      clearTimeout(debounceTimerSn);
+      if (input.value.trim().length >= 3 && input.value.trim() !== lastFetchedSn) {
+        fetchBySn();
       }
     });
 
     if (btn) {
       btn.addEventListener('click', function (e) {
         e.preventDefault();
-        clearTimeout(debounceTimer);
-        doFetch();
+        clearTimeout(debounceTimerSn);
+        fetchBySn();
+      });
+    }
+
+    if (memberInput) {
+      memberInput.addEventListener('input', function () {
+        clearTimeout(debounceTimerMem);
+        var memId = (memberInput.value || '').trim();
+        if (memId.length >= 3) {
+          debounceTimerMem = setTimeout(fetchByMemberId, 400);
+        }
+      });
+
+      memberInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          clearTimeout(debounceTimerMem);
+          fetchByMemberId();
+        }
+      });
+
+      memberInput.addEventListener('blur', function () {
+        clearTimeout(debounceTimerMem);
+        if (memberInput.value.trim().length >= 2 && memberInput.value.trim() !== lastFetchedMemId) {
+          fetchByMemberId();
+        }
+      });
+    }
+
+    if (memberBtn) {
+      memberBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        clearTimeout(debounceTimerMem);
+        fetchByMemberId();
       });
     }
   }
