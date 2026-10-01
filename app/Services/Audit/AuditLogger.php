@@ -59,7 +59,11 @@ class AuditLogger
 
         return DB::transaction(function () use ($row) {
             // Serialise chain writers so every row links to its true predecessor.
-            DB::statement("SELECT pg_advisory_xact_lock(hashtext('nimcos_audit_chain'))");
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement("SELECT pg_advisory_xact_lock(hashtext('nimcos_audit_chain'))");
+            } else {
+                DB::statement("SELECT GET_LOCK('nimcos_audit_chain', 10)");
+            }
 
             $prev = DB::table('audit_logs')->orderByDesc('id')->value('hash') ?? self::GENESIS;
             $createdAt = CarbonImmutable::now('UTC');
