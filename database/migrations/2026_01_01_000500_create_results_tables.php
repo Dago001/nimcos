@@ -42,7 +42,7 @@ return new class extends Migration
 
             $table->foreign('election_id')->references('id')->on('elections')->restrictOnDelete();
             $table->foreign(['election_position_id', 'election_id'])->references(['id', 'election_id'])->on('election_positions')->restrictOnDelete();
-            $table->foreign(['winning_candidate_id', 'election_position_id'])->references(['id', 'election_position_id'])->on('candidates')->restrictOnDelete();
+            $table->foreign(['winning_candidate_id', 'election_position_id'], 'fk_tie_res_winning_cand')->references(['id', 'election_position_id'])->on('candidates')->restrictOnDelete();
             $table->unique(['election_id', 'election_position_id']);
         });
 
