@@ -13,8 +13,6 @@
     </div>
 
     <div class="entry-form">
-        <img class="entry-seal" src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="Seal of the NIS Staff Multi-Purpose Co-operative Society Limited" width="88" height="88">
-
         <div class="step-label">Step 2 of 3 · Verify your identity</div>
         <h1 class="page-title">Verify your identity</h1>
         <p class="lede">We have sent a {{ config('nimcos.otp.length') }}-digit code to your registered {{ $destination }}. It expires in {{ $ttl }} minutes.</p>
