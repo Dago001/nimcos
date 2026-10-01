@@ -11,6 +11,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
         DB::unprepared(<<<'SQL'
 -- 1. Ballots and votes are write-once, and may only be written while the election is OPEN.
 CREATE OR REPLACE FUNCTION nimcos_block_modification() RETURNS trigger AS $$
@@ -143,6 +147,10 @@ SQL);
 
     public function down(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
         DB::unprepared(<<<'SQL'
 DROP TRIGGER IF EXISTS tie_resolutions_frozen ON tie_resolutions;
 DROP TRIGGER IF EXISTS result_tallies_frozen ON result_tallies;

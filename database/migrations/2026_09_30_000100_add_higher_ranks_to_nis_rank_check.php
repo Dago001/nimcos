@@ -17,10 +17,22 @@ return new class extends Migration
     {
         $values = "'".implode("','", NisRank::values())."'";
 
-        DB::statement('ALTER TABLE voters DROP CONSTRAINT IF EXISTS voters_rank_check');
-        DB::statement('ALTER TABLE candidates DROP CONSTRAINT IF EXISTS candidates_rank_check');
-        DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_rank_check CHECK (rank IN ({$values}))");
-        DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_rank_check CHECK (rank IN ({$values}))");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE voters DROP CONSTRAINT IF EXISTS voters_rank_check');
+            DB::statement('ALTER TABLE candidates DROP CONSTRAINT IF EXISTS candidates_rank_check');
+            DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_rank_check CHECK (rank IN ({$values}))");
+            DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_rank_check CHECK (rank IN ({$values}))");
+        } else {
+            // MySQL 8.0.19+ supports DROP CHECK constraint_name
+            try {
+                DB::statement('ALTER TABLE voters DROP CHECK voters_rank_check');
+            } catch (\Throwable) {}
+            try {
+                DB::statement('ALTER TABLE candidates DROP CHECK candidates_rank_check');
+            } catch (\Throwable) {}
+            DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_rank_check CHECK (rank IN ({$values}))");
+            DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_rank_check CHECK (rank IN ({$values}))");
+        }
     }
 
     public function down(): void

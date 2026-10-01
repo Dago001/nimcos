@@ -43,7 +43,7 @@ return new class extends Migration
         DB::statement('ALTER TABLE voters ADD CONSTRAINT voters_eligibility_check CHECK ('.VoterEligibility::checkSql('eligibility_status').')');
         DB::statement('ALTER TABLE voters ADD CONSTRAINT voters_verification_check CHECK ('.VerificationStatus::checkSql('verification_status').')');
         DB::statement('ALTER TABLE voters ADD CONSTRAINT voters_account_check CHECK ('.AccountStatus::checkSql('account_status').')');
-        DB::statement('ALTER TABLE voters ADD CONSTRAINT voters_service_number_normalised CHECK (service_number = upper(btrim(service_number)) AND length(service_number) >= 3)');
+        DB::statement('ALTER TABLE voters ADD CONSTRAINT voters_service_number_normalised CHECK (service_number = upper(trim(service_number)) AND length(service_number) >= 3)');
 
         Schema::create('voter_imports', function (Blueprint $table) {
             $table->uuid('id')->primary();

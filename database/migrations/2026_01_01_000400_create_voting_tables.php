@@ -55,7 +55,13 @@ return new class extends Migration
 
         DB::statement('ALTER TABLE voting_sessions ADD CONSTRAINT voting_sessions_status_check CHECK ('.VotingSessionStatus::checkSql('status').')');
         // At most one active ballot session per voter per election.
-        DB::statement("CREATE UNIQUE INDEX voting_sessions_one_active ON voting_sessions (election_voter_id) WHERE status = 'ACTIVE'");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement("CREATE UNIQUE INDEX voting_sessions_one_active ON voting_sessions (election_voter_id) WHERE status = 'ACTIVE'");
+        } else {
+            Schema::table('voting_sessions', function (Blueprint $table) {
+                $table->index(['election_voter_id', 'status'], 'voting_sessions_active_idx');
+            });
+        }
 
         Schema::create('ballot_tokens', function (Blueprint $table) {
             $table->uuid('id')->primary();

@@ -15,10 +15,21 @@ return new class extends Migration
     {
         $values = "'".implode("','", NisCommand::values())."'";
 
-        DB::statement('ALTER TABLE voters DROP CONSTRAINT IF EXISTS voters_command_check');
-        DB::statement('ALTER TABLE candidates DROP CONSTRAINT IF EXISTS candidates_command_check');
-        DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_command_check CHECK (command IN ({$values}))");
-        DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_command_check CHECK (command IN ({$values}))");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE voters DROP CONSTRAINT IF EXISTS voters_command_check');
+            DB::statement('ALTER TABLE candidates DROP CONSTRAINT IF EXISTS candidates_command_check');
+            DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_command_check CHECK (command IN ({$values}))");
+            DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_command_check CHECK (command IN ({$values}))");
+        } else {
+            try {
+                DB::statement('ALTER TABLE voters DROP CHECK voters_command_check');
+            } catch (\Throwable) {}
+            try {
+                DB::statement('ALTER TABLE candidates DROP CHECK candidates_command_check');
+            } catch (\Throwable) {}
+            DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_command_check CHECK (command IN ({$values}))");
+            DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_command_check CHECK (command IN ({$values}))");
+        }
     }
 
     public function down(): void {}
