@@ -65,10 +65,17 @@ class ElectionStatistics
     {
         $tz = config('nimcos.display_timezone');
 
+        $bucketExpression = DB::getDriverName() === 'pgsql'
+            ? "date_trunc('hour', voted_at AT TIME ZONE ?) AS bucket"
+            : "DATE_FORMAT(CONVERT_TZ(voted_at, '+00:00', '+01:00'), '%Y-%m-%d %H:00:00') AS bucket";
+
+        $bindings = DB::getDriverName() === 'pgsql' ? [$tz] : [];
+
         return DB::table('election_voters')
             ->where('election_id', $election->getKey())
             ->whereNotNull('voted_at')
-            ->selectRaw("date_trunc('hour', voted_at AT TIME ZONE ?) AS bucket, COUNT(*) AS n", [$tz])
+            ->selectRaw($bucketExpression, $bindings)
+            ->selectRaw('COUNT(*) AS n')
             ->groupBy('bucket')
             ->orderBy('bucket')
             ->get()
