@@ -68,7 +68,9 @@ class AuditLogger
             $prev = DB::table('audit_logs')->orderByDesc('id')->value('hash') ?? self::GENESIS;
             $createdAt = CarbonImmutable::now('UTC');
 
-            $row['created_at'] = $createdAt->format('Y-m-d H:i:s.uP');
+            $row['created_at'] = DB::getDriverName() === 'pgsql'
+                ? $createdAt->format('Y-m-d H:i:s.uP')
+                : $createdAt->format('Y-m-d H:i:s.u');
             $row['prev_hash'] = $prev;
             $row['hash'] = self::computeHash($row, $createdAt, $prev);
             $row['metadata'] = $row['metadata'] === [] ? null : json_encode($row['metadata'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
