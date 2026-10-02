@@ -138,6 +138,22 @@ class BallotSubmissionService
                     'ended_at' => $votedAt,
                 ])->save();
 
+                // Secrecy boundary: voter receives congratulations email with their ballot reference
+                $voter = $ev->voter;
+                if ($voter && $voter->email) {
+                    $voterId = $voter->getKey();
+                    $electionId = $election->getKey();
+                    $reference = $ballot->reference;
+                    $displayTime = display_time($votedAt, 'j F Y, H:i');
+
+                    DB::afterCommit(fn () => \App\Jobs\SendVoteConfirmationEmail::dispatch(
+                        $voterId,
+                        $electionId,
+                        $reference,
+                        $displayTime,
+                    ));
+                }
+
                 return new BallotReceipt($election, $ballot->reference, $votedAt);
             });
         } catch (TamperedBallotException $e) {
