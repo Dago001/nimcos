@@ -38,7 +38,8 @@ class EligibilityController extends Controller
 
         if ($search = trim((string) $request->query('q'))) {
             $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $search).'%';
-            $query->where(fn ($q) => $q->where('voters.service_number', 'ilike', $like)->orWhere('voters.surname', 'ilike', $like));
+            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(fn ($q) => $q->where('voters.service_number', $likeOp, $like)->orWhere('voters.surname', $likeOp, $like));
         }
         if ($status = EligibilityStatus::tryFrom((string) $request->query('status'))) {
             $query->where('election_voters.eligibility_status', $status->value);

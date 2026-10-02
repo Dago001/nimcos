@@ -48,7 +48,8 @@ class VoterController extends Controller
         }
         if ($search = trim((string) $request->query('q'))) {
             $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $search).'%';
-            $query->where(fn (Builder $q) => $q->where('service_number', 'ilike', $like)->orWhere('surname', 'ilike', $like)->orWhere('first_name', 'ilike', $like));
+            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(fn (Builder $q) => $q->where('service_number', $likeOp, $like)->orWhere('surname', $likeOp, $like)->orWhere('first_name', $likeOp, $like));
         }
         foreach (['rank', 'command', 'formation'] as $field) {
             if ($value = $request->query($field)) {

@@ -25,7 +25,8 @@ class AuditLogController extends Controller
             $query->where('created_at', '<', to_utc_from_display($to.' 00:00')->addDay());
         }
         if ($actor = trim((string) $request->query('actor'))) {
-            $query->where('actor_label', 'ilike', '%'.str_replace(['%', '_'], ['\%', '\_'], $actor).'%');
+            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where('actor_label', $likeOp, '%'.str_replace(['%', '_'], ['\%', '\_'], $actor).'%');
         }
         if ($action = trim((string) $request->query('action'))) {
             $query->where('action', 'like', str_replace(['%', '_'], ['\%', '\_'], $action).'%');

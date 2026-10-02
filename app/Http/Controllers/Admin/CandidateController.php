@@ -41,7 +41,8 @@ class CandidateController extends Controller
 
         if ($search = trim((string) $request->query('q'))) {
             $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $search).'%';
-            $query->where(fn ($q) => $q->where('candidates.surname', 'ilike', $like)->orWhere('candidates.first_name', 'ilike', $like)->orWhere('candidates.service_number', 'ilike', $like)->orWhere('candidates.membership_id', 'ilike', $like));
+            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(fn ($q) => $q->where('candidates.surname', $likeOp, $like)->orWhere('candidates.first_name', $likeOp, $like)->orWhere('candidates.service_number', $likeOp, $like)->orWhere('candidates.membership_id', $likeOp, $like));
         }
         if ($position = $request->query('position')) {
             $query->where('candidates.election_position_id', $position);
