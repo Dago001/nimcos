@@ -58,7 +58,7 @@
 
             <ul class="notice-list small mt-3">
                 <li>A one-time code will be sent to the email address registered for you with NIMCOS.</li>
-                <li>Your choices are secret. Election officials can see <em>that</em> you voted, never <em>how</em>.</li>
+                <li>Your Choices are Secret. Election Officials can see that you voted, But not who you voted.</li>
                 @if ($support)
                     <li>Need help or have complaints? Contact support: <a href="mailto:{{ $support }}">{{ $support }}</a></li>
                 @endif
