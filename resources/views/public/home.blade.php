@@ -189,7 +189,7 @@
         </div>
     </div>
     <div class="site-footer-bar">
-        <span>Your vote is secret. Officials can see that you voted, never how.</span>
+        <span>Your vote is secret. Officials can see that you voted, not who you voted.</span>
     </div>
     @include('partials.legal-footer')
 </footer>
