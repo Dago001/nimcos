@@ -19,7 +19,5 @@
     @foreach ($results['positions'] as $p)
         @include('partials.position-result', ['p' => $p])
     @endforeach
-
-    <p class="small muted">Verification hash: <span class="mono">{{ $results['hash'] }}</span></p>
 </div>
 @endsection
