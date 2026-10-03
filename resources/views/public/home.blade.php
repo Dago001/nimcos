@@ -90,7 +90,7 @@
             <li class="step-card">
                 <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h3M15 12h3M6 16h12"/></svg></span>
                 <h3>Enter your Service Number.</h3>
-                <p>Type your Service Number exactly as it appears on the NIMCOS register.</p>
+                <p>Type your Service Number correctly.</p>
             </li>
             <li class="step-card">
                 <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
@@ -105,7 +105,7 @@
             <li class="step-card">
                 <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 14l2 2 4-4"/></svg></span>
                 <h3>Confirm and keep your receipt.</h3>
-                <p>Submit once. Your receipt reference proves your ballot was counted, never how you voted.</p>
+                <p>Submit once. Your receipt reference proves your ballot was counted, not how you voted.</p>
             </li>
         </ol>
     </section>
@@ -116,17 +116,17 @@
             <div class="req-item">
                 <span class="req-icon" aria-hidden="true"><svg viewBox="0 0 48 48" width="52" height="52"><rect x="6" y="10" width="36" height="28" rx="4" fill="#207027"/><rect x="10" y="16" width="12" height="14" rx="2" fill="#fff"/><circle cx="16" cy="21" r="3" fill="#207027"/><path d="M11 29c1-3 3-4 5-4s4 1 5 4" fill="#207027"/><rect x="26" y="17" width="12" height="3" rx="1.5" fill="#f5b041"/><rect x="26" y="23" width="9" height="3" rx="1.5" fill="#fff"/><rect x="26" y="29" width="11" height="3" rx="1.5" fill="#fff"/></svg></span>
                 <h3>Service Number</h3>
-                <p>Enter your Service Number exactly as it appears on the NIMCOS register to avoid being turned away.</p>
+                <p>Enter your Service Number correctly to avoid being turned away.</p>
             </div>
             <div class="req-item">
                 <span class="req-icon" aria-hidden="true"><svg viewBox="0 0 48 48" width="52" height="52"><rect x="5" y="11" width="38" height="27" rx="4" fill="#f5b041"/><path d="m6 14 18 13 18-13" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><circle cx="38" cy="12" r="7" fill="#207027"/><path d="m35 12 2 2 4-4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                 <h3>Registered email address</h3>
-                <p>Your verification code goes to the email NIMCOS holds for you. Check your spam folder if it does not arrive.</p>
+                <p>Your verification code goes to the email address you used to register with NIMCOS. Check your spam folder if it does not arrive.</p>
             </div>
             <div class="req-item">
                 <span class="req-icon" aria-hidden="true"><svg viewBox="0 0 48 48" width="52" height="52"><path d="M24 4 8 10v12c0 10 7 18 16 22 9-4 16-12 16-22V10z" fill="#207027"/><path d="m17 24 5 5 10-11" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                 <h3>Active, eligible member</h3>
-                <p>You must be an active NIMCOS member authorised on the roll for this election. Each member votes once.</p>
+                <p>You must be an active NIMCOS member. Each member votes once.</p>
             </div>
         </div>
     </section>
