@@ -675,21 +675,28 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .results-header-center .page-title { margin: 0 0 .4rem; font-size: 1.95rem; font-weight: 800; color: var(--green-ink); letter-spacing: .01em; }
 .results-header-center .lede { margin: 0; color: var(--muted); font-size: 1.05rem; }
 
-.results-endorsement { margin-top: 2rem; margin-bottom: 2.5rem; display: flex; justify-content: flex-end; }
-.endorsement-card, .endorsement-box { width: 320px; max-width: 100%; border: 1.5px solid #207027; background: #ffffff; border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(32, 112, 39, 0.08); overflow: hidden; margin-left: auto; }
-.endorsement-header { display: flex; align-items: center; gap: .5rem; background: #f0f7f1; padding: .6rem .85rem; border-bottom: 1.5px solid #d1e7d4; font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #165b1c; }
-.endorsement-seal-img { border-radius: 50%; border: 1px solid #c2e0c7; flex: none; width: 26px; height: 26px; }
-.endorsement-header-title { flex: 1; }
-.endorsement-body { padding: .85rem 1rem; display: flex; flex-direction: column; gap: .5rem; }
-.endorsement-item { display: flex; flex-direction: column; gap: .1rem; font-size: .85rem; }
-.endorsement-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-.endorsement-value { font-size: .92rem; color: var(--ink); font-weight: 800; letter-spacing: .02em; }
-.endorsement-signature-section { display: flex; flex-direction: column; gap: .2rem; margin: .15rem 0; }
-.endorsement-signature-frame, .endorsement-signature { background: #fafbfa; border: 1px dashed #b8dcbb; border-radius: var(--radius-sm); padding: .25rem .5rem; text-align: center; height: 54px; max-height: 54px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.results-endorsement { margin-top: 2rem; margin-bottom: 2.5rem; }
+.endorsement-card, .endorsement-box { width: 100%; border: 1.5px solid #207027; background: #ffffff; border-radius: var(--radius-md); box-shadow: 0 4px 14px rgba(32, 112, 39, 0.08); overflow: hidden; }
+.endorsement-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; background: #f0f7f1; padding: .65rem 1rem; border-bottom: 1.5px solid #d1e7d4; font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #165b1c; }
+.endorsement-header-left { display: flex; align-items: center; gap: .6rem; }
+.endorsement-seal-img { border-radius: 50%; border: 1px solid #c2e0c7; flex: none; width: 28px; height: 28px; }
+.endorsement-header-title { font-weight: 800; letter-spacing: .06em; }
+.endorsement-body-horizontal { padding: 1rem 1.25rem; display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 1.5rem; align-items: center; }
+.endorsement-col { display: flex; flex-direction: column; gap: .4rem; }
+.endorsement-col:not(:last-child) { border-right: 1.5px solid #e0ede2; padding-right: 1.5rem; }
+.endorsement-sub-item { display: flex; flex-direction: column; gap: .1rem; }
+.endorsement-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.endorsement-value { font-size: 1.05rem; color: var(--ink); font-weight: 800; letter-spacing: .02em; }
+.endorsement-col-signature { display: flex; flex-direction: column; gap: .3rem; align-items: flex-start; }
+.endorsement-signature-frame, .endorsement-signature { background: #fafbfa; border: 1px dashed #b8dcbb; border-radius: var(--radius-sm); padding: .25rem .75rem; text-align: center; height: 52px; max-height: 52px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .signature-img, .endorsement-signature img { max-height: 48px; max-width: 140px; width: 140px; height: auto; display: block; margin: 0 auto; object-fit: contain; }
-.endorsement-certified-item { padding-top: .35rem; border-top: 1px solid var(--line); }
-.endorsement-date { font-size: .8rem; font-weight: 600; color: var(--ink-2); }
-.endorsement-badge, .endorsement-seal { display: inline-flex; align-items: center; gap: .35rem; font-size: .7rem; color: #1b6823; font-weight: 700; background: #e8f5e9; border: 1px solid #c8e6c9; padding: .25rem .5rem; border-radius: 4px; margin-top: .15rem; }
+.endorsement-certified-item { margin-top: .4rem; }
+.endorsement-date { font-size: .84rem; font-weight: 600; color: var(--ink-2); }
+.endorsement-badge, .endorsement-seal { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; color: #1b6823; font-weight: 700; background: #e8f5e9; border: 1px solid #c8e6c9; padding: .25rem .55rem; border-radius: 4px; }
+@media (max-width: 768px) {
+  .endorsement-body-horizontal { grid-template-columns: 1fr; gap: 1rem; }
+  .endorsement-col:not(:last-child) { border-right: none; border-bottom: 1.5px solid #e0ede2; padding-right: 0; padding-bottom: 1rem; }
+}
 
 /* ---------- System Maintenance Mode ---------- */
 .maintenance-banner { background: #fee2e2; border-bottom: 1px solid #f87171; color: #991b1b; font-size: .85rem; text-align: center; padding: .5rem 1rem; font-weight: 600; }
