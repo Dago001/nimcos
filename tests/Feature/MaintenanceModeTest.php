@@ -29,6 +29,7 @@ class MaintenanceModeTest extends TestCase
         $response->assertStatus(503);
         $response->assertSee('System Under Maintenance');
         $response->assertSee('Scheduled server upgrade in progress.');
+        $response->assertDontSee('Administrator Sign In');
 
         // Voter endpoints also blocked
         $this->get('/vote')->assertStatus(503);

@@ -49,10 +49,6 @@
             <div class="maintenance-actions">
                 <a class="btn btn-primary" href="{{ url()->current() }}">Refresh page</a>
             </div>
-
-            <div class="admin-link-note">
-                <a href="{{ route('admin.login') }}">Administrator Sign In &rarr;</a>
-            </div>
         </div>
     </div>
 </main>
