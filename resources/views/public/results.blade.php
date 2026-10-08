@@ -28,7 +28,7 @@
     <div class="results-endorsement">
         <div class="endorsement-card">
             <div class="endorsement-header">
-                <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="Seal" width="32" height="32" class="endorsement-seal-img">
+                <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="Seal" width="28" height="28" class="endorsement-seal-img">
                 <span class="endorsement-header-title">OFFICIAL RESULTS CERTIFICATION</span>
             </div>
 
@@ -46,7 +46,7 @@
                 <div class="endorsement-signature-section">
                     <span class="endorsement-label">SIGNATURE:</span>
                     <div class="endorsement-signature-frame">
-                        <img src="{{ route('election.signature', $election) }}" alt="Returning Officer Signature" class="signature-img" loading="eager">
+                        <img src="{{ route('election.signature', $election) }}" alt="Returning Officer Signature" width="140" height="48" class="signature-img" loading="eager">
                     </div>
                 </div>
 
