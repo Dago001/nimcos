@@ -185,7 +185,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .voter-footer a { color: var(--muted); }
 
 .page-title { margin-bottom: .25rem; }
-.page-title.danger { color: var(--error); }
+h1.page-title.danger, .page-title.danger { color: #a4221a !important; }
 .lede { color: var(--muted); font-size: 1.02rem; margin-bottom: 1.5rem; }
 .step-label { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green); margin-bottom: .35rem; }
 
