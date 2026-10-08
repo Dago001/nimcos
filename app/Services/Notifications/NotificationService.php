@@ -41,10 +41,23 @@ class NotificationService
         }
     }
 
-    /** Temporary password for a new account or after a reset; queued and encrypted at rest. */
+    /** Temporary password for a new account or after a reset; sent immediately with Resend fallback. */
     public function sendAdminCredentials(User $user, string $temporaryPassword, bool $isNewAccount): void
     {
-        Mail::to($user->email)->queue(new AdminCredentialsMail($user->name, $user->email, $temporaryPassword, $isNewAccount));
+        try {
+            Mail::to($user->email)->send(new AdminCredentialsMail($user->name, $user->email, $temporaryPassword, $isNewAccount));
+        } catch (\Throwable $e) {
+            Log::warning("Primary mailer failed to send Admin Credentials to {$user->email}: {$e->getMessage()}. Attempting Resend fallback.");
+
+            if (config('services.resend.key') || env('RESEND_API_KEY')) {
+                Mail::mailer('resend_smtp')->to($user->email)->send(new AdminCredentialsMail($user->name, $user->email, $temporaryPassword, $isNewAccount));
+                Log::info("Successfully sent Admin Credentials to {$user->email} via Resend fallback.");
+
+                return;
+            }
+
+            throw $e;
+        }
     }
 
     /** Notify every active administrator who can review security alerts. */
@@ -54,12 +67,23 @@ class NotificationService
             ->filter(fn (User $u) => $u->hasPermission(Permissions::VIEW_AUDIT_LOGS));
 
         foreach ($recipients as $user) {
-            Mail::to($user->email)->queue(new SecurityAlertMail(
-                $alert->type,
-                $alert->severity->value,
-                $alert->description,
-                display_time($alert->last_seen_at ?? now(), 'j M Y, H:i'),
-            ));
+            try {
+                Mail::to($user->email)->send(new SecurityAlertMail(
+                    $alert->type,
+                    $alert->severity->value,
+                    $alert->description,
+                    display_time($alert->last_seen_at ?? now(), 'j M Y, H:i'),
+                ));
+            } catch (\Throwable $e) {
+                if (config('services.resend.key') || env('RESEND_API_KEY')) {
+                    Mail::mailer('resend_smtp')->to($user->email)->send(new SecurityAlertMail(
+                        $alert->type,
+                        $alert->severity->value,
+                        $alert->description,
+                        display_time($alert->last_seen_at ?? now(), 'j M Y, H:i'),
+                    ));
+                }
+            }
         }
     }
 }
