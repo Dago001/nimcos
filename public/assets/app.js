@@ -716,11 +716,25 @@
     });
   }
 
+  /* ---------- Forms with data-confirm prompt ---------- */
+  function initDataConfirm() {
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      if (form && form.hasAttribute('data-confirm')) {
+        var msg = form.getAttribute('data-confirm');
+        if (msg && !window.confirm(msg)) {
+          e.preventDefault();
+        }
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     applyWidths();
     initDialogs();
     initSubmitOnce();
     initFinalSubmit();
+    initDataConfirm();
     initBallot();
     initCountdown();
     initOtp();

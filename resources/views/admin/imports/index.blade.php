@@ -19,7 +19,18 @@
                 <td class="num">{{ number_format($import->imported_count) }}</td>
                 <td class="num">{{ number_format($import->updated_count) }}</td>
                 <td class="num">{{ number_format($import->rejected_count) }}</td>
-                <td class="actions"><a class="btn btn-secondary btn-sm" href="{{ route('admin.imports.show', $import) }}">View</a></td>
+                <td class="actions">
+                    <div class="actions-row">
+                        <a class="btn btn-secondary btn-sm" href="{{ route('admin.imports.show', $import) }}">View</a>
+                        @if (auth()->user()->hasPermission('import_voters'))
+                            <form method="POST" action="{{ route('admin.imports.destroy', $import) }}" class="inline-form" data-confirm="Are you sure you want to permanently delete this import record and remove all onboarded voters associated with it? This action cannot be undone.">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        @endif
+                    </div>
+                </td>
             </tr>
         @empty
             <tr><td colspan="9" class="table-empty">No imports yet.</td></tr>

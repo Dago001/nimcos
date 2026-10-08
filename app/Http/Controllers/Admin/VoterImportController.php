@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ImportStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Voter;
 use App\Models\VoterImport;
 use App\Services\Reports\ReportRenderer;
 use App\Services\Voters\VoterFileParser;
@@ -11,6 +12,8 @@ use App\Services\Voters\VoterImportService;
 use App\Support\PhpIniSize;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -105,5 +108,77 @@ class VoterImportController extends Controller
             }
             fclose($out);
         }, 'import-errors-'.substr($import->getKey(), 0, 8).'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    public function destroy(Request $request, VoterImport $import, VoterFileParser $parser): RedirectResponse
+    {
+        $deletedVotersCount = 0;
+
+        DB::transaction(function () use ($import, $parser, &$deletedVotersCount) {
+            $sns = [];
+
+            // If the original file is still in storage, parse all service numbers from it
+            if ($import->stored_path && Storage::disk('local')->exists($import->stored_path)) {
+                try {
+                    $absolute = Storage::disk('local')->path($import->stored_path);
+                    $parsed = $parser->parse($absolute, pathinfo($import->stored_path, PATHINFO_EXTENSION));
+                    $sns = array_column($parsed['valid'] ?? [], 'service_number');
+                } catch (\Throwable) {
+                    // Ignore parsing error and fallback
+                }
+            }
+
+            // Also include any service numbers captured in error records
+            $errorSns = $import->errors()->whereNotNull('service_number')->pluck('service_number')->toArray();
+            $allSns = array_values(array_unique(array_filter(array_merge($sns, $errorSns))));
+
+            $voterQuery = Voter::query();
+            if (! empty($allSns)) {
+                $voterQuery->whereIn('service_number', $allSns);
+            } elseif ($import->imported_count > 0) {
+                // If file is not on disk, check if this was the only completed import
+                if (VoterImport::query()->where('status', ImportStatus::COMPLETED->value)->count() <= 1) {
+                    $voterQuery->whereNotNull('id');
+                } else {
+                    $voterQuery->where(function ($q) use ($import) {
+                        $q->where('created_by', $import->uploaded_by)
+                            ->orWhere('created_by', $import->confirmed_by);
+                    });
+                }
+            } else {
+                $voterQuery->whereRaw('1 = 0');
+            }
+
+            $voterIds = $voterQuery->pluck('id');
+
+            if ($voterIds->isNotEmpty()) {
+                // Remove election voter records and voting sessions to avoid FK constraint violations
+                $evIds = DB::table('election_voters')->whereIn('voter_id', $voterIds)->pluck('id');
+                if ($evIds->isNotEmpty()) {
+                    DB::table('voting_sessions')->whereIn('election_voter_id', $evIds)->delete();
+                    DB::table('election_voters')->whereIn('id', $evIds)->delete();
+                }
+
+                $deletedVotersCount = Voter::query()->whereIn('id', $voterIds)->delete();
+            }
+
+            // Delete import errors
+            $import->errors()->delete();
+
+            // Delete stored file if exists
+            if ($import->stored_path && Storage::disk('local')->exists($import->stored_path)) {
+                Storage::disk('local')->delete($import->stored_path);
+            }
+
+            // Delete the import record
+            $import->delete();
+        });
+
+        $msg = 'Import record deleted.';
+        if ($deletedVotersCount > 0) {
+            $msg .= ' '.number_format($deletedVotersCount).' onboarded voter(s) removed from the register.';
+        }
+
+        return redirect()->route('admin.imports.index')->with('success', $msg);
     }
 }

@@ -6,11 +6,18 @@ use App\Enums\AuditResult;
 use App\Enums\CandidateStatus;
 use App\Enums\ElectionStatus;
 use App\Enums\EligibilityStatus;
+use App\Enums\ResultStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ElectionRequest;
 use App\Http\Requests\Admin\ExtendVotingTimeRequest;
 use App\Http\Requests\Admin\ReauthenticatedRequest;
+use App\Models\Ballot;
+use App\Models\BallotToken;
 use App\Models\Election;
+use App\Models\ResultTally;
+use App\Models\TieResolution;
+use App\Models\Vote;
+use App\Models\VotingSession;
 use App\Services\Audit\AuditAction;
 use App\Services\Audit\AuditLogger;
 use App\Services\Elections\ElectionLifecycle;
@@ -108,20 +115,47 @@ class ElectionController extends Controller
         return redirect()->route('admin.elections.show', $election)->with('success', 'Election details saved.');
     }
 
-    public function destroy(ReauthenticatedRequest $request, Election $election): RedirectResponse
+    public function destroy(Request $request, Election $election): RedirectResponse
     {
-        if ($election->status !== ElectionStatus::DRAFT) {
-            throw ValidationException::withMessages(['election' => 'Only draft elections can be deleted.']);
-        }
-        $this->audit->log(AuditAction::ELECTION_DELETED, AuditResult::SUCCESS, $election, ['code' => $election->code, 'name' => $election->name]);
+        $this->audit->log(AuditAction::ELECTION_DELETED, AuditResult::SUCCESS, $election, [
+            'code' => $election->code,
+            'name' => $election->name,
+            'status' => $election->status->value,
+        ]);
+
         DB::transaction(function () use ($election) {
+            $epIds = $election->electionPositions()->pluck('id');
+
+            // Delete tie resolutions
+            TieResolution::query()->whereIn('election_position_id', $epIds)->delete();
+
+            // Unfreeze trigger on Postgres if result was published
+            if ($election->result_status !== ResultStatus::NOT_CALCULATED) {
+                DB::table('elections')->where('id', $election->id)->update([
+                    'result_status' => ResultStatus::NOT_CALCULATED->value,
+                ]);
+            }
+            ResultTally::query()->whereIn('election_position_id', $epIds)->delete();
+
+            // Delete votes, ballots, and ballot tokens
+            Vote::query()->where('election_id', $election->id)->delete();
+            Ballot::query()->where('election_id', $election->id)->delete();
+            BallotToken::query()->where('election_id', $election->id)->delete();
+
+            // Delete voting sessions and election voters
+            $evIds = $election->electionVoters()->pluck('id');
+            VotingSession::query()->whereIn('election_voter_id', $evIds)->delete();
             $election->electionVoters()->delete();
+
+            // Delete candidates and election positions
             $election->candidates()->delete();
             $election->electionPositions()->delete();
+
+            // Delete the election itself
             $election->delete();
         });
 
-        return redirect()->route('admin.elections.index')->with('success', 'Draft election deleted.');
+        return redirect()->route('admin.elections.index')->with('success', 'Election "'.$election->name.'" has been permanently deleted.');
     }
 
     public function schedule(ReauthenticatedRequest $request, Election $election): RedirectResponse
