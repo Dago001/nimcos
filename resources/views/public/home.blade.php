@@ -184,7 +184,7 @@
                 <li><a href="#how-to-vote">How to vote</a></li>
                 <li><a href="{{ route('public.results') }}">Published results</a></li>
                 <li><a href="{{ route('public.receipt') }}">Verify a ballot receipt</a></li>
-                <li><a href="{{ route('admin.login') }}">Election officials</a></li>
+                {{-- <li><a href="{{ route('admin.login') }}">Election officials</a></li> --}}
             </ul>
         </div>
     </div>
