@@ -155,6 +155,10 @@ class VoterImportService
      */
     public function process(VoterImport $import, User $by): void
     {
+        if ($import->status === ImportStatus::COMPLETED) {
+            return;
+        }
+
         try {
             $absolute = Storage::disk(self::DISK)->path($import->stored_path);
             if (! is_file($absolute) || hash_file('sha256', $absolute) !== $import->file_hash) {
@@ -164,6 +168,11 @@ class VoterImportService
             $parsed = $this->parser->parse($absolute, pathinfo($import->stored_path, PATHINFO_EXTENSION));
 
             $counts = DB::transaction(function () use ($parsed, $import, $by) {
+                $lockedImport = VoterImport::query()->whereKey($import->getKey())->lockForUpdate()->first();
+                if (! $lockedImport || $lockedImport->status === ImportStatus::COMPLETED) {
+                    return ['new' => 0, 'updated' => 0, 'unchanged' => 0];
+                }
+
                 $valid = $parsed['valid'];
                 foreach (array_keys($this->emailConflictsWithRegister($valid)) as $rowNumber) {
                     unset($valid[$rowNumber]);

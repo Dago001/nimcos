@@ -69,6 +69,18 @@ class VoterImportController extends Controller
 
     public function show(VoterImport $import): View
     {
+        if ($import->status === ImportStatus::PROCESSING) {
+            $user = $import->confirmer ?: auth()->user();
+            if ($user) {
+                try {
+                    $this->imports->process($import, $user);
+                    $import->refresh();
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        }
+
         return view('admin.imports.show', [
             'import' => $import->load(['uploader', 'confirmer']),
             'rowErrors' => $import->errors()->limit(200)->get(),
@@ -82,7 +94,18 @@ class VoterImportController extends Controller
         $request->validate(['acknowledge' => ['accepted']], ['acknowledge.accepted' => 'Confirm that you have reviewed the preview.']);
         $this->imports->confirm($import, $request->user());
 
-        return redirect()->route('admin.imports.show', $import)->with('success', 'Import confirmed and is being processed. This page shows the final totals when it completes.');
+        try {
+            $this->imports->process($import, $request->user());
+            $import->refresh();
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        $msg = $import->status === ImportStatus::COMPLETED
+            ? 'Import completed successfully! '.number_format($import->imported_count).' voter(s) onboarded.'
+            : 'Import confirmed and is being processed.';
+
+        return redirect()->route('admin.imports.show', $import)->with('success', $msg);
     }
 
     public function cancel(VoterImport $import): RedirectResponse
