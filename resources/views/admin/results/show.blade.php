@@ -120,7 +120,7 @@
                     <div class="endorsement-body">
                         <div class="endorsement-item">
                             <span class="endorsement-label">NAME:</span>
-                            <strong class="endorsement-value">{{ $election->returning_officer_name ?: ($election->publisher?->name ?? 'Gift Dagogo') }}</strong>
+                            <strong class="endorsement-value">{{ $election->returning_officer_display_name }}</strong>
                         </div>
 
                         <div class="endorsement-item">

@@ -82,6 +82,46 @@ class Election extends Model
         return $this->belongsTo(User::class, 'published_by');
     }
 
+    public function returningOfficerDisplayName(): string
+    {
+        if (! empty($this->returning_officer_name)) {
+            return $this->returning_officer_name;
+        }
+
+        if ($this->publisher && ! empty($this->publisher->name)) {
+            return $this->publisher->name;
+        }
+
+        if (auth()->check() && ! empty(auth()->user()->name)) {
+            return auth()->user()->name;
+        }
+
+        $returningOfficer = User::query()
+            ->whereHas('roles', fn ($query) => $query->where('name', Role::RETURNING_OFFICER))
+            ->orderByDesc('last_login_at')
+            ->first();
+
+        if ($returningOfficer && ! empty($returningOfficer->name)) {
+            return $returningOfficer->name;
+        }
+
+        $lastLoggedInAdmin = User::query()
+            ->whereNotNull('last_login_at')
+            ->orderByDesc('last_login_at')
+            ->first();
+
+        if ($lastLoggedInAdmin && ! empty($lastLoggedInAdmin->name)) {
+            return $lastLoggedInAdmin->name;
+        }
+
+        return 'Returning Officer';
+    }
+
+    public function getReturningOfficerDisplayNameAttribute(): string
+    {
+        return $this->returningOfficerDisplayName();
+    }
+
     /** Ballots may be cast only when status is OPEN *and* the server clock is inside the window. */
     public function isAcceptingVotes(?CarbonInterface $now = null): bool
     {

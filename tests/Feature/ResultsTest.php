@@ -133,6 +133,7 @@ class ResultsTest extends TestCase
             ->assertOk()
             ->assertSee('Elected')
             ->assertSee('NAME:')
+            ->assertSee($this->ro->name)
             ->assertSee('POSITION:')
             ->assertSee('RETURNING OFFICER')
             ->assertSee('Certified &amp; Published:', false);
