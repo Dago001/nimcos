@@ -10,7 +10,7 @@
         @csrf @method('PUT')
         <div class="panel-body">
             @foreach ($definitions as $key => [$configPath, $type, $label, $help])
-                <div class="field">
+                <div class="field {{ $key === 'system_under_maintenance' ? 'field-maintenance-toggle' : '' }}">
                     @if ($type === 'bool')
                         <label class="check"><input type="checkbox" name="{{ $key }}" value="1" @checked($values[$key])> <span><strong>{{ $label }}</strong></span></label>
                     @else

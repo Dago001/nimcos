@@ -23,17 +23,19 @@ return new class extends Migration
         } else {
             try {
                 DB::statement('ALTER TABLE voters DROP CONSTRAINT voters_command_check');
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 try {
                     DB::statement('ALTER TABLE voters DROP CHECK voters_command_check');
-                } catch (\Throwable) {}
+                } catch (Throwable) {
+                }
             }
             try {
                 DB::statement('ALTER TABLE candidates DROP CONSTRAINT candidates_command_check');
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 try {
                     DB::statement('ALTER TABLE candidates DROP CHECK candidates_command_check');
-                } catch (\Throwable) {}
+                } catch (Throwable) {
+                }
             }
             DB::statement("ALTER TABLE voters ADD CONSTRAINT voters_command_check CHECK (command IN ({$values}))");
             DB::statement("ALTER TABLE candidates ADD CONSTRAINT candidates_command_check CHECK (command IN ({$values}))");

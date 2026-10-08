@@ -17,6 +17,8 @@ class SettingsService
      * @var array<string, array{0:string,1:string,2:string,3:string}>
      */
     public const DEFINITIONS = [
+        'system_under_maintenance' => ['', 'bool', 'System under maintenance', 'Place the portal in maintenance mode. When enabled, voters and public visitors will see the maintenance screen. Administrators can still sign in and access the administration panel.'],
+        'maintenance_message' => ['', 'string', 'Maintenance notice message', 'Optional custom message displayed to voters and visitors on the maintenance screen. Leave blank for default message.'],
         'otp_ttl_minutes' => ['nimcos.otp.ttl_minutes', 'int', 'OTP validity (minutes)', 'How long a one-time password remains valid. 3 to 10 minutes recommended.'],
         'otp_max_attempts' => ['nimcos.otp.max_attempts', 'int', 'OTP attempts per code', 'Wrong entries allowed before a code is invalidated.'],
         'voting_session_minutes' => ['nimcos.voting_session.idle_minutes', 'int', 'Ballot session idle timeout (minutes)', 'A voter is signed out of the ballot after this much inactivity.'],
@@ -49,8 +51,9 @@ class SettingsService
     {
         $type = self::DEFINITIONS[$key][1] ?? 'string';
         $value = $this->cast($value, $type);
+        $dbValue = $value ?? ($type === 'int' ? 0 : ($type === 'bool' ? false : ''));
 
-        SystemSetting::query()->updateOrCreate(['key' => $key], ['value' => $value, 'updated_by' => $by?->getKey()]);
+        SystemSetting::query()->updateOrCreate(['key' => $key], ['value' => $dbValue, 'updated_by' => $by?->getKey()]);
         $this->cache[$key] = $value;
     }
 

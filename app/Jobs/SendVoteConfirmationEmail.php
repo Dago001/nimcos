@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 
@@ -54,12 +55,13 @@ class SendVoteConfirmationEmail implements ShouldQueue
 
         try {
             Mail::to($voter->email)->send($mailable);
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning("Primary mailer failed to send Vote Confirmation email to {$voter->email}: {$e->getMessage()}. Attempting Resend fallback.");
+        } catch (Throwable $e) {
+            Log::warning("Primary mailer failed to send Vote Confirmation email to {$voter->email}: {$e->getMessage()}. Attempting Resend fallback.");
 
             if (config('services.resend.key') || env('RESEND_API_KEY')) {
                 Mail::mailer('resend_smtp')->to($voter->email)->send($mailable);
-                \Illuminate\Support\Facades\Log::info("Successfully sent Vote Confirmation email to {$voter->email} via Resend fallback.");
+                Log::info("Successfully sent Vote Confirmation email to {$voter->email} via Resend fallback.");
+
                 return;
             }
 

@@ -677,5 +677,11 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .endorsement-title { font-size: 0.88rem; color: var(--ink-2); font-weight: 600; margin-bottom: 0.25rem; }
 .endorsement-date { font-size: 0.8rem; color: var(--muted); }
 .endorsement-seal { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--green); font-weight: 600; background: var(--green-tint); padding: 0.2rem 0.5rem; border-radius: 4px; }
-
-
+/* ---------- System Maintenance Mode ---------- */
+.maintenance-banner { background: #fee2e2; border-bottom: 1px solid #f87171; color: #991b1b; font-size: .85rem; text-align: center; padding: .5rem 1rem; font-weight: 600; }
+.maintenance-banner a { color: #991b1b; text-decoration: underline; margin-left: .5rem; font-weight: 700; }
+.field-maintenance-toggle { background: #fff8e6; border: 1px solid #ffd591; border-radius: var(--radius); padding: .85rem 1rem; }
+.maintenance-badge-wrap { margin-bottom: 1rem; }
+.maintenance-actions { margin-top: 1.5rem; margin-bottom: 1rem; }
+.admin-link-note { margin-top: 1.5rem; text-align: center; font-size: .82rem; color: var(--muted); }
+.admin-link-note a { color: var(--muted); text-decoration: underline; }

@@ -24,6 +24,11 @@
 @if (config('nimcos.show_demo_banner'))
     <div class="demo-banner" role="note">DEMONSTRATION ENVIRONMENT: fictitious test data only.</div>
 @endif
+@if (app(\App\Services\Settings\SettingsService::class)->get('system_under_maintenance'))
+    <div class="maintenance-banner" role="alert">
+        ⚠️ <strong>MAINTENANCE MODE ACTIVE:</strong> The portal is currently closed to public voters. <a href="{{ route('admin.settings.edit') }}">Change status in Settings</a>
+    </div>
+@endif
 <div class="admin-shell">
     <nav class="sidebar" aria-label="Administration">
         <a class="sidebar-brand" href="{{ route('admin.dashboard') }}">

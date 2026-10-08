@@ -22,6 +22,7 @@ class SettingsController extends Controller
             'definitions' => SettingsService::DEFINITIONS,
             'values' => $this->settings->all(),
             'environment' => [
+                'Maintenance mode' => $this->settings->get('system_under_maintenance') ? 'ACTIVE (Portal closed to voters)' : 'Off (Portal open)',
                 'Application environment' => app()->environment(),
                 'Demo mode' => config('nimcos.demo_mode') ? 'ON (test data only)' : 'Off',
                 'Mail driver' => config('mail.default'),
@@ -35,6 +36,8 @@ class SettingsController extends Controller
     public function update(Request $request, AuditLogger $audit, Reauthenticator $reauth): RedirectResponse
     {
         $data = $request->validate([
+            'system_under_maintenance' => ['nullable', 'boolean'],
+            'maintenance_message' => ['nullable', 'string', 'max:500'],
             'otp_ttl_minutes' => ['required', 'integer', 'min:2', 'max:15'],
             'otp_max_attempts' => ['required', 'integer', 'min:3', 'max:10'],
             'voting_session_minutes' => ['required', 'integer', 'min:5', 'max:60'],
@@ -50,6 +53,7 @@ class SettingsController extends Controller
         $reauth->confirm($request->user(), $data['confirm_password'], $data['confirm_mfa'] ?? null, 'change_settings');
 
         $data['require_admin_mfa'] = $request->boolean('require_admin_mfa');
+        $data['system_under_maintenance'] = $request->boolean('system_under_maintenance');
         $changed = [];
         foreach (array_keys(SettingsService::DEFINITIONS) as $key) {
             $old = $this->settings->get($key);

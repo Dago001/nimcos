@@ -6,6 +6,7 @@ use App\Enums\AlertSeverity;
 use App\Enums\AuditResult;
 use App\Enums\EligibilityStatus;
 use App\Enums\VotingSessionStatus;
+use App\Jobs\SendVoteConfirmationEmail;
 use App\Models\Ballot;
 use App\Models\BallotToken;
 use App\Models\Election;
@@ -146,7 +147,7 @@ class BallotSubmissionService
                     $reference = $ballot->reference;
                     $displayTime = display_time($votedAt, 'j F Y, H:i');
 
-                    DB::afterCommit(fn () => \App\Jobs\SendVoteConfirmationEmail::dispatch(
+                    DB::afterCommit(fn () => SendVoteConfirmationEmail::dispatch(
                         $voterId,
                         $electionId,
                         $reference,

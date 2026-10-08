@@ -9,8 +9,11 @@ use Throwable;
 class TermiiSmsService
 {
     private string $apiKey;
+
     private string $baseUrl;
+
     private string $senderId;
+
     private string $channel;
 
     public function __construct()
@@ -38,6 +41,7 @@ class TermiiSmsService
         $normalised = $this->normaliseNigerianPhone($phone);
         if ($normalised === null) {
             Log::warning("TermiiSms: invalid phone number provided: {$phone}");
+
             return false;
         }
 

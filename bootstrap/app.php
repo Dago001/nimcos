@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\EnsureAdminSession;
 use App\Http\Middleware\RequirePermission;
 use App\Http\Middleware\RequireVotingSession;
@@ -20,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(SecurityHeaders::class);
+
+        $middleware->web(append: [
+            CheckMaintenanceMode::class,
+        ]);
 
         $middleware->alias([
             'permission' => RequirePermission::class,

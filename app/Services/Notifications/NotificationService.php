@@ -9,6 +9,7 @@ use App\Mail\VoterOtpMail;
 use App\Models\SecurityAlert;
 use App\Models\User;
 use App\Support\Permissions;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -26,12 +27,13 @@ class NotificationService
         try {
             Mail::to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning("Primary mailer failed to send OTP to {$destination}: {$e->getMessage()}. Attempting Resend fallback.");
+            Log::warning("Primary mailer failed to send OTP to {$destination}: {$e->getMessage()}. Attempting Resend fallback.");
 
             // If Resend is configured, immediately failover to Resend
             if (config('services.resend.key') || env('RESEND_API_KEY')) {
                 Mail::mailer('resend_smtp')->to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
-                \Illuminate\Support\Facades\Log::info("Successfully sent OTP to {$destination} via Resend fallback.");
+                Log::info("Successfully sent OTP to {$destination} via Resend fallback.");
+
                 return;
             }
 
