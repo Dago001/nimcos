@@ -22,8 +22,16 @@ class ProcessVoterImport implements ShouldQueue
 
     public function handle(VoterImportService $service): void
     {
-        $import = VoterImport::query()->findOrFail($this->importId);
-        $user = User::query()->findOrFail($this->userId);
+        $import = VoterImport::query()->find($this->importId);
+        if (! $import) {
+            return;
+        }
+
+        $user = User::query()->find($this->userId);
+        if (! $user) {
+            return;
+        }
+
         $service->process($import, $user);
     }
 }
