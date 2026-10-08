@@ -45,14 +45,26 @@ class SendVoteConfirmationEmail implements ShouldQueue
 
         $voterName = trim($voter->first_name.' '.$voter->surname);
 
-        Mail::to($voter->email)->send(
-            new VoteConfirmationMail(
-                election: $election,
-                voterName: $voterName,
-                reference: $this->reference,
-                votedAtDisplay: $this->votedAtDisplay,
-            )
+        $mailable = new VoteConfirmationMail(
+            election: $election,
+            voterName: $voterName,
+            reference: $this->reference,
+            votedAtDisplay: $this->votedAtDisplay,
         );
+
+        try {
+            Mail::to($voter->email)->send($mailable);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Primary mailer failed to send Vote Confirmation email to {$voter->email}: {$e->getMessage()}. Attempting Resend fallback.");
+
+            if (config('services.resend.key') || env('RESEND_API_KEY')) {
+                Mail::mailer('resend')->to($voter->email)->send($mailable);
+                \Illuminate\Support\Facades\Log::info("Successfully sent Vote Confirmation email to {$voter->email} via Resend fallback.");
+                return;
+            }
+
+            throw $e;
+        }
     }
 
     public function failed(?Throwable $e): void

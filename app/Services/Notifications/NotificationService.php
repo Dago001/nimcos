@@ -20,10 +20,23 @@ class NotificationService
 {
     public const CHANNEL_EMAIL = 'EMAIL';
 
-    /** Sent synchronously from the encrypted SendVoterOtp job. */
+    /** Sent synchronously from the encrypted SendVoterOtp job with automatic fallback to Resend. */
     public function sendOtp(string $destination, string $code, int $ttlMinutes): void
     {
-        Mail::to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
+        try {
+            Mail::to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Primary mailer failed to send OTP to {$destination}: {$e->getMessage()}. Attempting Resend fallback.");
+
+            // If Resend is configured, immediately failover to Resend
+            if (config('services.resend.key') || env('RESEND_API_KEY')) {
+                Mail::mailer('resend')->to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
+                \Illuminate\Support\Facades\Log::info("Successfully sent OTP to {$destination} via Resend fallback.");
+                return;
+            }
+
+            throw $e;
+        }
     }
 
     /** Temporary password for a new account or after a reset; queued and encrypted at rest. */

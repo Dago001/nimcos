@@ -62,7 +62,13 @@ return [
         ],
 
         'resend' => [
-            'transport' => 'resend',
+            'transport' => 'smtp',
+            'host' => 'smtp.resend.com',
+            'port' => 465,
+            'encryption' => 'ssl',
+            'username' => 'resend',
+            'password' => env('RESEND_API_KEY'),
+            'timeout' => 10,
         ],
 
         'sendmail' => [
@@ -81,10 +87,10 @@ return [
 
         'failover' => [
             'transport' => 'failover',
-            'mailers' => [
+            'mailers' => array_filter([
                 'smtp',
-                'log',
-            ],
+                env('RESEND_API_KEY') ? 'resend' : null,
+            ]),
             'retry_after' => 60,
         ],
 
