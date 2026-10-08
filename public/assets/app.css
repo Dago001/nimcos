@@ -667,16 +667,30 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .mfa-input { font-family: var(--mono); font-size: 1.15rem; text-align: center; letter-spacing: .2em; padding: .45rem .6rem; max-width: 200px; width: 100%; margin: 0 auto; display: block; }
 .mfa-input::placeholder { color: var(--muted); opacity: .5; letter-spacing: .2em; }
 
-/* ---------- Official Results Endorsement & E-Signature ---------- */
-.results-endorsement { margin-top: 3rem; padding-top: 1.5rem; border-top: 2px dashed var(--line); display: flex; justify-content: flex-end; }
-.endorsement-box { width: 320px; max-width: 100%; border: 1px solid var(--line); background: #ffffff; border-radius: var(--radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.endorsement-header { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--green); margin-bottom: 0.75rem; border-bottom: 1px solid var(--line); padding-bottom: 0.35rem; }
-.endorsement-signature { margin-bottom: 0.75rem; text-align: center; }
-.endorsement-signature img { max-height: 90px; max-width: 220px; margin: 0 auto; display: block; object-fit: contain; }
-.endorsement-name { font-weight: 700; font-size: 1.05rem; color: var(--ink); margin-bottom: 0.2rem; }
-.endorsement-title { font-size: 0.88rem; color: var(--ink-2); font-weight: 600; margin-bottom: 0.25rem; }
-.endorsement-date { font-size: 0.8rem; color: var(--muted); }
-.endorsement-seal { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--green); font-weight: 600; background: var(--green-tint); padding: 0.2rem 0.5rem; border-radius: 4px; }
+/* ---------- Official Results Header & Endorsement ---------- */
+.results-header-center { text-align: center; margin-bottom: 2rem; }
+.results-logo-wrap { display: flex; justify-content: center; margin-bottom: .85rem; }
+.results-logo { border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2.5px solid var(--line-strong); width: 88px; height: 88px; object-fit: cover; }
+.results-header-center .step-label { display: inline-block; text-align: center; margin-bottom: .35rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--green); font-size: .85rem; }
+.results-header-center .page-title { margin: 0 0 .4rem; font-size: 1.95rem; font-weight: 800; color: var(--green-ink); letter-spacing: .01em; }
+.results-header-center .lede { margin: 0; color: var(--muted); font-size: 1.05rem; }
+
+.results-endorsement { margin-top: 3rem; padding-top: 2rem; border-top: 2px dashed var(--line); display: flex; justify-content: flex-end; }
+.endorsement-card, .endorsement-box { width: 380px; max-width: 100%; border: 1.5px solid #207027; background: #ffffff; border-radius: var(--radius-md); box-shadow: 0 4px 14px rgba(32, 112, 39, 0.08); overflow: hidden; }
+.endorsement-header { display: flex; align-items: center; gap: .6rem; background: #f0f7f1; padding: .75rem 1.15rem; border-bottom: 1.5px solid #d1e7d4; font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #165b1c; }
+.endorsement-seal-img { border-radius: 50%; border: 1px solid #c2e0c7; flex: none; width: 32px; height: 32px; }
+.endorsement-header-title { flex: 1; }
+.endorsement-body { padding: 1.15rem 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
+.endorsement-item { display: flex; flex-direction: column; gap: .15rem; font-size: .9rem; }
+.endorsement-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.endorsement-value { font-size: 1rem; color: var(--ink); font-weight: 800; letter-spacing: .02em; }
+.endorsement-signature-section { display: flex; flex-direction: column; gap: .25rem; margin: .25rem 0; }
+.endorsement-signature-frame, .endorsement-signature { background: #fafbfa; border: 1px dashed #b8dcbb; border-radius: var(--radius-sm); padding: .5rem .75rem; text-align: center; min-height: 85px; display: flex; align-items: center; justify-content: center; }
+.signature-img, .endorsement-signature img { max-height: 85px; max-width: 260px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain; }
+.endorsement-certified-item { padding-top: .4rem; border-top: 1px solid var(--line); }
+.endorsement-date { font-size: .88rem; font-weight: 600; color: var(--ink-2); }
+.endorsement-badge, .endorsement-seal { display: inline-flex; align-items: center; gap: .4rem; font-size: .75rem; color: #1b6823; font-weight: 700; background: #e8f5e9; border: 1px solid #c8e6c9; padding: .35rem .65rem; border-radius: 4px; margin-top: .25rem; }
+
 /* ---------- System Maintenance Mode ---------- */
 .maintenance-banner { background: #fee2e2; border-bottom: 1px solid #f87171; color: #991b1b; font-size: .85rem; text-align: center; padding: .5rem 1rem; font-weight: 600; }
 .maintenance-banner a { color: #991b1b; text-decoration: underline; margin-left: .5rem; font-weight: 700; }

@@ -129,7 +129,14 @@ class ResultsTest extends TestCase
         $election->refresh();
         $this->assertSame(ElectionStatus::RESULTS_PUBLISHED, $election->status);
         $this->assertSame(ResultStatus::PUBLISHED, $election->result_status);
-        $this->get(route('public.results.show', $election->code))->assertOk()->assertSee('Elected');
+        $this->get(route('public.results.show', $election->code))
+            ->assertOk()
+            ->assertSee('Elected')
+            ->assertSee('NAME:')
+            ->assertSee('POSITION:')
+            ->assertSee('RETURNING OFFICER')
+            ->assertSee('Certified &amp; Published:', false);
+        $this->get(route('election.signature', $election))->assertOk();
         // Counts were not changed by the tie resolution.
         $this->assertSame([1, 1], ResultTally::query()->orderBy('rank')->limit(2)->pluck('votes')->all());
     }

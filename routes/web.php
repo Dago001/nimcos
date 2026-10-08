@@ -58,6 +58,8 @@ Route::middleware('throttle:public')->name('public.')->group(function () {
 });
 Route::get('/media/candidates/{candidate}/photo', Public\CandidatePhotoController::class)
     ->whereUuid('candidate')->name('candidate.photo');
+Route::get('/media/elections/{election}/signature', Public\ElectionSignatureController::class)
+    ->whereUuid('election')->name('election.signature');
 
 /*
 |--------------------------------------------------------------------------
