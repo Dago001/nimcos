@@ -90,7 +90,24 @@ class ResultController extends Controller
 
     public function publish(ReauthenticatedRequest $request, Election $election): RedirectResponse
     {
-        $this->calculator->publish($election, $request->user());
+        $request->validate([
+            'signature' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
+            'returning_officer_name' => ['nullable', 'string', 'max:150'],
+        ]);
+
+        $signaturePath = null;
+        if ($request->hasFile('signature')) {
+            $file = $request->file('signature');
+            $filename = 'signature_'.$election->id.'_'.time().'.'.$file->getClientOriginalExtension();
+            $signaturePath = $file->storeAs('signatures', $filename, 'public');
+        }
+
+        $this->calculator->publish(
+            $election,
+            $request->user(),
+            $signaturePath,
+            $request->input('returning_officer_name')
+        );
 
         return back()->with('success', 'Results have been officially PUBLISHED and are now frozen.');
     }

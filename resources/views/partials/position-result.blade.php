@@ -42,7 +42,7 @@
                 <td><strong>Total valid votes</strong></td>
                 <td class="num"><strong>{{ number_format($p['total_valid_votes']) }}</strong></td>
                 <td class="num">100.00</td>
-                <td class="small muted">Invalid: {{ $p['invalid_votes'] }}@if ($p['abstentions'] !== null) · Abstained: {{ number_format($p['abstentions']) }}@endif</td>
+                <td class="small muted">@if ($p['abstentions'] !== null)Abstained: {{ number_format($p['abstentions']) }}@endif</td>
             </tr>
             </tfoot>
         </table>

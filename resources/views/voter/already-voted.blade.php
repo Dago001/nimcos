@@ -13,7 +13,7 @@
     </div>
 
     <div class="entry-form">
-        <h1 class="page-title">You have already voted</h1>
+        <h1 class="page-title danger">You have already voted</h1>
         <p class="lede">Our records show that your ballot for <strong>{{ $election->name }}</strong> was recorded on {{ display_time($votedAt, 'j F Y') }} at {{ display_time($votedAt, 'H:i') }} (WAT). Each member may vote only once.</p>
 
         @if ($receipt)

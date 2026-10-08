@@ -185,6 +185,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .voter-footer a { color: var(--muted); }
 
 .page-title { margin-bottom: .25rem; }
+.page-title.danger { color: var(--error); }
 .lede { color: var(--muted); font-size: 1.02rem; margin-bottom: 1.5rem; }
 .step-label { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green); margin-bottom: .35rem; }
 
@@ -665,4 +666,16 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .mfa-field label { display: block; font-size: .88rem; font-weight: 600; margin-bottom: .35rem; color: var(--ink-2); }
 .mfa-input { font-family: var(--mono); font-size: 1.15rem; text-align: center; letter-spacing: .2em; padding: .45rem .6rem; max-width: 200px; width: 100%; margin: 0 auto; display: block; }
 .mfa-input::placeholder { color: var(--muted); opacity: .5; letter-spacing: .2em; }
+
+/* ---------- Official Results Endorsement & E-Signature ---------- */
+.results-endorsement { margin-top: 3rem; padding-top: 1.5rem; border-top: 2px dashed var(--line); display: flex; justify-content: flex-end; }
+.endorsement-box { width: 320px; max-width: 100%; border: 1px solid var(--line); background: #ffffff; border-radius: var(--radius); padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.endorsement-header { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--green); margin-bottom: 0.75rem; border-bottom: 1px solid var(--line); padding-bottom: 0.35rem; }
+.endorsement-signature { margin-bottom: 0.75rem; text-align: center; }
+.endorsement-signature img { max-height: 90px; max-width: 220px; margin: 0 auto; display: block; object-fit: contain; }
+.endorsement-name { font-weight: 700; font-size: 1.05rem; color: var(--ink); margin-bottom: 0.2rem; }
+.endorsement-title { font-size: 0.88rem; color: var(--ink-2); font-weight: 600; margin-bottom: 0.25rem; }
+.endorsement-date { font-size: 0.8rem; color: var(--muted); }
+.endorsement-seal { display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--green); font-weight: 600; background: var(--green-tint); padding: 0.2rem 0.5rem; border-radius: 4px; }
+
 

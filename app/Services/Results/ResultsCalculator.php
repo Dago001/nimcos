@@ -342,9 +342,9 @@ class ResultsCalculator
         return $blockers;
     }
 
-    public function publish(Election $election, User $by): Election
+    public function publish(Election $election, User $by, ?string $signaturePath = null, ?string $officerName = null): Election
     {
-        $published = DB::transaction(function () use ($election, $by) {
+        $published = DB::transaction(function () use ($election, $by, $signaturePath, $officerName) {
             $locked = $this->lockClosed($election);
             $blockers = $this->publicationBlockers($locked);
             if ($blockers !== []) {
@@ -361,6 +361,8 @@ class ResultsCalculator
                 'result_status' => ResultStatus::PUBLISHED,
                 'published_at' => now(),
                 'published_by' => $by->getKey(),
+                'returning_officer_signature' => $signaturePath,
+                'returning_officer_name' => $officerName ?: $by->name,
             ]);
             $locked->save();
 

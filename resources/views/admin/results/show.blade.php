@@ -42,9 +42,20 @@
                     @if ($blockers)
                         <div class="alert alert-warning mb-0"><strong>Cannot publish yet:</strong><ul>@foreach ($blockers as $b)<li>{{ $b }}</li>@endforeach</ul></div>
                     @else
-                        <x-reauth-dialog id="dlg-publish" :action="route('admin.results.publish', $election)" title="PUBLISH RESULTS" button="Publish official results">
+                        <x-reauth-dialog id="dlg-publish" :action="route('admin.results.publish', $election)" title="PUBLISH RESULTS" button="Publish official results" :multipart="true">
                             <div class="alert alert-warning mb-2"><strong>Publication is final.</strong> Results become public and are frozen.</div>
-                            <div class="modal-summary">{{ $election->name }}<br>{{ number_format($results['ballots'] ?? 0) }} ballots · turnout {{ number_format($results['turnout'] ?? 0, 2) }}%</div>
+                            <div class="modal-summary mb-3">{{ $election->name }}<br>{{ number_format($results['ballots'] ?? 0) }} ballots · turnout {{ number_format($results['turnout'] ?? 0, 2) }}%</div>
+                            
+                            <div class="field">
+                                <label for="ro-name">Returning Officer Name</label>
+                                <input class="input" type="text" id="ro-name" name="returning_officer_name" value="{{ auth()->user()->name }}" maxlength="150">
+                            </div>
+
+                            <div class="field">
+                                <label for="ro-sig">Returning Officer E-Signature (Image)</label>
+                                <input class="input" type="file" id="ro-sig" name="signature" accept="image/png,image/jpeg,image/webp">
+                                <div class="help">Upload PNG, JPEG, or WebP signature image to stamp the official results sheet.</div>
+                            </div>
                         </x-reauth-dialog>
                     @endif
                 @endif
@@ -97,6 +108,22 @@
         @endforeach
 
         <p class="small muted">Result hash (SHA-256 of all tallies): <span class="mono">{{ $results['hash'] }}</span></p>
+
+        @if ($election->returning_officer_signature || $election->status === \App\Enums\ElectionStatus::RESULTS_PUBLISHED)
+            <div class="results-endorsement">
+                <div class="endorsement-box">
+                    <div class="endorsement-header">Official Certification</div>
+                    @if ($election->returning_officer_signature)
+                        <div class="endorsement-signature">
+                            <img src="{{ asset('storage/'.$election->returning_officer_signature) }}" alt="Returning Officer Signature" loading="lazy">
+                        </div>
+                    @endif
+                    <div class="endorsement-name">{{ $election->returning_officer_name ?: ($election->publisher?->name ?? 'Returning Officer') }}</div>
+                    <div class="endorsement-title">Returning Officer, NIMCOS Electoral Committee</div>
+                    <div class="endorsement-date">Certified & Published: {{ display_time($election->published_at, 'j F Y, H:i') }} (WAT)</div>
+                </div>
+            </div>
+        @endif
     @endif
 @endif
 @endsection

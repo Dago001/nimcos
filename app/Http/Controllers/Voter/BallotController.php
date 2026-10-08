@@ -120,7 +120,7 @@ class BallotController extends Controller
         $request->session()->regenerateToken();
         Cookie::queue(Cookie::forget(config('nimcos.voting_session.ballot_cookie')));
 
-        return redirect()->route('voter.entry')->with('status', 'Thank you for voting. You have been signed out.');
+        return redirect()->route('home')->with('status', 'Thank you for voting. You have been signed out.');
     }
 
     private function session(Request $request): VotingSession

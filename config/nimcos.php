@@ -29,7 +29,7 @@ return [
 
     'voting_session' => [
         // Idle lifetime of a ballot session; refreshed on each ballot page.
-        'idle_minutes' => (int) env('NIMCOS_VOTING_SESSION_MINUTES', 20),
+        'idle_minutes' => (int) env('NIMCOS_VOTING_SESSION_MINUTES', 10),
         'ballot_cookie' => 'nimcos_ballot',
     ],
 

@@ -7,11 +7,12 @@
     'method' => 'POST',
     'trigger' => null,
     'triggerClass' => 'btn btn-primary',
+    'multipart' => false,
 ])
 {{-- Privileged-action confirmation: shows a summary and requires the admin's password (and MFA code). --}}
 <button type="button" class="{{ $triggerClass }}" data-dialog-open="{{ $id }}">{{ $trigger ?? $button }}</button>
 <dialog class="modal" id="{{ $id }}" aria-labelledby="{{ $id }}-title">
-    <form method="POST" action="{{ $action }}" data-submit-once>
+    <form method="POST" action="{{ $action }}" data-submit-once @if($multipart) enctype="multipart/form-data" @endif>
         @csrf
         @if (strtoupper($method) !== 'POST')
             @method($method)
