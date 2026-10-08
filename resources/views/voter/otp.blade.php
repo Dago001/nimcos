@@ -25,7 +25,7 @@
         @else
             <div class="alert alert-info" role="note">
                 <strong>Live election</strong>
-                Check your email for the code. If it has not arrived within a couple of minutes, check your spam folder or use Resend code below.
+                Check your email and SMS messages for the code. If it has not arrived within a couple of minutes, check your spam folder or use Resend code below.
             </div>
         @endif
 

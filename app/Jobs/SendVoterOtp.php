@@ -37,9 +37,18 @@ class SendVoterOtp implements ShouldBeEncrypted, ShouldQueue
         $this->onQueue('otp');
     }
 
-    public function handle(NotificationService $notifications): void
+    public function handle(NotificationService $notifications, \App\Services\Notifications\TermiiSmsService $termii): void
     {
         $notifications->sendOtp($this->destination, $this->code, $this->ttlMinutes);
+
+        // Dual delivery: also dispatch SMS if voter has registered phone number
+        if ($termii->isEnabled()) {
+            $voter = \App\Models\Voter::query()->find($this->voterId);
+            if ($voter && $voter->phone) {
+                $msg = "Your NIMCOS E-Voting verification code is: {$this->code}. It expires in {$this->ttlMinutes} minutes. Do not share this code.";
+                $termii->send($voter->phone, $msg);
+            }
+        }
     }
 
     /** An OTP past its lifetime is useless; do not keep retrying. */
