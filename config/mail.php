@@ -61,7 +61,7 @@ return [
             // ],
         ],
 
-        'resend' => [
+        'resend_smtp' => [
             'transport' => 'smtp',
             'host' => 'smtp.resend.com',
             'port' => 465,
@@ -89,7 +89,7 @@ return [
             'transport' => 'failover',
             'mailers' => array_filter([
                 'smtp',
-                env('RESEND_API_KEY') ? 'resend' : null,
+                env('RESEND_API_KEY') ? 'resend_smtp' : null,
             ]),
             'retry_after' => 60,
         ],

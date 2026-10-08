@@ -30,7 +30,7 @@ class NotificationService
 
             // If Resend is configured, immediately failover to Resend
             if (config('services.resend.key') || env('RESEND_API_KEY')) {
-                Mail::mailer('resend')->to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
+                Mail::mailer('resend_smtp')->to($destination)->send(new VoterOtpMail($code, $ttlMinutes));
                 \Illuminate\Support\Facades\Log::info("Successfully sent OTP to {$destination} via Resend fallback.");
                 return;
             }

@@ -58,7 +58,7 @@ class SendVoteConfirmationEmail implements ShouldQueue
             \Illuminate\Support\Facades\Log::warning("Primary mailer failed to send Vote Confirmation email to {$voter->email}: {$e->getMessage()}. Attempting Resend fallback.");
 
             if (config('services.resend.key') || env('RESEND_API_KEY')) {
-                Mail::mailer('resend')->to($voter->email)->send($mailable);
+                Mail::mailer('resend_smtp')->to($voter->email)->send($mailable);
                 \Illuminate\Support\Facades\Log::info("Successfully sent Vote Confirmation email to {$voter->email} via Resend fallback.");
                 return;
             }
