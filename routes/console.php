@@ -1,14 +1,17 @@
 <?php
 
 use App\Enums\AlertSeverity;
+use App\Enums\ImportStatus;
 use App\Enums\UserStatus;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\VoterImport;
 use App\Services\Audit\AuditAction;
 use App\Services\Audit\AuditChainVerifier;
 use App\Services\Audit\AuditLogger;
 use App\Services\Elections\ElectionLifecycle;
 use App\Services\Security\SecurityAlertService;
+use App\Services\Voters\VoterImportService;
 use App\Services\Voting\VotingSessionService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -86,7 +89,54 @@ Artisan::command('nimcos:prune', function () {
     $this->info("Pruned {$otps} OTP record(s) older than 30 days.");
 })->purpose('Remove expired operational data (old OTP records)');
 
+Artisan::command('voters:process-import {id?}', function (VoterImportService $service) {
+    @ini_set('memory_limit', '512M');
+    if (function_exists('set_time_limit')) {
+        @set_time_limit(0);
+    }
+
+    $id = $this->argument('id');
+    $query = VoterImport::query();
+
+    if ($id) {
+        $imports = $query->where('id', $id)->get();
+    } else {
+        $imports = $query->where('status', ImportStatus::PROCESSING->value)->latest()->get();
+    }
+
+    if ($imports->isEmpty()) {
+        $this->info('No pending or processing imports found.');
+
+        return 0;
+    }
+
+    foreach ($imports as $import) {
+        $this->info("Processing import {$import->original_filename} (ID: {$import->id})...");
+        $user = $import->confirmer ?? $import->uploader ?? User::first();
+        if (! $user) {
+            $this->error('No administrative user found to attribute the import to.');
+
+            return 1;
+        }
+
+        try {
+            $service->process($import, $user);
+            $import->refresh();
+            if ($import->status === ImportStatus::COMPLETED) {
+                $this->info("Import completed successfully! {$import->imported_count} new, {$import->updated_count} updated, {$import->unchanged_count} unchanged.");
+            } else {
+                $this->error("Import status: {$import->status->value}. Reason: {$import->failure_reason}");
+            }
+        } catch (Throwable $e) {
+            $this->error("Import failed with exception: {$e->getMessage()}");
+        }
+    }
+
+    return 0;
+})->purpose('Process and complete pending or processing voter register imports');
+
 Schedule::command('nimcos:tick')->everyMinute()->withoutOverlapping()->onOneServer();
+Schedule::command('queue:work --stop-when-empty --max-time=50 --queue=otp,default')->everyMinute()->withoutOverlapping();
 Schedule::command('audit:verify')->hourly()->withoutOverlapping();
 Schedule::command('nimcos:prune')->dailyAt('02:30');
 Schedule::command('queue:prune-failed --hours=168')->daily();

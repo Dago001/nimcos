@@ -159,6 +159,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/imports', [Admin\VoterImportController::class, 'store'])->name('imports.store');
             Route::get('/imports/{import}', [Admin\VoterImportController::class, 'show'])->name('imports.show');
             Route::post('/imports/{import}/confirm', [Admin\VoterImportController::class, 'confirm'])->name('imports.confirm');
+            Route::post('/imports/{import}/process-now', [Admin\VoterImportController::class, 'processNow'])->name('imports.process-now');
             Route::post('/imports/{import}/cancel', [Admin\VoterImportController::class, 'cancel'])->name('imports.cancel');
             Route::delete('/imports/{import}', [Admin\VoterImportController::class, 'destroy'])->name('imports.destroy');
             Route::get('/imports/{import}/errors', [Admin\VoterImportController::class, 'errors'])->name('imports.errors');

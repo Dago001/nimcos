@@ -2,9 +2,12 @@
 
 namespace App\Services\Voters;
 
+use App\Enums\AccountStatus;
 use App\Enums\AuditResult;
 use App\Enums\ImportStatus;
+use App\Enums\MembershipStatus;
 use App\Enums\VerificationStatus;
+use App\Enums\VoterEligibility;
 use App\Jobs\ProcessVoterImport;
 use App\Models\User;
 use App\Models\Voter;
@@ -36,6 +39,11 @@ class VoterImportService
 
     public function preview(UploadedFile $file, User $by, bool $updateExisting): VoterImport
     {
+        @ini_set('memory_limit', '512M');
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(600);
+        }
+
         $extension = strtolower($file->getClientOriginalExtension());
         $storedPath = $file->storeAs('imports', Str::uuid().'.'.$extension, self::DISK);
         $absolute = Storage::disk(self::DISK)->path($storedPath);
@@ -155,6 +163,11 @@ class VoterImportService
      */
     public function process(VoterImport $import, User $by): void
     {
+        @ini_set('memory_limit', '512M');
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(600);
+        }
+
         if ($import->status === ImportStatus::COMPLETED) {
             return;
         }
@@ -179,35 +192,58 @@ class VoterImportService
                 }
 
                 $counts = ['new' => 0, 'updated' => 0, 'unchanged' => 0];
+                $now = now();
+
                 foreach (array_chunk($valid, 500, true) as $chunk) {
                     $existing = Voter::query()
                         ->whereIn('service_number', array_column($chunk, 'service_number'))
-                        ->lockForUpdate()
                         ->get()
                         ->keyBy('service_number');
+
+                    $newRecords = [];
 
                     foreach ($chunk as $row) {
                         /** @var Voter|null $voter */
                         $voter = $existing->get($row['service_number']);
                         if (! $voter) {
-                            $voter = new Voter;
-                            $voter->fill($row);
-                            // The register file is the source of truth for onboarding: a voter
-                            // from an approved import is verified on arrival, not left pending
-                            // for a separate manual step.
-                            $voter->forceFill([
-                                'created_by' => $by->getKey(), 'updated_by' => $by->getKey(), 'registered_at' => now(),
-                                'verification_status' => VerificationStatus::VERIFIED, 'verified_at' => now(), 'verified_by' => $by->getKey(),
-                            ])->save();
-                            $counts['new']++;
+                            $newRecords[] = [
+                                'id' => (string) Str::uuid(),
+                                'service_number' => $row['service_number'],
+                                'membership_id' => $row['membership_id'] ?? null,
+                                'surname' => $row['surname'],
+                                'first_name' => $row['first_name'],
+                                'other_names' => $row['other_names'] ?? null,
+                                'gender' => $row['gender'] ?? null,
+                                'dob' => $row['dob'] ?? null,
+                                'rank' => $row['rank'] ?? null,
+                                'command' => $row['command'] ?? null,
+                                'formation' => $row['formation'] ?? null,
+                                'phone' => $row['phone'] ?? null,
+                                'email' => $row['email'],
+                                'membership_status' => $row['membership_status'] ?? MembershipStatus::ACTIVE->value,
+                                'eligibility_status' => VoterEligibility::ELIGIBLE->value,
+                                'verification_status' => VerificationStatus::VERIFIED->value,
+                                'account_status' => AccountStatus::ACTIVE->value,
+                                'status_reason' => null,
+                                'registered_at' => $now,
+                                'verified_at' => $now,
+                                'verified_by' => $by->getKey(),
+                                'created_by' => $by->getKey(),
+                                'updated_by' => $by->getKey(),
+                                'is_test_data' => false,
+                                'created_at' => $now,
+                                'updated_at' => $now,
+                            ];
 
                             continue;
                         }
+
                         if (! $import->update_existing) {
                             $counts['unchanged']++;
 
                             continue;
                         }
+
                         $voter->fill(array_intersect_key($row, array_flip(self::TRACKED_FIELDS)));
                         if ($voter->isDirty()) {
                             $voter->updated_by = $by->getKey();
@@ -216,6 +252,11 @@ class VoterImportService
                         } else {
                             $counts['unchanged']++;
                         }
+                    }
+
+                    if (! empty($newRecords)) {
+                        Voter::query()->insert($newRecords);
+                        $counts['new'] += count($newRecords);
                     }
                 }
 

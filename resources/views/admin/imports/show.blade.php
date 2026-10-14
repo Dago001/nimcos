@@ -13,7 +13,13 @@
 </div>
 
 @if ($import->status->value === 'PROCESSING')
-    <div class="alert alert-info">The import is being applied. Refresh this page in a moment to see the final totals. (A queue worker must be running.)</div>
+    <div class="alert alert-info">
+        <div>The import is being applied. If it has not finished automatically, click the button below to process and complete it immediately.</div>
+        <form method="POST" action="{{ route('admin.imports.process-now', $import) }}" class="mt-2">
+            @csrf
+            <button class="btn btn-primary btn-sm" type="submit">Process now</button>
+        </form>
+    </div>
 @elseif ($import->status->value === 'FAILED')
     <div class="alert alert-error"><strong>The import failed and was rolled back. No records were changed.</strong> {{ $import->failure_reason }}</div>
 @elseif ($import->status->value === 'COMPLETED')

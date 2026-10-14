@@ -108,6 +108,25 @@ class VoterImportController extends Controller
         return redirect()->route('admin.imports.show', $import)->with('success', $msg);
     }
 
+    public function processNow(Request $request, VoterImport $import): RedirectResponse
+    {
+        $user = $import->confirmer ?: $request->user();
+        if ($user) {
+            try {
+                $this->imports->process($import, $user);
+                $import->refresh();
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        $msg = $import->status === ImportStatus::COMPLETED
+            ? 'Import completed successfully! '.number_format($import->imported_count).' voter(s) onboarded.'
+            : 'Import status: '.$import->status->label().($import->failure_reason ? ' ('.$import->failure_reason.')' : '');
+
+        return redirect()->route('admin.imports.show', $import)->with($import->status === ImportStatus::COMPLETED ? 'success' : 'info', $msg);
+    }
+
     public function cancel(VoterImport $import): RedirectResponse
     {
         $this->imports->cancel($import);

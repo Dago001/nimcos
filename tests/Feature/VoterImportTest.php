@@ -35,9 +35,11 @@ class VoterImportTest extends TestCase
 
     private function upload(UploadedFile $file): VoterImport
     {
-        $this->actingAsAdmin($this->ea)->post(route('admin.imports.store'), ['file' => $file, 'update_existing' => '1'])->assertRedirect();
+        $response = $this->actingAsAdmin($this->ea)->post(route('admin.imports.store'), ['file' => $file, 'update_existing' => '1']);
+        $response->assertRedirect();
+        $id = basename(parse_url($response->headers->get('Location'), PHP_URL_PATH));
 
-        return VoterImport::query()->latest()->firstOrFail();
+        return VoterImport::query()->findOrFail($id);
     }
 
     public function test_preview_validates_and_reports_without_changing_the_register(): void
@@ -234,5 +236,39 @@ class VoterImportTest extends TestCase
         $this->assertStringContainsString('MEMBERSHIP ID', $content);
         $this->assertStringContainsString('GENDER', $content);
         $this->assertStringContainsString('DOB', $content);
+    }
+
+    public function test_process_now_and_artisan_command_complete_processing_import(): void
+    {
+        $import = $this->upload($this->csv([
+            ['7001', 'TANKO', 'Ibrahim', '', 'ASI1', 'KANO STATE COMMAND', '', '08031112233', 'tanko@example.com', 'ACTIVE'],
+            ['7002', 'GARBA', 'Zainab', '', 'CSI', 'FCT COMMAND', '', '08031112244', 'zainab@example.com', 'ACTIVE'],
+        ]));
+
+        // Force into PROCESSING state
+        $import->forceFill(['status' => ImportStatus::PROCESSING, 'confirmed_by' => $this->ea->id])->save();
+
+        // Test web processNow route
+        $this->actingAsAdmin($this->ea)
+            ->post(route('admin.imports.process-now', $import))
+            ->assertRedirect(route('admin.imports.show', $import));
+
+        $import->refresh();
+        $this->assertSame(ImportStatus::COMPLETED, $import->status);
+        $this->assertDatabaseHas('voters', ['service_number' => '7001', 'email' => 'tanko@example.com']);
+        $this->assertDatabaseHas('voters', ['service_number' => '7002', 'email' => 'zainab@example.com']);
+
+        // Test artisan command on another processing import
+        $import2 = $this->upload($this->csv([
+            ['7003', 'ALI', 'Sule', '', 'ASI1', 'KANO STATE COMMAND', '', '08031112255', 'sule@example.com', 'ACTIVE'],
+        ]));
+        $import2->forceFill(['status' => ImportStatus::PROCESSING, 'confirmed_by' => $this->ea->id])->save();
+
+        $this->artisan('voters:process-import', ['id' => $import2->id])
+            ->assertSuccessful();
+
+        $import2->refresh();
+        $this->assertSame(ImportStatus::COMPLETED, $import2->status);
+        $this->assertDatabaseHas('voters', ['service_number' => '7003', 'email' => 'sule@example.com']);
     }
 }
