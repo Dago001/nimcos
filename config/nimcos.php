@@ -56,7 +56,7 @@ return [
         'photo_max_kb' => 3072,
         'photo_min_dimension' => 200,
         'photo_max_dimension' => 6000,
-        'photo_output_size' => 600,
+        'photo_output_size' => 360,
         'import_max_kb' => 20480,
     ],
 

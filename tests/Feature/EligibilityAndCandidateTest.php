@@ -93,7 +93,8 @@ class EligibilityAndCandidateTest extends TestCase
         $this->assertStringEndsWith('.jpg', $candidate->photo_path);
         Storage::disk('local')->assertExists($candidate->photo_path);
         [$w, $h] = getimagesize(Storage::disk('local')->path($candidate->photo_path));
-        $this->assertSame([600, 600], [$w, $h]);
+        $outputSize = (int) config('nimcos.uploads.photo_output_size');
+        $this->assertSame([$outputSize, $outputSize], [$w, $h]);
         $this->assertSame(4, $candidate->candidate_number, 'Next number after candidates 1 to 3 is allocated automatically.');
     }
 
@@ -216,6 +217,25 @@ class EligibilityAndCandidateTest extends TestCase
         $candidate->forceFill(['photo_path' => 'candidates/x.jpg'])->save();
 
         $this->get(route('candidate.photo', $candidate))->assertNotFound();
+    }
+
+    public function test_candidate_photo_serves_with_cache_headers_and_supports_304(): void
+    {
+        Storage::fake('local');
+        $election = $this->openElection(1, status: ElectionStatus::OPEN);
+        $candidate = Candidate::query()->where('election_id', $election->id)->first();
+        Storage::disk('local')->put('candidates/x.jpg', 'fake-image-bytes');
+        $candidate->forceFill(['photo_path' => 'candidates/x.jpg'])->save();
+
+        $response = $this->get(route('candidate.photo', $candidate));
+        $response->assertOk();
+        $this->assertStringContainsString('public', $response->headers->get('Cache-Control'));
+        $etag = $response->headers->get('ETag');
+        $this->assertNotEmpty($etag);
+
+        $cachedResponse = $this->withHeaders(['If-None-Match' => $etag])
+            ->get(route('candidate.photo', $candidate));
+        $cachedResponse->assertStatus(304);
     }
 
     public function test_audit_chain_detects_tampering(): void
