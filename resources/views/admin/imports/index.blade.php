@@ -22,6 +22,12 @@
                 <td class="actions">
                     <div class="actions-row">
                         <a class="btn btn-secondary btn-sm" href="{{ route('admin.imports.show', $import) }}">View</a>
+                        @if ($import->status->value === 'PROCESSING' && auth()->user()->hasPermission('import_voters'))
+                            <form method="POST" action="{{ route('admin.imports.process-now', $import) }}" class="inline-form">
+                                @csrf
+                                <button type="submit" class="btn btn-primary btn-sm">Process</button>
+                            </form>
+                        @endif
                         @if (auth()->user()->hasPermission('import_voters'))
                             <form method="POST" action="{{ route('admin.imports.destroy', $import) }}" class="inline-form" data-confirm="Are you sure you want to permanently delete this import record and remove all onboarded voters associated with it? This action cannot be undone.">
                                 @csrf

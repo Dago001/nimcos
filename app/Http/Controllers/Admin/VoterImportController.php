@@ -101,11 +101,19 @@ class VoterImportController extends Controller
             report($e);
         }
 
-        $msg = $import->status === ImportStatus::COMPLETED
-            ? 'Import completed successfully! '.number_format($import->imported_count).' voter(s) onboarded.'
-            : 'Import confirmed and is being processed.';
+        if ($import->status === ImportStatus::COMPLETED) {
+            $msg = 'Import completed successfully! '.number_format($import->imported_count).' voter(s) onboarded.';
 
-        return redirect()->route('admin.imports.show', $import)->with('success', $msg);
+            return redirect()->route('admin.imports.show', $import)->with('success', $msg);
+        }
+
+        if ($import->status === ImportStatus::FAILED) {
+            $msg = 'Import processing failed: '.$import->failure_reason;
+
+            return redirect()->route('admin.imports.show', $import)->with('error', $msg);
+        }
+
+        return redirect()->route('admin.imports.show', $import)->with('info', 'Import confirmed and is being processed in the background.');
     }
 
     public function processNow(Request $request, VoterImport $import): RedirectResponse
