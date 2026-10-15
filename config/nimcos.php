@@ -30,7 +30,7 @@ return [
     'termii' => [
         'api_key' => env('TERMII_API_KEY'),
         'base_url' => env('TERMII_BASE_URL', 'https://v4.api.termii.com'),
-        'sender_id' => env('TERMII_SENDER_ID', 'NIMCOS'),
+        'sender_id' => env('TERMII_SENDER_ID', 'OE Alert'),
         'channel' => env('TERMII_CHANNEL', 'generic'),
     ],
 

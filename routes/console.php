@@ -10,6 +10,7 @@ use App\Services\Audit\AuditAction;
 use App\Services\Audit\AuditChainVerifier;
 use App\Services\Audit\AuditLogger;
 use App\Services\Elections\ElectionLifecycle;
+use App\Services\Notifications\TermiiSmsService;
 use App\Services\Security\SecurityAlertService;
 use App\Services\Voters\VoterImportService;
 use App\Services\Voting\VotingSessionService;
@@ -134,6 +135,34 @@ Artisan::command('voters:process-import {id?}', function (VoterImportService $se
 
     return 0;
 })->purpose('Process and complete pending or processing voter register imports');
+
+Artisan::command('termii:test {phone} {message?}', function (TermiiSmsService $termii) {
+    $phone = (string) $this->argument('phone');
+    $message = (string) ($this->argument('message') ?? 'Test SMS from NIMCOS E-Voting with Sender ID OE Alert.');
+
+    $this->info('Testing Termii SMS delivery...');
+    $this->line("Phone: {$phone}");
+    $this->line("Sender ID: {$termii->getSenderId()}");
+    $this->line("Channel: {$termii->getChannel()}");
+    $this->line("Base URL: {$termii->getBaseUrl()}");
+
+    if (! $termii->isEnabled()) {
+        $this->error('Termii is not enabled (TERMII_API_KEY is empty in .env).');
+
+        return 1;
+    }
+
+    $success = $termii->send($phone, $message);
+    if ($success) {
+        $this->info("SUCCESS: SMS successfully dispatched to {$phone} via Termii with Sender ID '{$termii->getSenderId()}'!");
+
+        return 0;
+    }
+
+    $this->error("FAILED: Could not send SMS to {$phone}. Check storage/logs/laravel.log for API response.");
+
+    return 1;
+})->purpose('Send a test SMS via Termii to verify sender ID and channel delivery');
 
 Schedule::command('nimcos:tick')->everyMinute()->withoutOverlapping()->onOneServer();
 Schedule::command('queue:work --stop-when-empty --max-time=50 --queue=otp,default')->everyMinute()->withoutOverlapping();

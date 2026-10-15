@@ -13,7 +13,9 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Voter;
 use App\Services\Notifications\NotificationService;
+use App\Services\Notifications\TermiiSmsService;
 use App\Services\Security\SecurityAlertService;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
@@ -126,5 +128,45 @@ class DashboardAndEmailTest extends TestCase
         $alerts->raise('TEST_HIGH', AlertSeverity::HIGH, 'High severity');
         Mail::assertQueued(SecurityAlertMail::class, fn ($m) => $m->hasTo($auditor->email));
         Mail::assertNotQueued(SecurityAlertMail::class, fn ($m) => $m->hasTo($electionAdmin->email));
+    }
+
+    public function test_termii_sms_service_uses_oe_alert_sender_id_and_supports_channel_fallback(): void
+    {
+        config([
+            'nimcos.termii.api_key' => 'test-api-key',
+            'nimcos.termii.sender_id' => 'OE Alert',
+            'nimcos.termii.channel' => 'generic',
+        ]);
+
+        Http::fake([
+            'https://v4.api.termii.com/api/sms/send' => Http::sequence()
+                // First call fails on generic channel
+                ->push(['code' => 'error', 'message' => 'Sender ID not allowed on generic'], 400)
+                // Fallback call succeeds on dnd channel
+                ->push(['message_id' => 'msg-12345', 'message' => 'Successfully Sent'], 200),
+        ]);
+
+        $service = app(TermiiSmsService::class);
+        $this->assertSame('OE Alert', $service->getSenderId());
+        $this->assertTrue($service->isEnabled());
+
+        $sent = $service->send('08031234567', 'Your code is 123456');
+        $this->assertTrue($sent);
+
+        Http::assertSentCount(2);
+
+        // Verify first request used OE Alert and generic channel
+        Http::assertSent(fn ($request) => $request->url() === 'https://v4.api.termii.com/api/sms/send'
+            && $request['to'] === '2348031234567'
+            && $request['from'] === 'OE Alert'
+            && $request['channel'] === 'generic'
+        );
+
+        // Verify fallback request used OE Alert and dnd channel
+        Http::assertSent(fn ($request) => $request->url() === 'https://v4.api.termii.com/api/sms/send'
+            && $request['to'] === '2348031234567'
+            && $request['from'] === 'OE Alert'
+            && $request['channel'] === 'dnd'
+        );
     }
 }

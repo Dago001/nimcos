@@ -20,7 +20,7 @@ class TermiiSmsService
     {
         $this->apiKey = (string) config('nimcos.termii.api_key');
         $this->baseUrl = rtrim((string) config('nimcos.termii.base_url', 'https://v4.api.termii.com'), '/');
-        $this->senderId = (string) config('nimcos.termii.sender_id', 'NIMCOS');
+        $this->senderId = (string) config('nimcos.termii.sender_id', 'OE Alert');
         $this->channel = (string) config('nimcos.termii.channel', 'generic');
     }
 
@@ -29,8 +29,25 @@ class TermiiSmsService
         return ! empty($this->apiKey);
     }
 
+    public function getSenderId(): string
+    {
+        return $this->senderId;
+    }
+
+    public function getChannel(): string
+    {
+        return $this->channel;
+    }
+
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
     /**
      * Send SMS to a phone number. Automatically normalises Nigerian phone numbers.
+     * If the primary channel fails or is blocked by DND, automatically retries
+     * on the alternative channel (generic <-> dnd).
      */
     public function send(string $phone, string $message): bool
     {
@@ -56,18 +73,82 @@ class TermiiSmsService
             ]);
 
             if ($response->successful()) {
+                $body = $response->json();
+                if (isset($body['code']) && strtolower((string) $body['code']) === 'error') {
+                    Log::warning('TermiiSms primary channel warning: '.($body['message'] ?? 'Unknown error').'. Retrying with fallback channel.', [
+                        'channel' => $this->channel,
+                        'to' => $normalised,
+                    ]);
+
+                    return $this->retryWithFallbackChannel($normalised, $message);
+                }
+
+                Log::info("TermiiSms dispatched to {$normalised} via {$this->channel} (Sender ID: {$this->senderId})", [
+                    'message_id' => $body['message_id'] ?? null,
+                ]);
+
                 return true;
             }
 
-            Log::error('TermiiSms dispatch failed: '.$response->body(), [
-                'status' => $response->status(),
+            Log::warning('TermiiSms dispatch failed on primary channel ('.$response->status().'): '.$response->body().'. Retrying with fallback channel.', [
+                'channel' => $this->channel,
+                'to' => $normalised,
+            ]);
+
+            return $this->retryWithFallbackChannel($normalised, $message);
+        } catch (Throwable $e) {
+            Log::error('TermiiSms exception: '.$e->getMessage(), [
                 'to' => $normalised,
             ]);
 
             return false;
+        }
+    }
+
+    /**
+     * Fallback channel delivery (swaps between generic and dnd).
+     */
+    private function retryWithFallbackChannel(string $normalisedPhone, string $message): bool
+    {
+        $fallbackChannel = $this->channel === 'generic' ? 'dnd' : 'generic';
+
+        try {
+            $response = Http::timeout(10)->post("{$this->baseUrl}/api/sms/send", [
+                'to' => $normalisedPhone,
+                'from' => $this->senderId,
+                'sms' => $message,
+                'type' => 'plain',
+                'channel' => $fallbackChannel,
+                'api_key' => $this->apiKey,
+            ]);
+
+            if ($response->successful()) {
+                $body = $response->json();
+                if (isset($body['code']) && strtolower((string) $body['code']) === 'error') {
+                    Log::error('TermiiSms fallback channel failed: '.($body['message'] ?? 'Unknown error'), [
+                        'channel' => $fallbackChannel,
+                        'to' => $normalisedPhone,
+                    ]);
+
+                    return false;
+                }
+
+                Log::info("TermiiSms dispatched to {$normalisedPhone} via fallback channel {$fallbackChannel} (Sender ID: {$this->senderId})", [
+                    'message_id' => $body['message_id'] ?? null,
+                ]);
+
+                return true;
+            }
+
+            Log::error('TermiiSms fallback channel failed ('.$response->status().'): '.$response->body(), [
+                'channel' => $fallbackChannel,
+                'to' => $normalisedPhone,
+            ]);
+
+            return false;
         } catch (Throwable $e) {
-            Log::error('TermiiSms exception: '.$e->getMessage(), [
-                'to' => $normalised,
+            Log::error('TermiiSms fallback channel exception: '.$e->getMessage(), [
+                'to' => $normalisedPhone,
             ]);
 
             return false;
