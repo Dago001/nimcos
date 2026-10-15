@@ -47,7 +47,7 @@ class SendVoterOtp implements ShouldBeEncrypted, ShouldQueue
         if ($termii->isEnabled()) {
             $voter = Voter::query()->find($this->voterId);
             if ($voter && $voter->phone) {
-                $msg = "Your NIMCOS E-Voting verification code is: {$this->code}. It expires in {$this->ttlMinutes} minutes. Do not share this code.";
+                $msg = "Your NIMCOS e-Voting verification code is {$this->code}. This code expires in {$this->ttlMinutes} minutes. Do not share with anyone.";
                 $termii->send($voter->phone, $msg);
             }
         }

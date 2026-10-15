@@ -138,7 +138,7 @@ Artisan::command('voters:process-import {id?}', function (VoterImportService $se
 
 Artisan::command('termii:test {phone} {message?}', function (TermiiSmsService $termii) {
     $phone = (string) $this->argument('phone');
-    $message = (string) ($this->argument('message') ?? 'Test SMS from NIMCOS E-Voting with Sender ID OE Alert.');
+    $message = (string) ($this->argument('message') ?? 'Your NIMCOS e-Voting verification code is 123456. This code expires in 10 minutes. Do not share with anyone.');
 
     $this->info('Testing Termii SMS delivery...');
     $this->line("Phone: {$phone}");

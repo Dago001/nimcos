@@ -21,7 +21,7 @@ class TermiiSmsService
         $this->apiKey = (string) config('nimcos.termii.api_key');
         $this->baseUrl = rtrim((string) config('nimcos.termii.base_url', 'https://v4.api.termii.com'), '/');
         $this->senderId = (string) config('nimcos.termii.sender_id', 'OE Alert');
-        $this->channel = (string) config('nimcos.termii.channel', 'generic');
+        $this->channel = (string) config('nimcos.termii.channel', 'dnd');
     }
 
     public function isEnabled(): bool

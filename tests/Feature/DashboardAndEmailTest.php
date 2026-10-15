@@ -135,38 +135,31 @@ class DashboardAndEmailTest extends TestCase
         config([
             'nimcos.termii.api_key' => 'test-api-key',
             'nimcos.termii.sender_id' => 'OE Alert',
-            'nimcos.termii.channel' => 'generic',
+            'nimcos.termii.channel' => 'dnd',
         ]);
 
         Http::fake([
             'https://v4.api.termii.com/api/sms/send' => Http::sequence()
-                // First call fails on generic channel
-                ->push(['code' => 'error', 'message' => 'Sender ID not allowed on generic'], 400)
-                // Fallback call succeeds on dnd channel
+                // First call succeeds on dnd channel
                 ->push(['message_id' => 'msg-12345', 'message' => 'Successfully Sent'], 200),
         ]);
 
         $service = app(TermiiSmsService::class);
         $this->assertSame('OE Alert', $service->getSenderId());
+        $this->assertSame('dnd', $service->getChannel());
         $this->assertTrue($service->isEnabled());
 
-        $sent = $service->send('08031234567', 'Your code is 123456');
+        $msg = 'Your NIMCOS e-Voting verification code is 123456. This code expires in 10 minutes. Do not share with anyone.';
+        $sent = $service->send('08031234567', $msg);
         $this->assertTrue($sent);
 
-        Http::assertSentCount(2);
+        Http::assertSentCount(1);
 
-        // Verify first request used OE Alert and generic channel
-        Http::assertSent(fn ($request) => $request->url() === 'https://v4.api.termii.com/api/sms/send'
-            && $request['to'] === '2348031234567'
-            && $request['from'] === 'OE Alert'
-            && $request['channel'] === 'generic'
-        );
-
-        // Verify fallback request used OE Alert and dnd channel
         Http::assertSent(fn ($request) => $request->url() === 'https://v4.api.termii.com/api/sms/send'
             && $request['to'] === '2348031234567'
             && $request['from'] === 'OE Alert'
             && $request['channel'] === 'dnd'
+            && $request['sms'] === $msg
         );
     }
 }
