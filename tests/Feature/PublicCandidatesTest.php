@@ -6,7 +6,6 @@ use App\Enums\CandidateStatus;
 use App\Enums\ElectionStatus;
 use App\Enums\NisCommand;
 use App\Enums\NisRank;
-use App\Models\Candidate;
 use App\Models\Role;
 use Tests\TestCase;
 
@@ -22,7 +21,7 @@ class PublicCandidatesTest extends TestCase
         $candidatesResponse = $this->get(route('public.candidates'));
         $candidatesResponse->assertOk();
         $candidatesResponse->assertSee('Candidates');
-        $candidatesResponse->assertSee('Meet the Candidates');
+        $candidatesResponse->assertSee('Official Candidates Directory');
     }
 
     public function test_candicates_spelling_redirects_to_candidates(): void
@@ -77,22 +76,32 @@ class PublicCandidatesTest extends TestCase
         $response->assertDontSee('WithdrawnCandidate');
     }
 
-    public function test_draft_election_is_hidden_from_public_but_visible_to_admin(): void
+    public function test_draft_election_without_screened_candidates_is_hidden_from_public_but_visible_to_admin(): void
     {
         $draftElection = $this->openElection(1, status: ElectionStatus::DRAFT);
-        $candidate = $draftElection->candidates()->first();
-        $candidate->update(['first_name' => 'DraftCandidateOnly']);
+        $draftElection->candidates()->update(['status' => CandidateStatus::INACTIVE->value]);
 
-        // Public visitor should not see candidates from draft election
+        // Public visitor should not see candidates from unfinalized draft election
         $publicResponse = $this->get(route('public.candidates'));
         $publicResponse->assertOk();
-        $publicResponse->assertDontSee('DraftCandidateOnly');
+        $publicResponse->assertSee('Candidate Screening &amp; Vetting Underway', false);
 
-        // Signed-in administrator can view draft candidate preview
+        // Signed-in administrator can view the draft election directory
         $admin = $this->admin(Role::SUPER_ADMIN);
         $adminResponse = $this->actingAsAdmin($admin)->get(route('public.candidates'));
         $adminResponse->assertOk();
-        $adminResponse->assertSee('DraftCandidateOnly');
-        $adminResponse->assertSee('Administrator Preview');
+        $adminResponse->assertSee($draftElection->name);
+    }
+
+    public function test_draft_election_with_screened_candidates_is_visible_to_public(): void
+    {
+        $draftElection = $this->openElection(1, status: ElectionStatus::DRAFT);
+        $candidate = $draftElection->candidates()->first();
+        $candidate->update(['first_name' => 'ScreenedDraftCandidate']);
+        $candidate->forceFill(['status' => CandidateStatus::ACTIVE])->save();
+
+        $publicResponse = $this->get(route('public.candidates'));
+        $publicResponse->assertOk();
+        $publicResponse->assertSee('ScreenedDraftCandidate');
     }
 }

@@ -15,8 +15,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#207027">
-    <meta name="description" content="Official screened and cleared candidates for the Nigeria Immigration Multi-Purpose Cooperative Society (NIMCOS) Elections.">
-    <title>Candidates · {{ config('nimcos.name') }}</title>
+    <meta name="description" content="Official screened and certified candidates for the Nigeria Immigration Multi-Purpose Cooperative Society (NIMCOS) Elections.">
+    <title>Screened Candidates · {{ config('nimcos.name') }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="stylesheet" href="{{ asset_v('assets/app.css') }}">
     <script src="{{ asset_v('assets/app.js') }}" defer></script>
@@ -30,7 +30,7 @@
 <header class="site-header">
     <nav class="site-nav" aria-label="Main">
         <a class="site-brand" href="{{ route('home') }}">
-            <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="" width="48" height="48">
+            <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS Crest" width="48" height="48">
             <span><span class="site-brand-name">NIMCOS</span><span class="site-brand-sub">E-VOTING</span></span>
         </a>
         <div class="site-links" id="site-links" data-nav-panel>
@@ -58,19 +58,48 @@
 @include('partials.announcements', ['showTicker' => true, 'showPopups' => false])
 
 <main id="main" tabindex="-1">
-    <section class="candidates-header-band" aria-labelledby="candidates-title">
-        <div class="candidates-header-inner">
-            <span class="candidates-badge">
-                <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                Screened &amp; Cleared Candidates
+    {{-- Executive Hero Header --}}
+    <section class="candidates-hero" aria-labelledby="candidates-hero-title">
+        <div class="candidates-hero-inner">
+            <div class="candidates-hero-seal-wrap">
+                <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS Official Seal" class="candidates-hero-seal" width="86" height="86">
+            </div>
+
+            <span class="candidates-hero-badge">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Nigeria Immigration Service · NIMCOS Electoral Directory
             </span>
-            <h1 class="candidates-header-title" id="candidates-title">Meet the Candidates</h1>
-            <p class="candidates-header-sub">
-                Review the profiles, ranks, commands, and manifestos of all candidates who have successfully undergone and passed the official screening process.
+
+            <h1 id="candidates-hero-title">Official Candidates Directory</h1>
+            <p class="candidates-hero-sub">
+                Official register of screened, vetted, and cleared contestants eligible for election into the Executive Committee of the Nigeria Immigration Multi-Purpose Cooperative Society.
             </p>
 
+            {{-- Metrics Ribbon --}}
+            <div class="candidates-metrics-ribbon" role="region" aria-label="Election directory summary">
+                <div class="candidates-metric-item">
+                    <div class="candidates-metric-label">Contested Offices</div>
+                    <div class="candidates-metric-val">{{ $totalPositions }} {{ \Illuminate\Support\Str::plural('Position', $totalPositions) }}</div>
+                </div>
+                <div class="candidates-metric-item">
+                    <div class="candidates-metric-label">Screened Contestants</div>
+                    <div class="candidates-metric-val">{{ $totalClearedCandidates }} {{ \Illuminate\Support\Str::plural('Candidate', $totalClearedCandidates) }}</div>
+                </div>
+                <div class="candidates-metric-item">
+                    <div class="candidates-metric-label">Screening Status</div>
+                    <div class="candidates-metric-val">
+                        <svg viewBox="0 0 20 20" fill="#4ade80" width="18" height="18" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                        Certified &amp; Cleared
+                    </div>
+                </div>
+                <div class="candidates-metric-item">
+                    <div class="candidates-metric-label">Voting Channel</div>
+                    <div class="candidates-metric-val">Electronic Ballot</div>
+                </div>
+            </div>
+
             @if ($elections->count() > 1)
-                <div class="candidates-election-pills" role="navigation" aria-label="Select election">
+                <div class="candidates-election-pills" role="navigation" aria-label="Select election directory">
                     @foreach ($elections as $elec)
                         <a href="{{ route('public.candidates', ['election' => $elec->code]) }}"
                            class="candidates-election-pill {{ $selectedElection && $selectedElection->id === $elec->id ? 'is-active' : '' }}">
@@ -81,96 +110,115 @@
             @endif
 
             @if ($selectedElection && $selectedElection->status === \App\Enums\ElectionStatus::DRAFT)
-                <div class="badge badge-warning mt-2">
-                    Administrator Preview: This election is in DRAFT status and is not yet publicly live.
+                <div class="badge badge-warning mt-3">
+                    Preview Mode: Displaying screened candidates for {{ $selectedElection->name }}
                 </div>
             @endif
         </div>
     </section>
 
-    <div class="candidates-content">
-        @if (! $selectedElection || $selectedElection->electionPositions->isEmpty())
-            <div class="candidates-empty-card">
-                <div class="candidates-empty-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    {{-- Main Directory Body --}}
+    <div class="candidates-main-content">
+        @if ($totalClearedCandidates > 0 && $selectedElection)
+            {{-- Interactive Search and Filter Toolbar --}}
+            <div class="candidates-toolbar" role="search" aria-label="Filter candidates">
+                <div class="candidates-search-wrap">
+                    <svg class="candidates-search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="candidates-search-input" placeholder="Search candidate by name, rank, or command..." data-candidate-search aria-label="Search candidates">
                 </div>
-                <h2>No Screened Candidates Published Yet</h2>
-                <p class="muted">Candidate profiles will appear here once the NIMCOS Electoral Screening Committee concludes screening and verification of contestants.</p>
-                <div class="btn-row center mt-3">
-                    <a href="{{ route('home') }}" class="btn btn-secondary">Return to Home</a>
-                    <a href="{{ route('voter.entry') }}" class="btn btn-primary">Sign in to Vote</a>
+
+                <div class="candidates-filter-pills" role="tablist" aria-label="Position filter">
+                    <button type="button" class="candidate-filter-btn active" data-filter-pos="all">All Offices</button>
+                    @foreach ($selectedElection->electionPositions as $ep)
+                        @if ($ep->activeCandidates->isNotEmpty())
+                            <button type="button" class="candidate-filter-btn" data-filter-pos="{{ $ep->id }}">
+                                {{ $ep->position->name }}
+                            </button>
+                        @endif
+                    @endforeach
+                    <span class="candidates-count-tag"><strong data-candidate-count>{{ $totalClearedCandidates }}</strong> candidates shown</span>
                 </div>
             </div>
-        @else
-            @php($hasAnyCandidates = false)
+
+            {{-- Fallback Card for when Search Finds Nothing --}}
+            <div class="position-showcase-panel hidden" data-no-search-results>
+                <div class="position-showcase-body center">
+                    <p class="lede mb-1">No cleared candidates matched your search criteria.</p>
+                    <p class="muted small mb-0">Try typing a different name, command, or reset the office filter above.</p>
+                </div>
+            </div>
+
+            {{-- Positions and Candidate Profiles --}}
             @foreach ($selectedElection->electionPositions as $positionIndex => $ep)
                 @php($activeCandidates = $ep->activeCandidates)
                 @if ($activeCandidates->isNotEmpty())
-                    @php($hasAnyCandidates = true)
-                @endif
-                <section class="position-showcase-card" id="pos-{{ $ep->id }}" aria-labelledby="pos-title-{{ $ep->id }}">
-                    <div class="position-showcase-header">
-                        <div class="position-showcase-title">
-                            <span class="position-badge-number" aria-hidden="true">{{ $positionIndex + 1 }}</span>
-                            <div>
-                                <h2 class="mb-0" id="pos-title-{{ $ep->id }}">{{ $ep->position->name }}</h2>
-                                <div class="position-showcase-subtitle">
-                                    {{ $ep->seats }} {{ \Illuminate\Support\Str::plural('Seat', $ep->seats) }} available
-                                    @unless ($ep->is_required) · <em>Optional position</em> @endunless
+                    <section class="position-showcase-panel" id="pos-{{ $ep->id }}" data-position-section data-position-id="{{ $ep->id }}" aria-labelledby="pos-title-{{ $ep->id }}">
+                        <div class="position-showcase-header">
+                            <div class="position-showcase-title-left">
+                                <span class="position-index-badge" aria-hidden="true">{{ $positionIndex + 1 }}</span>
+                                <div>
+                                    <h2 id="pos-title-{{ $ep->id }}">{{ $ep->position->name }}</h2>
+                                    <div class="position-showcase-sub">
+                                        {{ $ep->seats }} {{ \Illuminate\Support\Str::plural('Seat', $ep->seats) }} to be filled
+                                        @unless ($ep->is_required) · <em>Optional vote</em> @endunless
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="position-showcase-meta">
-                            <span class="badge badge-info">{{ $activeCandidates->count() }} Cleared {{ \Illuminate\Support\Str::plural('Candidate', $activeCandidates->count()) }}</span>
-                        </div>
-                    </div>
-
-                    <div class="position-showcase-body">
-                        @if ($activeCandidates->isEmpty())
-                            <div class="position-empty-notice">
-                                <p class="muted mb-0">No cleared candidates currently listed for this position.</p>
+                            <div>
+                                <span class="badge badge-success">{{ $activeCandidates->count() }} Cleared Contestants</span>
                             </div>
-                        @else
-                            <div class="candidates-grid">
+                        </div>
+
+                        <div class="position-showcase-body">
+                            <div class="candidates-showcase-grid">
                                 @foreach ($activeCandidates as $candidate)
-                                    <article class="candidate-card" id="candidate-{{ $candidate->id }}">
-                                        <div class="candidate-card-top">
-                                            @if ($candidate->candidate_number)
-                                                <span class="candidate-num-tag">Candidate {{ $candidate->candidate_number }}</span>
-                                            @endif
-                                            <div class="candidate-card-photo-wrap">
+                                    <article class="candidate-profile-card" id="candidate-{{ $candidate->id }}"
+                                             data-candidate-card
+                                             data-candidate-search-text="{{ strtolower($candidate->displayName().' '.$candidate->rankLabel().' '.$candidate->commandLabel().' '.$ep->position->name) }}">
+                                        
+                                        <div class="candidate-profile-top">
+                                            <div class="candidate-badges-strip">
+                                                @if ($candidate->candidate_number)
+                                                    <span class="candidate-number-tag">No. {{ $candidate->candidate_number }}</span>
+                                                @else
+                                                    <span></span>
+                                                @endif
+                                                <span class="candidate-verified-pill">
+                                                    <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                                                    Screened &amp; Cleared
+                                                </span>
+                                            </div>
+
+                                            <div class="candidate-photo-frame">
                                                 <x-candidate-avatar :candidate="$candidate" size="large" />
                                             </div>
-                                            <span class="candidate-verified-chip">
-                                                <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                                                Screened &amp; Cleared
-                                            </span>
-                                            <h3 class="candidate-card-name">{{ $candidate->displayName() }}</h3>
-                                            <p class="candidate-card-position">{{ $ep->position->name }}</p>
+
+                                            <h3 class="candidate-profile-name">{{ $candidate->displayName() }}</h3>
+                                            <p class="candidate-contested-tag">Contesting for {{ $ep->position->name }}</p>
                                         </div>
 
-                                        <div class="candidate-card-info">
-                                            <div class="candidate-info-table">
-                                                <div class="candidate-info-row">
-                                                    <span class="candidate-info-label">Rank</span>
-                                                    <span class="candidate-info-value">{{ $candidate->rankLabel() ?? 'Not specified' }}</span>
+                                        <div class="candidate-profile-body">
+                                            <div class="candidate-details-grid">
+                                                <div class="candidate-detail-item">
+                                                    <span class="candidate-detail-label">Official NIS Rank</span>
+                                                    <span class="candidate-detail-value">{{ $candidate->rankLabel() ?? 'Not specified' }}</span>
                                                 </div>
-                                                <div class="candidate-info-row">
-                                                    <span class="candidate-info-label">Command</span>
-                                                    <span class="candidate-info-value">{{ $candidate->commandLabel() ?? 'Not specified' }}</span>
+                                                <div class="candidate-detail-item">
+                                                    <span class="candidate-detail-label">Command / Deployment</span>
+                                                    <span class="candidate-detail-value">{{ $candidate->commandLabel() ?? 'Not specified' }}</span>
                                                 </div>
                                             </div>
 
-                                            <div class="candidate-bio-wrap">
-                                                <h4 class="candidate-bio-title">
+                                            <div class="candidate-bio-box">
+                                                <h4 class="candidate-bio-heading">
                                                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                                                    Profile &amp; Brief Bio
+                                                    Manifesto &amp; Brief Bio
                                                 </h4>
-                                                <div class="candidate-bio-box">
+                                                <div class="candidate-bio-text">
                                                     @if ($candidate->biography)
                                                         {!! nl2br(e($candidate->biography)) !!}
                                                     @else
-                                                        <span class="candidate-bio-empty">No biography statement submitted.</span>
+                                                        <span class="candidate-bio-none">Official profile and manifesto statement pending submission.</span>
                                                     @endif
                                                 </div>
                                             </div>
@@ -178,33 +226,79 @@
                                     </article>
                                 @endforeach
                             </div>
-                        @endif
-                    </div>
-                </section>
+                        </div>
+                    </section>
+                @endif
             @endforeach
 
-            @unless ($hasAnyCandidates)
-                <div class="candidates-empty-card">
-                    <div class="candidates-empty-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    </div>
-                    <h2>Candidate Screening in Progress</h2>
-                    <p class="muted">Contestants are currently undergoing verification by the Electoral Screening Committee. Cleared candidates will be published here shortly.</p>
-                </div>
-            @endunless
-        @endif
+        @else
+            {{-- Executive Electoral Screening Notice (Shown when screening is in progress or no candidates published yet) --}}
+            <div class="electoral-notice-panel">
+                <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS Official Seal" class="electoral-notice-seal" width="88" height="88">
+                
+                <span class="electoral-notice-badge">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Official Notice · Electoral Screening in Progress
+                </span>
 
-        <div class="candidates-cta-band">
-            <div class="candidates-cta-inner">
-                <div>
-                    <h2>Ready to exercise your democratic right?</h2>
-                    <p class="muted mb-0">Cast your vote securely using your Service Number and registered email verification code.</p>
+                <h2>Candidate Screening &amp; Vetting Underway</h2>
+                <p class="electoral-notice-desc">
+                    The NIMCOS Electoral Screening Committee is actively reviewing nomination dossiers, service qualifications, and statutory eligibility for all aspirants. Official certified candidates will be rostered here immediately following sign-off.
+                </p>
+
+                {{-- 3-Step Process Timeline --}}
+                <div class="electoral-timeline" role="region" aria-label="Screening progress">
+                    <div class="electoral-step done">
+                        <span class="electoral-step-dot" aria-hidden="true">✓</span>
+                        <div>
+                            <div class="electoral-step-title">Phase 1: Nominations</div>
+                            <div class="electoral-step-sub">Aspirant submissions closed</div>
+                        </div>
+                    </div>
+                    <div class="electoral-step active">
+                        <span class="electoral-step-dot" aria-hidden="true">●</span>
+                        <div>
+                            <div class="electoral-step-title">Phase 2: Screening</div>
+                            <div class="electoral-step-sub">Vetting &amp; clearance in progress</div>
+                        </div>
+                    </div>
+                    <div class="electoral-step">
+                        <span class="electoral-step-dot" aria-hidden="true">3</span>
+                        <div>
+                            <div class="electoral-step-title">Phase 3: Directory</div>
+                            <div class="electoral-step-sub">Publishing verified profiles</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="candidates-cta-btn">
-                    <a class="btn btn-primary btn-lg" href="{{ route('voter.entry') }}">Vote Now</a>
+
+                <div class="btn-row center">
+                    <a href="{{ route('home') }}" class="btn btn-secondary">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        Return to Homepage
+                    </a>
+                    <a href="{{ route('voter.entry') }}" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Voter Login Portal
+                    </a>
                 </div>
             </div>
-        </div>
+        @endif
+
+        {{-- Call to Action Banner --}}
+        <section class="candidates-cta-section" aria-labelledby="cta-heading">
+            <div class="candidates-cta-flex">
+                <div>
+                    <h2 id="cta-heading">Ready to cast your ballot?</h2>
+                    <p>Make sure you have your Service Number and registered email address on hand to receive your verification code.</p>
+                </div>
+                <div>
+                    <a class="btn btn-primary btn-lg" href="{{ route('voter.entry') }}">
+                        Proceed to Vote
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
     </div>
 </main>
 
@@ -212,7 +306,7 @@
     <div class="site-footer-main">
         <div class="site-footer-org">
             <a class="site-brand" href="{{ route('home') }}">
-                <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="" width="44" height="44">
+                <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS Seal" width="44" height="44">
                 <span><span class="site-brand-name">NIMCOS</span><span class="site-brand-sub">E-VOTING</span></span>
             </a>
             <h2>{{ config('nimcos.short_org') }}</h2>

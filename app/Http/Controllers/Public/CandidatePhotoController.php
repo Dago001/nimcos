@@ -24,7 +24,8 @@ class CandidatePhotoController extends Controller
 
         $election = $candidate->election;
         $isAdmin = $request->user('web') !== null;
-        abort_if($election->status === ElectionStatus::DRAFT && ! $isAdmin, 404);
+        // Screened active candidates are visible to voters before election commences.
+        abort_if(! $candidate->isActive() && $election->status === ElectionStatus::DRAFT && ! $isAdmin, 404);
 
         $path = $photos->absolutePath($candidate);
         abort_if($path === null || ! file_exists($path), 404);

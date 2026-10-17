@@ -729,6 +729,74 @@
     });
   }
 
+  /* ---------- Real-time candidate directory search and position filter ---------- */
+  function initCandidateFilters() {
+    var searchInput = $('[data-candidate-search]');
+    var filterBtns = $$('[data-filter-pos]');
+    var sections = $$('[data-position-section]');
+    var countEl = $('[data-candidate-count]');
+    var noResults = $('[data-no-search-results]');
+    if (!searchInput && filterBtns.length === 0) return;
+
+    var activePos = 'all';
+
+    function filter() {
+      var query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      var visibleTotal = 0;
+
+      sections.forEach(function (sec) {
+        var secPos = sec.getAttribute('data-position-id');
+        var secCards = $$('[data-candidate-card]', sec);
+        var visibleInSec = 0;
+
+        secCards.forEach(function (card) {
+          var posMatches = (activePos === 'all' || activePos === secPos);
+          var text = (card.getAttribute('data-candidate-search-text') || '').toLowerCase();
+          var textMatches = !query || text.indexOf(query) !== -1;
+
+          if (posMatches && textMatches) {
+            card.classList.remove('hidden');
+            visibleInSec++;
+            visibleTotal++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        if (visibleInSec === 0) {
+          sec.classList.add('hidden');
+        } else {
+          sec.classList.remove('hidden');
+        }
+      });
+
+      if (countEl) {
+        countEl.textContent = visibleTotal;
+      }
+
+      if (noResults) {
+        if (visibleTotal === 0 && (query || activePos !== 'all')) {
+          noResults.classList.remove('hidden');
+        } else {
+          noResults.classList.add('hidden');
+        }
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', filter);
+    }
+
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        filterBtns.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activePos = btn.getAttribute('data-filter-pos') || 'all';
+        filter();
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     applyWidths();
     initDialogs();
@@ -752,5 +820,6 @@
     initHumanCheck();
     initPasswordToggle();
     initDisableRightClick();
+    initCandidateFilters();
   });
 })();
