@@ -712,7 +712,7 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 /* =========================================================================
    PUBLIC SCREENED CANDIDATES DIRECTORY (Institutional NIS/NIMCOS Styling)
    ========================================================================= */
-.candidates-body { background: #f6f8f6; }
+.candidates-body { background: #f6f8f6; overflow-x: hidden; }
 
 /* Hero section - Dignified institutional dark green gradient, no AI radial glow */
 .candidates-hero {
@@ -726,6 +726,7 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 }
 .candidates-hero-inner {
   max-width: 960px;
+  width: 100%;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -749,6 +750,8 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 .candidates-hero-masthead {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: 0.55rem;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -760,14 +763,16 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.95rem;
+  max-width: 100%;
 }
 .candidates-hero h1 {
-  font-size: clamp(1.9rem, 3.2vw, 2.65rem);
+  font-size: clamp(1.6rem, 4vw, 2.65rem);
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.015em;
   margin: 0 0 0.75rem;
-  line-height: 1.18;
+  line-height: 1.2;
+  word-break: break-word;
 }
 .candidates-hero-sub {
   color: rgba(255, 255, 255, 0.9);
@@ -792,6 +797,7 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
   border-radius: 8px;
   padding: 0.75rem 1rem;
   text-align: center;
+  min-width: 0;
 }
 .candidates-metric-label {
   font-size: 0.7rem;
@@ -800,6 +806,9 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.78);
   margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .candidates-metric-val {
   font-size: 1.15rem;
@@ -809,6 +818,7 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
+  min-width: 0;
 }
 
 /* Election pills in Hero */
@@ -818,6 +828,7 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
   gap: 0.5rem;
   justify-content: center;
   margin-top: 1.25rem;
+  max-width: 100%;
 }
 .candidates-election-pill {
   background: rgba(255, 255, 255, 0.14);
@@ -829,6 +840,9 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
   font-size: 0.88rem;
   font-weight: 650;
   transition: all 0.15s ease;
+  white-space: normal;
+  text-align: center;
+  max-width: 100%;
 }
 .candidates-election-pill:hover,
 .candidates-election-pill.is-active {
@@ -1308,15 +1322,43 @@ fieldset.field > legend { padding: 0; } fieldset.field .check { font-weight: 400
 }
 
 @media (max-width: 768px) {
-  .candidates-hero { padding: 2.5rem 5% 3.5rem; }
-  .candidates-main-content { margin-top: -1.5rem; padding: 0 14px; }
-  .candidates-toolbar { flex-direction: column; align-items: stretch; }
+  .candidates-hero { padding: 2.25rem 4% 3.25rem; }
+  .candidates-hero h1 { font-size: 1.6rem; }
+  .candidates-hero-masthead { font-size: 0.7rem; padding: 0.35rem 0.65rem; }
+  .candidates-metrics-ribbon { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .candidates-metric-item { padding: 0.55rem 0.5rem; }
+  .candidates-metric-label { font-size: 0.65rem; }
+  .candidates-metric-val { font-size: 0.95rem; }
+  .candidates-election-pills { gap: 0.35rem; }
+  .candidates-election-pill { font-size: 0.78rem; padding: 0.35rem 0.75rem; }
+
+  .candidates-main-content { margin-top: -1.5rem; padding: 0 12px; }
+  .candidates-toolbar { flex-direction: column; align-items: stretch; padding: 0.85rem; }
+  .candidates-search-wrap { flex: none; width: 100%; }
   .position-showcase-header { padding: 1rem 1.15rem; }
   .position-showcase-body { padding: 1.15rem 0.85rem; }
   .electoral-notice-panel { padding: 2.25rem 1.15rem; }
   .candidates-cta-section { padding: 1.35rem 1.15rem; }
   .candidates-cta-flex { flex-direction: column; align-items: stretch; text-align: center; }
   .candidates-cta-flex .btn { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .candidates-hero { padding: 1.75rem 14px 2.5rem; }
+  .candidates-hero h1 { font-size: 1.35rem; }
+  .candidates-hero-sub { font-size: 0.85rem; margin-bottom: 1.25rem; }
+  .candidates-hero-masthead { font-size: 0.65rem; padding: 0.3rem 0.5rem; letter-spacing: 0.04em; white-space: normal; }
+  .candidates-metrics-ribbon { grid-template-columns: 1fr 1fr; gap: 0.45rem; }
+  .candidates-metric-item { padding: 0.5rem 0.35rem; }
+  .candidates-metric-label { font-size: 0.58rem; letter-spacing: 0.04em; }
+  .candidates-metric-val { font-size: 0.82rem; flex-wrap: wrap; text-align: center; }
+  .candidates-metric-val svg { width: 14px; height: 14px; }
+  .candidates-election-pills { gap: 0.35rem; }
+  .candidates-election-pill { font-size: 0.72rem; padding: 0.3rem 0.55rem; }
+  .candidate-meta-strip { gap: 0.4rem; padding: 0.45rem 0.6rem; }
+  .candidate-meta-val { font-size: 0.78rem; }
+  .candidates-toolbar { padding: 0.65rem 0.75rem; }
+  .candidate-filter-btn { font-size: 0.75rem; padding: 0.3rem 0.65rem; }
 }
 
 
