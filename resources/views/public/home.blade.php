@@ -36,6 +36,7 @@
         </a>
         <div class="site-links" id="site-links" data-nav-panel>
             <a href="{{ route('home') }}" aria-current="page">Home</a>
+            <a href="{{ route('public.candidates') }}">Candidates</a>
             <a href="#requirements">Requirements</a>
             <a href="#how-to-vote">How to vote</a>
             <a href="{{ route('public.results') }}">Results</a>
@@ -181,6 +182,7 @@
             <h2>Voting and Results</h2>
             <ul>
                 <li><a href="{{ route('voter.entry') }}">Sign in to vote</a></li>
+                <li><a href="{{ route('public.candidates') }}">Screened candidates</a></li>
                 <li><a href="#how-to-vote">How to vote</a></li>
                 <li><a href="{{ route('public.results') }}">Published results</a></li>
                 <li><a href="{{ route('public.receipt') }}">Verify a ballot receipt</a></li>

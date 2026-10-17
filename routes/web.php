@@ -51,11 +51,13 @@ Route::name('voter.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('throttle:public')->name('public.')->group(function () {
+    Route::get('/candidates', Public\CandidatesController::class)->name('candidates');
     Route::get('/results', [Public\ResultsController::class, 'index'])->name('results');
     Route::get('/results/{code}', [Public\ResultsController::class, 'show'])->where('code', '[A-Za-z0-9\-]+')->name('results.show');
     Route::get('/receipt/verify', [Public\ReceiptVerificationController::class, 'form'])->name('receipt');
     Route::post('/receipt/verify', [Public\ReceiptVerificationController::class, 'verify'])->name('receipt.verify');
 });
+Route::redirect('/candicates', '/candidates');
 Route::get('/media/candidates/{candidate}/photo', Public\CandidatePhotoController::class)
     ->whereUuid('candidate')->name('candidate.photo');
 Route::get('/media/elections/{election}/signature', Public\ElectionSignatureController::class)

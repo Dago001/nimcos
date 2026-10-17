@@ -46,7 +46,8 @@
 <footer class="voter-footer">
     <div class="inner">
         <span>
-            <a href="{{ route('public.receipt') }}">Verify a ballot receipt</a>
+            <a href="{{ route('public.candidates') }}">Candidates</a>
+            · <a href="{{ route('public.receipt') }}">Verify a ballot receipt</a>
             · <a href="{{ route('public.results') }}">Published results</a>
         </span>
     </div>
