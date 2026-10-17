@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            @if ($elections->count() > 1)
+            @if ($elections->isNotEmpty())
                 <div class="candidates-election-pills" role="navigation" aria-label="Select election directory">
                     @foreach ($elections as $elec)
                         <a href="{{ route('public.candidates', ['election' => $elec->code]) }}"
@@ -109,11 +109,6 @@
                 </div>
             @endif
 
-            @if ($selectedElection && $selectedElection->status === \App\Enums\ElectionStatus::DRAFT)
-                <div class="badge badge-warning mt-3">
-                    Preview Mode: Displaying screened candidates for {{ $selectedElection->name }}
-                </div>
-            @endif
         </div>
     </section>
 
