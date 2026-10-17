@@ -65,8 +65,8 @@
                 <img src="{{ asset('images/nimcos-seal-sq.jpg') }}" alt="NIMCOS Official Seal" class="candidates-hero-seal" width="86" height="86">
             </div>
 
-            <span class="candidates-hero-badge">
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="candidates-hero-masthead">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 Nigeria Immigration Service · NIMCOS Electoral Directory
             </span>
 
@@ -183,9 +183,9 @@
                                                 @else
                                                     <span></span>
                                                 @endif
-                                                <span class="candidate-verified-pill">
-                                                    <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                                                    Screened &amp; Cleared
+                                                <span class="candidate-clearance-badge">
+                                                    <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.175l-4.2-3.733a1.473 1.473 0 0 1 1.958-2.202l3.047 2.709 6.84-8.552a.207.207 0 0 0 .211-.26z"/></svg>
+                                                    Screened Contestant
                                                 </span>
                                             </div>
 
@@ -198,30 +198,32 @@
                                         </div>
 
                                         <div class="candidate-profile-body">
-                                            <div class="candidate-details-grid">
-                                                <div class="candidate-detail-item">
-                                                    <span class="candidate-detail-label">Official NIS Rank</span>
-                                                    <span class="candidate-detail-value">{{ $candidate->rankLabel() ?? 'Not specified' }}</span>
+                                            <div class="candidate-meta-strip">
+                                                <div class="candidate-meta-cell">
+                                                    <span class="candidate-meta-label">NIS Rank</span>
+                                                    <span class="candidate-meta-val" title="{{ $candidate->rankLabel() ?? 'Not specified' }}">{{ $candidate->rankLabel() ?? 'Not specified' }}</span>
                                                 </div>
-                                                <div class="candidate-detail-item">
-                                                    <span class="candidate-detail-label">Command / Deployment</span>
-                                                    <span class="candidate-detail-value">{{ $candidate->commandLabel() ?? 'Not specified' }}</span>
+                                                <div class="candidate-meta-cell">
+                                                    <span class="candidate-meta-label">Command</span>
+                                                    <span class="candidate-meta-val" title="{{ $candidate->commandLabel() ?? 'Not specified' }}">{{ $candidate->commandLabel() ?? 'Not specified' }}</span>
                                                 </div>
                                             </div>
 
-                                            <div class="candidate-bio-box">
-                                                <h4 class="candidate-bio-heading">
-                                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                                                    Manifesto &amp; Brief Bio
-                                                </h4>
-                                                <div class="candidate-bio-text">
-                                                    @if ($candidate->biography)
+                                            @if ($candidate->biography)
+                                                <details class="candidate-bio-accordion">
+                                                    <summary class="candidate-bio-summary">
+                                                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                                        <span>Read Manifesto / Statement</span>
+                                                    </summary>
+                                                    <div class="candidate-bio-content">
                                                         {!! nl2br(e($candidate->biography)) !!}
-                                                    @else
-                                                        <span class="candidate-bio-none">Official profile and manifesto statement pending submission.</span>
-                                                    @endif
+                                                    </div>
+                                                </details>
+                                            @else
+                                                <div class="candidate-bio-placeholder">
+                                                    <span>Official profile on file with Electoral Committee</span>
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                     </article>
                                 @endforeach

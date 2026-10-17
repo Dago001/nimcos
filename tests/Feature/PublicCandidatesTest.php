@@ -52,7 +52,7 @@ class PublicCandidatesTest extends TestCase
         $response->assertSee(NisRank::CIS->label());
         $response->assertSee(NisCommand::SERVICE_HEADQUARTERS_ABUJA->label());
         $response->assertSee('Experienced immigration officer with over 20 years of meritorious service.');
-        $response->assertSee('Screened &amp; Cleared', false);
+        $response->assertSee('Screened Contestant');
     }
 
     public function test_inactive_and_disqualified_candidates_are_excluded(): void
